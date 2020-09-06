@@ -1,0 +1,6 @@
+<azkaban-users>
+  <user groups="azkaban" password="${admin_password}" roles="admin" username="${admin_username}"/>
+  <user password="metrics" roles="metrics" username="metrics"/>
+  <role name="admin" permissions="ADMIN"/>
+  <role name="metrics" permissions="METRICS"/>
+</azkaban-users>
