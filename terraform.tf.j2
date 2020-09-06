@@ -11,6 +11,34 @@ terraform {
   }
 }
 
+data "terraform_remote_state" "common" {
+  backend   = "s3"
+  workspace = terraform.workspace
+
+  config = {
+    bucket         = "{{terraform.state_file_bucket}}"
+    key            = "terraform/dataworks/common.tfstate"
+    region         = "{{terraform.state_file_region}}"
+    encrypt        = true
+    kms_key_id     = "arn:aws:kms:{{terraform.state_file_region}}:{{terraform.state_file_account}}:key/{{terraform.state_file_kms_key}}"
+    dynamodb_table = "remote_state_locks"
+  }
+}
+
+data "terraform_remote_state" "management" {
+  backend   = "s3"
+  workspace = "management"
+
+  config = {
+    bucket         = "{{terraform.state_file_bucket}}"
+    key            = "terraform/dataworks/management.tfstate"
+    region         = "{{terraform.state_file_region}}"
+    encrypt        = true
+    kms_key_id     = "arn:aws:kms:{{terraform.state_file_region}}:{{terraform.state_file_account}}:key/{{terraform.state_file_kms_key}}"
+    dynamodb_table = "remote_state_locks"
+  }
+}
+
 provider "aws" {
   version = "~> 2.66.0"
   region  = "{{terraform.provider_region}}"
@@ -21,8 +49,18 @@ provider "aws" {
 }
 
 locals {
-  name        = "aws-azkaban"
+  name        = "workflow-manager"
   environment = terraform.workspace == "default" ? "development" : terraform.workspace
+
+  parent_domain_name = {
+    management-dev = "mgt-dev.${var.parent_domain_name}"
+    management = var.parent_domain_name
+    development = "dev.${var.parent_domain_name}"
+    qa = "qa.${var.parent_domain_name}"
+    integration = "int.${var.parent_domain_name}"
+    preprod = "preprod.${var.parent_domain_name}"
+    production = "prod.${var.parent_domain_name}"
+  }
 
   account = {
     {%- for key, value in accounts.items() %}
@@ -39,7 +77,6 @@ locals {
     Application  = local.name
     Persistence  = "True"
     AutoShutdown = "False"
-    Costcode     = var.costcode
     Team         = "DataWorks"
   }
 

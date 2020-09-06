@@ -8,8 +8,6 @@ jobs:
         params:
           path: aws-azkaban-pr
           status: pending
-        input_mapping:
-          aws-azkaban: aws-azkaban-pr
       - .: (( inject meta.plan.terraform-bootstrap ))
         input_mapping:
           aws-azkaban: aws-azkaban-pr
