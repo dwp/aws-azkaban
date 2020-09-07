@@ -1,8 +1,8 @@
 data template_file "azkaban_webserver_users" {
   template = file("${path.module}/config/azkaban/web-server/azkaban-users.xml")
   vars = {
-    admin_username = "azkaban"
-    admin_password = "azkaban"
+    admin_username = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).azkaban_username
+    admin_password = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).azkaban_password
   }
 }
 
