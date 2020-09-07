@@ -30,6 +30,9 @@ data template_file "azkaban_executor_start" {
 
 data template_file "azkaban_executor_internal" {
   template = file("${path.module}/config/azkaban/exec-server/internal-start-executor.sh")
+  vars = {
+    azkaban_executor_port = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_executor_port
+  }
 }
 
 resource "aws_s3_bucket_object" "azkaban_executor_users" {
