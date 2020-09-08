@@ -57,4 +57,6 @@ else
 fi
 AZKABAN_OPTS="$AZKABAN_OPTS -server -Dcom.sun.management.jmxremote -Djava.io.tmpdir=$tmpdir -Dexecutorport=$executorport -Dserverpath=$serverpath"
 
+bash -c 'while true; do wget --server-response http://localhost:${azkaban_executor_port}/executor?action=activate 2>&1; if [ $? -ne 0 ]; then sleep 5; else break; fi done' &
+
 java $AZKABAN_OPTS $JAVA_LIB_PATH -cp $CLASSPATH azkaban.execapp.AzkabanExecutorServer -conf $conf $@
