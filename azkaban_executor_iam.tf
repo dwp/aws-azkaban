@@ -22,10 +22,21 @@ resource "aws_iam_role_policy_attachment" "azkaban_executor_read_config_attachme
   policy_arn = aws_iam_policy.azkaban_executor_read_config.arn
 }
 
+resource "aws_iam_role_policy_attachment" "azkaban_executor_emr_attachment" {
+  role       = aws_iam_role.azkaban_executor.name
+  policy_arn = aws_iam_policy.azkaban_executor_emr.arn
+}
+
 resource "aws_iam_policy" "azkaban_executor_read_config" {
   name        = "AzkabanExecutorReadConfigPolicy"
   description = "Allow Azkaban webserver to read from config bucket"
   policy      = data.aws_iam_policy_document.azkaban_executor_read_config.json
+}
+
+resource "aws_iam_policy" "azkaban_executor_emr" {
+  name        = "AzkabanExecutorEMRPolicy"
+  description = "Allow Azkaban webserver to interact with EMR api"
+  policy      = data.aws_iam_policy_document.azkaban_executor_emr.json
 }
 
 data "aws_iam_policy_document" "azkaban_executor_read_config" {
@@ -62,6 +73,22 @@ data "aws_iam_policy_document" "azkaban_executor_read_config" {
 
     resources = [
       "${data.terraform_remote_state.common.outputs.config_bucket_cmk.arn}",
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "azkaban_executor_emr" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "elasticmapreduce:AddJobFlowSteps",
+      "elasticmapreduce:ListSteps",
+      "elasticmapreduce:DescribeCluster",
+    ]
+
+    resources = [
+      "*",
     ]
   }
 }
