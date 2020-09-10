@@ -32,6 +32,10 @@ data template_file "azkaban_webserver_start" {
   }
 }
 
+data template_file "azkaban_webserver_commonprivate" {
+  template = file("${path.module}/config/azkaban/web-server/commonprivate.properties")
+}
+
 data template_file "azkaban_webserver_internal" {
   template = file("${path.module}/config/azkaban/web-server/internal-start-web.sh")
 }
@@ -61,6 +65,13 @@ resource "aws_s3_bucket_object" "azkaban_webserver_start" {
   bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
   key        = "${local.name}/azkaban/web-server/start-web.sh"
   content    = data.template_file.azkaban_webserver_start.rendered
+  kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
+}
+
+resource "aws_s3_bucket_object" "azkaban_webserver_commonprivate" {
+  bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
+  key        = "${local.name}/azkaban/web-server/commonprivate.properties"
+  content    = data.template_file.azkaban_webserver_commonprivate.rendered
   kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
 }
 
