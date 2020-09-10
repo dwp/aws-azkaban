@@ -29,7 +29,9 @@ meta:
             - -exc
             - |
               python bootstrap_terraform.py
+              sed -i '/^assume_role/ d' terraform.tfvars
               cp terraform.tf ../terraform-bootstrap
+              cp terraform.tfvars ../terraform-bootstrap
           dir: aws-azkaban
         inputs:
           - name: aws-azkaban
@@ -47,6 +49,7 @@ meta:
             - -exc
             - |
               cp ../terraform-bootstrap/terraform.tf .
+              cp ../terraform-bootstrap/terraform.tfvars .
               terraform workspace show
               terraform init
               terraform plan -out terraform.plan
@@ -65,6 +68,7 @@ meta:
             - -exc
             - |
               cp ../terraform-bootstrap/terraform.tf .
+              cp ../terraform-bootstrap/terraform.tfvars .
               terraform workspace show
               terraform init
               terraform plan $DETAILED_EXITCODE

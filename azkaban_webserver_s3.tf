@@ -1,3 +1,9 @@
+data "archive_file" "impact_measures" {
+  type        = "zip"
+  source_dir  = "${path.module}/../impact-measures"
+  output_path = "${path.module}/config/azkaban/impact-measures.zip"
+}
+
 data template_file "azkaban_webserver_users" {
   template = file("${path.module}/config/azkaban/web-server/azkaban-users.xml")
   vars = {
@@ -79,5 +85,12 @@ resource "aws_s3_bucket_object" "azkaban_webserver_internal" {
   bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
   key        = "${local.name}/azkaban/web-server/internal-start-web.sh"
   content    = data.template_file.azkaban_webserver_internal.rendered
+  kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
+}
+
+resource "aws_s3_bucket_object" "impact_measures_zip" {
+  bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
+  key        = "${local.name}/azkaban/impact-measures.zip"
+  source     = data.archive_file.impact_measures.output_path
   kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
 }
