@@ -76,6 +76,7 @@ meta:
         inputs:
           - name: aws-azkaban
           - name: terraform-bootstrap
+          - name: impact-measures
       params:
         DETAILED_EXITCODE: -detailed-exitcode
 
