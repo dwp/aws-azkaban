@@ -83,6 +83,7 @@ data "aws_iam_policy_document" "azkaban_executor_emr" {
 
     actions = [
       "elasticmapreduce:AddJobFlowSteps",
+      "elasticmapreduce:ListClusters",
       "elasticmapreduce:ListSteps",
       "elasticmapreduce:DescribeCluster",
     ]
