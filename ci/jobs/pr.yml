@@ -4,6 +4,7 @@ jobs:
       - get: aws-azkaban-pr
         trigger: true
         version: every
+      - get: impact-measures
       - put: aws-azkaban-pr
         params:
           path: aws-azkaban-pr
@@ -15,7 +16,6 @@ jobs:
         input_mapping:
           aws-azkaban: aws-azkaban-pr
         params:
-          TF_WORKSPACE: 'qa'
           DETAILED_EXITCODE: ''
         on_failure:
           put: aws-azkaban-pr

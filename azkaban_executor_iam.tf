@@ -29,13 +29,13 @@ resource "aws_iam_role_policy_attachment" "azkaban_executor_emr_attachment" {
 
 resource "aws_iam_policy" "azkaban_executor_read_config" {
   name        = "AzkabanExecutorReadConfigPolicy"
-  description = "Allow Azkaban webserver to read from config bucket"
+  description = "Allow Azkaban executor to read from config bucket"
   policy      = data.aws_iam_policy_document.azkaban_executor_read_config.json
 }
 
 resource "aws_iam_policy" "azkaban_executor_emr" {
   name        = "AzkabanExecutorEMRPolicy"
-  description = "Allow Azkaban webserver to interact with EMR api"
+  description = "Allow Azkaban executor to interact with EMR api"
   policy      = data.aws_iam_policy_document.azkaban_executor_emr.json
 }
 
@@ -83,6 +83,7 @@ data "aws_iam_policy_document" "azkaban_executor_emr" {
 
     actions = [
       "elasticmapreduce:AddJobFlowSteps",
+      "elasticmapreduce:ListClusters",
       "elasticmapreduce:ListSteps",
       "elasticmapreduce:DescribeCluster",
     ]

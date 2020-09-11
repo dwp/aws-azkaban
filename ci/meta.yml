@@ -30,6 +30,7 @@ meta:
             - |
               python bootstrap_terraform.py
               cp terraform.tf ../terraform-bootstrap
+              cp terraform.tfvars ../terraform-bootstrap
           dir: aws-azkaban
         inputs:
           - name: aws-azkaban
@@ -47,14 +48,17 @@ meta:
             - -exc
             - |
               cp ../terraform-bootstrap/terraform.tf .
+              cp ../terraform-bootstrap/terraform.tfvars .
               terraform workspace show
               terraform init
               terraform plan -out terraform.plan
               terraform apply -auto-approve terraform.plan
           dir: aws-azkaban
+          
         inputs:
           - name: aws-azkaban
           - name: terraform-bootstrap
+          - name: impact-measures
     terraform-plan:
       task: terraform-plan
       .: (( inject meta.plan.terraform-common-config ))
@@ -65,6 +69,7 @@ meta:
             - -exc
             - |
               cp ../terraform-bootstrap/terraform.tf .
+              cp ../terraform-bootstrap/terraform.tfvars .
               terraform workspace show
               terraform init
               terraform plan $DETAILED_EXITCODE
@@ -72,6 +77,7 @@ meta:
         inputs:
           - name: aws-azkaban
           - name: terraform-bootstrap
+          - name: impact-measures
       params:
         DETAILED_EXITCODE: -detailed-exitcode
 
