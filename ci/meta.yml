@@ -29,7 +29,6 @@ meta:
             - -exc
             - |
               python bootstrap_terraform.py
-              sed -i '/^assume_role/ d' terraform.tfvars
               cp terraform.tf ../terraform-bootstrap
               cp terraform.tfvars ../terraform-bootstrap
           dir: aws-azkaban
@@ -55,9 +54,11 @@ meta:
               terraform plan -out terraform.plan
               terraform apply -auto-approve terraform.plan
           dir: aws-azkaban
+          
         inputs:
           - name: aws-azkaban
           - name: terraform-bootstrap
+          - name: impact-measures
     terraform-plan:
       task: terraform-plan
       .: (( inject meta.plan.terraform-common-config ))
