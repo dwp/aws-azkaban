@@ -29,6 +29,10 @@ data "template_file" "azkaban_webserver_definition" {
       {
         "name" : "AZKABAN_ROLE",
         "value" : "web-server"
+      },
+      {
+        "name" : "KEYSTORE_DATA",
+        "value" : jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).keystore_data
       }
     ])
   }
