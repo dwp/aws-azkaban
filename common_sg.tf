@@ -14,7 +14,7 @@ resource "aws_security_group_rule" "allow_workflow_manager_egress_https" {
   type              = "egress"
   to_port           = var.https_port
   protocol          = "tcp"
-  prefix_list_ids   = [module.workflow_manager_vpc.s3_prefix_list_id]
+  prefix_list_ids   = [module.workflow_manager_vpc.prefix_list_ids.s3]
   from_port         = var.https_port
   security_group_id = aws_security_group.workflow_manager_common.id
 }
