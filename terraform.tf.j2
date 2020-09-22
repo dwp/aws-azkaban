@@ -74,7 +74,7 @@ locals {
     {%- endfor %}
     Name         = local.name
     Environment  = local.environment
-    Application  = local.name
+    Application  = "aws-azkaban"
     Persistence  = "True"
     AutoShutdown = "False"
     Team         = "DataWorks"
