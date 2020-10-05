@@ -29,6 +29,14 @@ data "template_file" "azkaban_executor_definition" {
       {
         "name" : "AZKABAN_ROLE",
         "value" : "exec-server"
+      },
+      {
+        "name" : "USER_POOL_ID",
+        "value" : data.terraform_remote_state.aws_analytical_environment_cognito.outputs.cognito.user_pool_id
+      },
+      {
+        "name" : "COGNITO_ROLE_ARN",
+        "value" : aws_iam_role.aws_analytical_env_cognito_read_only_role.arn
       }
     ])
   }
@@ -45,6 +53,7 @@ resource "aws_ecs_service" "azkaban_executor" {
   network_configuration {
     security_groups = [aws_security_group.azkaban_executor.id, aws_security_group.workflow_manager_common.id]
     subnets         = aws_subnet.workflow_manager_private.*.id
+    assign_public_ip = true
   }
 
   service_registries {
