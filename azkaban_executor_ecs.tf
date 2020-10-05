@@ -53,7 +53,6 @@ resource "aws_ecs_service" "azkaban_executor" {
   network_configuration {
     security_groups = [aws_security_group.azkaban_executor.id, aws_security_group.workflow_manager_common.id]
     subnets         = aws_subnet.workflow_manager_private.*.id
-    assign_public_ip = true
   }
 
   service_registries {
