@@ -17,6 +17,7 @@ data template_file "azkaban_executor_properties" {
     azkaban_executor_port      = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_executor_port
     azkaban_webserver_hostname = "azkaban-webserver.${local.service_discovery_fqdn}"
     azkaban_webserver_port     = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_webserver_port
+    pass                       = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).keystore_password
   }
 }
 
