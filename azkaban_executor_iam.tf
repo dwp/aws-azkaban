@@ -181,3 +181,30 @@ data "aws_iam_policy_document" "aws_analytical_env_cognito_read_only" {
     ]
   }
 }
+
+resource "aws_iam_policy" "azkaban_executor_read_secret" {
+  name        = "AzkabanExecutorReadSecretPolicy"
+  description = "Allow Azkaban executor to read from secrets manager"
+  policy      = data.aws_iam_policy_document.azkaban_executor_read_secret.json
+}
+
+resource "aws_iam_role_policy_attachment" "azkaban_executor_read_secret_attachment" {
+  policy_arn = aws_iam_policy.azkaban_executor_read_secret.arn
+  role       = aws_iam_role.azkaban_executor.name
+}
+
+data "aws_iam_policy_document" "azkaban_executor_read_secret" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:ListSecretVersionIds"
+    ]
+
+    resources = [
+      data.aws_secretsmanager_secret.workflow_secret.arn,
+    ]
+  }
+}

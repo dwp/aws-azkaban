@@ -41,6 +41,10 @@ variable "fargate_memory" {
   default = "512"
 }
 
+variable "internet_proxy_port" {
+  default = 3128
+}
+
 variable "https_port" {
   default = 443
 }

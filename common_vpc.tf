@@ -19,7 +19,8 @@ module "workflow_manager_vpc" {
     "ecr.api",
     "ecr.dkr",
     "ecs",
-    "elasticmapreduce"
+    "elasticmapreduce",
+    "sts"
   ]
   common_tags = local.common_tags
 }
@@ -48,3 +49,21 @@ resource "aws_cloudwatch_log_group" "workflow_manager" {
   name = "${data.terraform_remote_state.common.outputs.ecs_cluster_main_log_group.name}/${local.name}"
   tags = merge(local.common_tags, { Name = local.name })
 }
+
+resource "aws_vpc_endpoint" "internet_proxy" {
+  vpc_id              = module.workflow_manager_vpc.vpc.id
+  service_name        = data.terraform_remote_state.internet_egress.outputs.internet_proxy_service.service_name
+  vpc_endpoint_type   = "Interface"
+  security_group_ids  = [aws_security_group.internet_proxy_endpoint.id]
+  subnet_ids          = aws_subnet.workflow_manager_private.*.id
+  private_dns_enabled = false
+  tags                = merge(local.common_tags, { Name = local.name })
+}
+
+resource "aws_security_group" "internet_proxy_endpoint" {
+  name        = "proxy_vpc_endpoint"
+  description = "Control access to the Internet Proxy VPC Endpoint"
+  vpc_id      = module.workflow_manager_vpc.vpc.id
+  tags        = merge(local.common_tags, { Name = local.name })
+}
+

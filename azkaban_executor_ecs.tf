@@ -37,6 +37,18 @@ data "template_file" "azkaban_executor_definition" {
       {
         "name" : "COGNITO_ROLE_ARN",
         "value" : aws_iam_role.aws_analytical_env_cognito_read_only_role.arn
+      },
+      {
+        "name" : "HTTP_PROXY",
+        "value" : "http://${aws_vpc_endpoint.internet_proxy.dns_entry[0].dns_name}:${var.internet_proxy_port}"
+      },
+      {
+        "name" : "HTTPS_PROXY",
+        "value" : "http://${aws_vpc_endpoint.internet_proxy.dns_entry[0].dns_name}:${var.internet_proxy_port}"
+      },
+      {
+        "name" : "NO_PROXY",
+        "value" : "127.0.0.1,s3.${var.region}.amazonaws.com,secretsmanager.${var.region}.amazonaws.com,sts.${var.region}.amazonaws.com,azkaban-webserver.${local.service_discovery_fqdn},${aws_db_instance.azkaban_database.address}"
       }
     ])
   }
@@ -73,3 +85,5 @@ resource "aws_service_discovery_service" "azkaban_executor" {
     }
   }
 }
+
+
