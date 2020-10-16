@@ -1,10 +1,3 @@
-data template_file "prepare_cluster" {
-  template = file("${path.module}/config/azkaban/prepare_cluster.sh")
-  vars = {
-    config_bucket = data.terraform_remote_state.common.outputs.config_bucket.id
-  }
-}
-
 data template_file "dummy" {
   template = file("${path.module}/config/azkaban/dummy.sh")
 }
@@ -42,13 +35,6 @@ data "archive_file" "example_job" {
     content  = data.template_file.workflow_submit_step.rendered
     filename = "submit_step.sh"
   }
-}
-
-resource "aws_s3_bucket_object" "prepare_cluster" {
-  bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
-  key        = "${local.name}/azkaban/prepare_cluster.sh"
-  content    = data.template_file.prepare_cluster.rendered
-  kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
 }
 
 resource "aws_s3_bucket_object" "dummy" {
