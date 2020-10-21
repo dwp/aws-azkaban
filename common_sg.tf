@@ -1,6 +1,6 @@
 resource "aws_security_group" "workflow_manager_common" {
   name        = "workflow_manager_common"
-  description = "Rules necesary for pulling container images and accessing VPC endpoints"
+  description = "Rules necessary for pulling container images and accessing VPC endpoints"
   vpc_id      = module.workflow_manager_vpc.vpc.id
   tags        = merge(local.common_tags, { Name = "workflow_manager_common" })
 
