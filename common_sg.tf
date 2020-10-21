@@ -18,3 +18,4 @@ resource "aws_security_group_rule" "allow_workflow_manager_egress_https" {
   from_port         = var.https_port
   security_group_id = aws_security_group.workflow_manager_common.id
 }
+  
