@@ -4,6 +4,8 @@ jobs:
       - get: aws-azkaban-pr
         trigger: true
         version: every
+      - get: manage-mysql-user-release
+        trigger: true
       - put: aws-azkaban-pr
         params:
           path: aws-azkaban-pr

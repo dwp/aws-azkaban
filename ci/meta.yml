@@ -49,6 +49,7 @@ meta:
             - |
               cp ../terraform-bootstrap/terraform.tf .
               cp ../terraform-bootstrap/terraform.tfvars .
+              export TF_VAR_manage_mysql_user_lambda_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
               terraform workspace show
               terraform init
               terraform plan -out terraform.plan
@@ -58,6 +59,7 @@ meta:
         inputs:
           - name: aws-azkaban
           - name: terraform-bootstrap
+          - name: manage-mysql-user-release
     terraform-plan:
       task: terraform-plan
       .: (( inject meta.plan.terraform-common-config ))
@@ -69,6 +71,7 @@ meta:
             - |
               cp ../terraform-bootstrap/terraform.tf .
               cp ../terraform-bootstrap/terraform.tfvars .
+              export TF_VAR_manage_mysql_user_lambda_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
               terraform workspace show
               terraform init
               terraform plan $DETAILED_EXITCODE
@@ -76,6 +79,7 @@ meta:
         inputs:
           - name: aws-azkaban
           - name: terraform-bootstrap
+          - name: manage-mysql-user-release
       params:
         DETAILED_EXITCODE: -detailed-exitcode
     rotate-mysql-master-password:
