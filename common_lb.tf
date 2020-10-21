@@ -26,14 +26,15 @@ resource "aws_lb_listener" "workflow_manager" {
 resource "aws_lb_target_group" "azkaban_webserver" {
   name        = "azkaban-webserver-http"
   port        = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_webserver_port
-  protocol    = "HTTP"
+  protocol    = "HTTPS"
   vpc_id      = module.workflow_manager_vpc.vpc.id
   target_type = "ip"
 
   health_check {
-    port    = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_webserver_port
-    path    = "/"
-    matcher = "200"
+    protocol = "HTTPS"
+    port     = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_webserver_port
+    path     = "/"
+    matcher  = "200"
   }
 
   stickiness {
