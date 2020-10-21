@@ -4,7 +4,6 @@ jobs:
       - get: aws-azkaban-pr
         trigger: true
         version: every
-      - get: impact-measures
       - put: aws-azkaban-pr
         params:
           path: aws-azkaban-pr

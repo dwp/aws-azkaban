@@ -6,3 +6,6 @@ groups:
   - name: pull-request
     jobs:
       - aws-azkaban-pr
+  - name: admin-development
+    jobs:
+      - rotate-mysql-password-master-development
