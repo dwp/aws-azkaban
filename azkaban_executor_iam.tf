@@ -205,6 +205,7 @@ data "aws_iam_policy_document" "azkaban_executor_read_secret" {
 
     resources = [
       data.aws_secretsmanager_secret.workflow_secret.arn,
+      aws_secretsmanager_secret.azkaban_executor_password.arn
     ]
   }
 }

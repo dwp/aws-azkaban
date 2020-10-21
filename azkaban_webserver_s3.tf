@@ -9,20 +9,14 @@ data template_file "azkaban_webserver_users" {
 data template_file "azkaban_webserver_properties" {
   template = file("${path.module}/config/azkaban/web-server/azkaban.properties")
   vars = {
-    db_host     = aws_db_instance.azkaban_database.address
-    db_port     = aws_db_instance.azkaban_database.port
+    db_host     = aws_rds_cluster.azkaban_database.endpoint
+    db_port     = aws_rds_cluster.azkaban_database.port
     environment = local.environment
   }
 }
 
 data template_file "azkaban_webserver_start" {
   template = file("${path.module}/config/azkaban/web-server/start-web.sh")
-  vars = {
-    db_host     = aws_db_instance.azkaban_database.address
-    db_name     = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).db_name
-    db_username = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).db_username
-    db_password = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).db_password
-  }
 }
 
 data template_file "azkaban_webserver_internal" {
