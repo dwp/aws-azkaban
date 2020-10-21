@@ -10,12 +10,6 @@ data template_file "azkaban_executor_properties" {
 
 data template_file "azkaban_executor_start" {
   template = file("${path.module}/config/azkaban/exec-server/start-exec.sh")
-  vars = {
-    db_host     = aws_rds_cluster.azkaban_database.endpoint
-    db_name     = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).db_name
-    db_username = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).db_username
-    db_password = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).db_password
-  }
 }
 
 data template_file "azkaban_executor_commonprivate" {
