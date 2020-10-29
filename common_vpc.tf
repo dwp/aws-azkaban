@@ -66,7 +66,3 @@ resource "aws_security_group" "internet_proxy_endpoint" {
   vpc_id      = module.workflow_manager_vpc.vpc.id
   tags        = merge(local.common_tags, { Name = local.name })
 }
-
-resource "aws_internet_gateway" "igw" {
-  vpc_id = module.workflow_manager_vpc.vpc.id
-}
