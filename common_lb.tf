@@ -28,11 +28,7 @@ resource "aws_lb_target_group" "azkaban_webserver" {
   target_type = "ip"
 
   health_check {
-<<<<<<< Updated upstream
     protocol = "HTTPS"
-=======
-    protocol = "HTTP"
->>>>>>> Stashed changes
     port     = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_webserver_port
     path     = "/"
     matcher  = "200"
