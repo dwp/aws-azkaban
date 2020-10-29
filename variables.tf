@@ -8,7 +8,7 @@ data "aws_secretsmanager_secret_version" "workflow_manager" {
 
 variable "assume_role" {
   type        = string
-  default     = "ci"
+  default     = "administrator"
   description = "IAM role assumed by Concourse when running Terraform"
 }
 
@@ -38,7 +38,7 @@ variable "fargate_cpu" {
 }
 
 variable "fargate_memory" {
-  default = "512"
+  default = "2048"
 }
 
 variable "internet_proxy_port" {

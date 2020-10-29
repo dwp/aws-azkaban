@@ -36,7 +36,7 @@ resource "aws_subnet" "workflow_manager_private" {
 resource "aws_route_table" "workflow_manager_private" {
   count  = length(data.aws_availability_zones.current.zone_ids)
   vpc_id = module.workflow_manager_vpc.vpc.id
-  tags   = merge(local.common_tags, { Name = "${local.name}-private-${data.aws_availability_zones.current.names[count.index]}" })
+  tags = merge(local.common_tags, { Name = "${local.name}-private-${data.aws_availability_zones.current.names[count.index]}" })
 }
 
 resource "aws_route_table_association" "workflow_manager_private" {
@@ -67,3 +67,6 @@ resource "aws_security_group" "internet_proxy_endpoint" {
   tags        = merge(local.common_tags, { Name = local.name })
 }
 
+resource "aws_internet_gateway" "igw" {
+  vpc_id = module.workflow_manager_vpc.vpc.id
+}
