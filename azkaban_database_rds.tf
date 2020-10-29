@@ -18,6 +18,7 @@ resource "aws_rds_cluster" "azkaban_database" {
   preferred_maintenance_window = "sun:01:00-sun:06:00"
 
   db_subnet_group_name   = aws_db_subnet_group.azkaban_database.name
+  db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.azkaban_database.name
   availability_zones     = data.aws_availability_zones.current.names
   vpc_security_group_ids = [aws_security_group.azkaban_database.id]
 
@@ -32,4 +33,15 @@ resource "aws_db_subnet_group" "azkaban_database" {
   name       = "azkaban-database"
   subnet_ids = aws_subnet.workflow_manager_private.*.id
   tags       = merge(local.common_tags, { Name = "azkaban-database" })
+}
+
+resource "aws_rds_cluster_parameter_group" "azkaban_database" {
+  name = "azkaban-database"
+  family = "aurora-mysql5.7"
+  description = "Parameters for the Azkaban database"
+
+  parameter {
+    name = "require_secure_transport"
+    value = "ON"
+  }
 }
