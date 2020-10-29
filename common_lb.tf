@@ -38,6 +38,11 @@ resource "aws_lb_target_group" "azkaban_webserver" {
     enabled = true
     type    = "lb_cookie"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+  
   tags = merge(local.common_tags, { Name = "azkaban-webserver" })
 }
 
