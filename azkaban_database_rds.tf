@@ -17,10 +17,10 @@ resource "aws_rds_cluster" "azkaban_database" {
   preferred_backup_window      = "09:00-11:00"
   preferred_maintenance_window = "sun:01:00-sun:06:00"
 
-  db_subnet_group_name   = aws_db_subnet_group.azkaban_database.name
+  db_subnet_group_name            = aws_db_subnet_group.azkaban_database.name
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.azkaban_database.name
-  availability_zones     = data.aws_availability_zones.current.names
-  vpc_security_group_ids = [aws_security_group.azkaban_database.id]
+  availability_zones              = data.aws_availability_zones.current.names
+  vpc_security_group_ids          = [aws_security_group.azkaban_database.id]
 
   lifecycle {
     ignore_changes = [master_password]
