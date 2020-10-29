@@ -9,17 +9,14 @@ resource "aws_lb" "workflow_manager" {
 
 resource "aws_lb_listener" "workflow_manager" {
   load_balancer_arn = aws_lb.workflow_manager.arn
-  port              = var.http_port
-  protocol          = "HTTP"
+  port              = var.https_port
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
+  certificate_arn   = aws_acm_certificate.azkaban_loadbalancer.arn
 
   default_action {
-    type = "fixed-response"
-
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "FORBIDDEN"
-      status_code  = "403"
-    }
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.azkaban_webserver.arn
   }
 }
 
@@ -41,21 +38,12 @@ resource "aws_lb_target_group" "azkaban_webserver" {
     enabled = true
     type    = "lb_cookie"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+  
   tags = merge(local.common_tags, { Name = "azkaban-webserver" })
-}
-
-resource "aws_lb_listener_rule" "azkaban_webserver" {
-  listener_arn = aws_lb_listener.workflow_manager.arn
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.azkaban_webserver.arn
-  }
-
-  condition {
-    field  = "host-header"
-    values = [aws_route53_record.azkaban_loadbalancer.fqdn]
-  }
 }
 
 resource "aws_security_group" "workflow_manager_loadbalancer" {
@@ -65,16 +53,6 @@ resource "aws_security_group" "workflow_manager_loadbalancer" {
   lifecycle {
     create_before_destroy = true
   }
-}
-
-resource "aws_security_group_rule" "allow_ingress_https" {
-  description       = "Enable inbound connectivity from whitelisted endpoints"
-  from_port         = var.https_port
-  protocol          = "tcp"
-  security_group_id = aws_security_group.workflow_manager_loadbalancer.id
-  to_port           = var.https_port
-  type              = "ingress"
-  cidr_blocks       = var.whitelist_cidr_blocks
 }
 
 resource "aws_security_group_rule" "allow_loadbalancer_egress_azkaban_webserver" {
