@@ -28,7 +28,6 @@ resource "aws_rds_cluster" "azkaban_database" {
   backup_retention_period      = 7
   preferred_backup_window      = "23:00-01:00"
   preferred_maintenance_window = "sun:01:00-sun:06:00"
-  skip_final_snapshot          = true
 
   db_subnet_group_name            = aws_db_subnet_group.azkaban_database.name
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.azkaban_database.name
