@@ -38,4 +38,4 @@ resource "aws_security_group_rule" "azkaban_allow_egress_analytical_env" {
   security_group_id        = data.terraform_remote_state.orchestration_service.outputs.ecs_user_host.security_group_id
   source_security_group_id = aws_security_group.workflow_manager_loadbalancer.id
 }
-  
+
