@@ -42,7 +42,7 @@ resource "aws_lb_target_group" "azkaban_webserver" {
   lifecycle {
     create_before_destroy = true
   }
-  
+
   tags = merge(local.common_tags, { Name = "azkaban-webserver" })
 }
 
@@ -58,9 +58,9 @@ resource "aws_security_group" "workflow_manager_loadbalancer" {
 resource "aws_security_group_rule" "allow_loadbalancer_egress_azkaban_webserver" {
   description              = "Allow loadbalancer to access azkaban webserver user interface"
   type                     = "egress"
-  to_port                  = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_webserver_port
   protocol                 = "tcp"
   from_port                = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_webserver_port
+  to_port                  = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_webserver_port
   security_group_id        = aws_security_group.workflow_manager_loadbalancer.id
   source_security_group_id = aws_security_group.azkaban_webserver.id
 }

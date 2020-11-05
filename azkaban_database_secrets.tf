@@ -1,5 +1,5 @@
 resource "aws_secretsmanager_secret" "azkaban_master_password" {
-  name = "azkaban-master-rds-password"
+  name        = "azkaban-master-rds-password"
   description = "Azkaban master database password"
 
   lifecycle {
@@ -8,7 +8,7 @@ resource "aws_secretsmanager_secret" "azkaban_master_password" {
 }
 
 resource "aws_secretsmanager_secret" "azkaban_webserver_password" {
-  name = "azkaban-webserver-rds-password"
+  name        = "azkaban-webserver-rds-password"
   description = "Azkaban webserver database password"
 
   lifecycle {
@@ -17,7 +17,7 @@ resource "aws_secretsmanager_secret" "azkaban_webserver_password" {
 }
 
 resource "aws_secretsmanager_secret" "azkaban_executor_password" {
-  name = "azkaban-executor-rds-password"
+  name        = "azkaban-executor-rds-password"
   description = "Azkaban webserver database password"
 
   lifecycle {
