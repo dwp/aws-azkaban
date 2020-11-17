@@ -9,9 +9,10 @@ data template_file "azkaban_webserver_users" {
 data template_file "azkaban_webserver_properties" {
   template = file("${path.module}/config/azkaban/web-server/azkaban.properties")
   vars = {
-    db_host     = aws_rds_cluster.azkaban_database.endpoint
-    db_port     = aws_rds_cluster.azkaban_database.port
-    environment = local.environment
+    db_host                = aws_rds_cluster.azkaban_database.endpoint
+    db_port                = aws_rds_cluster.azkaban_database.port
+    environment            = local.environment
+    azkaban_webserver_port = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_webserver_port
   }
 }
 
