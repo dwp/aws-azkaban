@@ -4,7 +4,6 @@ LOG_GROUP_NAME=/aws/emr/azkaban
 CONFIG_FILE=/opt/aws/amazon-cloudwatch-agent/bin/config.json
 LOG_DIR=$(ls -td -- /var/log/hadoop/steps/* | head -n 1)
 STEP_NAME=$(basename $LOG_DIR)
-LOG_DIR=$LOG_DIR
 
 if [ ! -f "$CONFIG_FILE" ]; then
   cat << EOF > $CONFIG_FILE
