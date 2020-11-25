@@ -52,7 +52,7 @@ resource "aws_iam_policy" "azkaban_executor_emr" {
 }
 
 resource "aws_iam_policy" "azkaban_executor_logs" {
-  name        = "AzkabanExecutorEMRPolicy"
+  name        = "AzkabanExecutorLogsPolicy"
   description = "Allow Azkaban executor to interact with CloudWatch logs api"
   policy      = data.aws_iam_policy_document.azkaban_executor_logs.json
 }
