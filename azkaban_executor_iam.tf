@@ -122,7 +122,6 @@ data "aws_iam_policy_document" "azkaban_executor_emr" {
       "elasticmapreduce:ListSteps",
       "elasticmapreduce:DescribeCluster",
       "elasticmapreduce:ModifyCluster",
-      "logs:GetLogEvents",
     ]
 
     resources = [
