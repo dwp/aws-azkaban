@@ -29,6 +29,11 @@ resource "aws_iam_role_policy_attachment" "azkaban_executor_emr_attachment" {
   policy_arn = aws_iam_policy.azkaban_executor_emr.arn
 }
 
+resource "aws_iam_role_policy_attachment" "azkaban_executor_logs_attachment" {
+  role       = aws_iam_role.azkaban_executor.name
+  policy_arn = aws_iam_policy.azkaban_executor_logs.arn
+}
+
 resource "aws_iam_role_policy_attachment" "azkaban_executor_assume_cognito_role_attachment" {
   role       = aws_iam_role.azkaban_executor.name
   policy_arn = aws_iam_policy.azkaban_executor_assume_cognito_role.arn
@@ -44,6 +49,12 @@ resource "aws_iam_policy" "azkaban_executor_emr" {
   name        = "AzkabanExecutorEMRPolicy"
   description = "Allow Azkaban executor to interact with EMR api"
   policy      = data.aws_iam_policy_document.azkaban_executor_emr.json
+}
+
+resource "aws_iam_policy" "azkaban_executor_logs" {
+  name        = "AzkabanExecutorEMRPolicy"
+  description = "Allow Azkaban executor to interact with CloudWatch logs api"
+  policy      = data.aws_iam_policy_document.azkaban_executor_logs.json
 }
 
 resource "aws_iam_policy" "azkaban_executor_assume_cognito_role" {
@@ -111,6 +122,21 @@ data "aws_iam_policy_document" "azkaban_executor_emr" {
       "elasticmapreduce:ListSteps",
       "elasticmapreduce:DescribeCluster",
       "elasticmapreduce:ModifyCluster",
+      "logs:GetLogEvents",
+    ]
+
+    resources = [
+      "*",
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "azkaban_executor_logs" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "logs:GetLogEvents",
     ]
 
     resources = [
