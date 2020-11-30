@@ -1,39 +1,45 @@
 jobs:
-  - name: development
+  - name: integration
     max_in_flight: 1
     plan:
       - get: aws-azkaban
         trigger: true
+        passed:
+          - qa
       - get: manage-mysql-user-release
         trigger: true
       - .: (( inject meta.plan.terraform-bootstrap ))
       - .: (( inject meta.plan.terraform-apply ))
+        params:
+          TF_WORKSPACE: 'integration'
       - .: (( inject meta.plan.terraform-plan ))
-      
-  - name: rotate-mysql-password-master-development
+        params:
+          TF_WORKSPACE: 'integration'
+
+  - name: rotate-mysql-password-master-integration
     plan:
       - get: secrets-management
         trigger: false
       - .: (( inject meta.plan.rotate-mysql-master-password ))
         config:
           params:
-            AWS_ACC: ((aws_account.development))
-            AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
+            AWS_ACC: ((aws_account.integration))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.integration)):role/ci
           inputs:
             - name: secrets-management
 
-  - name: rotate-azkaban-webserver-password-development
+  - name: rotate-azkaban-webserver-password-integration
     plan:
       - .: (( inject meta.plan.rotate-azkaban-webserver-password ))
         config:
           params:
-            AWS_ACC: ((aws_account.development))
-            AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
+            AWS_ACC: ((aws_account.integration))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.integration)):role/ci
 
-  - name: rotate-azkaban-executor-password-development
+  - name: rotate-azkaban-executor-password-integration
     plan:
       - .: (( inject meta.plan.rotate-azkaban-executor-password ))
         config:
           params:
-            AWS_ACC: ((aws_account.development))
-            AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
+            AWS_ACC: ((aws_account.integration))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.integration)):role/ci
