@@ -235,3 +235,24 @@ data "aws_iam_policy_document" "azkaban_executor_read_secret" {
     ]
   }
 }
+
+data "aws_iam_policy_document" "azkaban_executor_execute_launcher" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "lambda:InvokeFunction",
+    ]
+
+    resources = [
+      data.terraform_remote_state.aws_analytical_env_app.outputs.emr_launcher_lambda.arn
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "azkaban_executor_execute_launcher_policy" {
+  name = "azkaban_executor_execute_launcher_policy"
+  role = aws_iam_role.azkaban_executor.id
+
+  policy = data.aws_iam_policy_document.azkaban_executor_execute_launcher.json
+}
