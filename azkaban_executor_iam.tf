@@ -180,7 +180,7 @@ data "aws_iam_policy_document" "assume_role_cross_acount" {
 
 resource "aws_iam_policy" "aws_analytical_env_cognito_read_only" {
   provider    = aws.management
-  name        = "AzkabanExecutorCognitoReadOnlyPolicy"
+  name        = "AzkabanExecutorCognitoReadOnlyPolicy${title(local.environment)}"
   description = "Allow Azkaban executor to interact with cognito api"
   policy      = data.aws_iam_policy_document.aws_analytical_env_cognito_read_only.json
 }
