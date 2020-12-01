@@ -157,7 +157,7 @@ provider "aws" {
 
 resource "aws_iam_role" "aws_analytical_env_cognito_read_only_role" {
   provider           = aws.management
-  name               = "azkaban-executor-read-only-cognito"
+  name               = "azkaban-executor-read-only-cognito-${local.environment}"
   assume_role_policy = data.aws_iam_policy_document.assume_role_cross_acount.json
 
   tags = merge(local.common_tags, {
