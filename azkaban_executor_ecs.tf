@@ -48,7 +48,7 @@ data "template_file" "azkaban_executor_definition" {
       },
       {
         "name" : "NO_PROXY",
-        "value" : "127.0.0.1,elasticmapreduce.${var.region}.amazonaws.com,s3.${var.region}.amazonaws.com,secretsmanager.${var.region}.amazonaws.com,sts.${var.region}.amazonaws.com,logs.${var.region}.amazonaws.com,lambda.${var.region}.amazonaws.com,azkaban-webserver.${local.service_discovery_fqdn},${aws_rds_cluster.azkaban_database.endpoint}"
+        "value" : "127.0.0.1,elasticmapreduce.${var.region}.amazonaws.com,s3.${var.region}.amazonaws.com,secretsmanager.${var.region}.amazonaws.com,sts.${var.region}.amazonaws.com,logs.${var.region}.amazonaws.com,azkaban-webserver.${local.service_discovery_fqdn},${aws_rds_cluster.azkaban_database.endpoint}"
       }
     ])
   }

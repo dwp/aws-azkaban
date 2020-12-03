@@ -20,8 +20,7 @@ module "workflow_manager_vpc" {
     "ecr.dkr",
     "ecs",
     "elasticmapreduce",
-    "sts",
-    "lambda"
+    "sts"
   ]
   common_tags = local.common_tags
 }
