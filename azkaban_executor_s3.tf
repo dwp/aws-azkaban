@@ -65,3 +65,11 @@ resource "aws_s3_bucket_object" "azkaban_executor_internal" {
   content    = data.template_file.azkaban_executor_internal.rendered
   kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
 }
+
+resource "aws_s3_bucket_object" "azkaban_executor_script" {
+  bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
+  key        = "${local.name}/azkaban/step.sh"
+  content    = file("${path.module}/config/azkaban/step.sh")
+  kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
+}
+
