@@ -31,10 +31,6 @@ data template_file "azkaban_executor_internal" {
   }
 }
 
-data template_file "azkaban_executor_script" {
-  template = file("${path.module}/config/azkaban/step.sh")
-}
-
 resource "aws_s3_bucket_object" "azkaban_executor_properties" {
   bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
   key        = "${local.name}/azkaban/exec-server/azkaban.properties"
@@ -73,7 +69,7 @@ resource "aws_s3_bucket_object" "azkaban_executor_internal" {
 resource "aws_s3_bucket_object" "azkaban_executor_script" {
   bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
   key        = "${local.name}/azkaban/step.sh"
-  content    = data.template_file.azkaban_executor_script.rendered
+  content    = file("${path.module}/config/azkaban/step.sh")
   kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
 }
 
