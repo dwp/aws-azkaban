@@ -49,6 +49,7 @@ meta:
             - |
               cp ../terraform-bootstrap/terraform.tf .
               cp ../terraform-bootstrap/terraform.tfvars .
+              export TF_VAR_manage_mysql_user_lambda_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
               terraform workspace show
               terraform init
               terraform plan -out terraform.plan
@@ -58,7 +59,7 @@ meta:
         inputs:
           - name: aws-azkaban
           - name: terraform-bootstrap
-          - name: impact-measures
+          - name: manage-mysql-user-release
     terraform-plan:
       task: terraform-plan
       .: (( inject meta.plan.terraform-common-config ))
@@ -70,6 +71,7 @@ meta:
             - |
               cp ../terraform-bootstrap/terraform.tf .
               cp ../terraform-bootstrap/terraform.tfvars .
+              export TF_VAR_manage_mysql_user_lambda_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
               terraform workspace show
               terraform init
               terraform plan $DETAILED_EXITCODE
@@ -77,7 +79,72 @@ meta:
         inputs:
           - name: aws-azkaban
           - name: terraform-bootstrap
-          - name: impact-measures
+          - name: manage-mysql-user-release
       params:
         DETAILED_EXITCODE: -detailed-exitcode
+    rotate-mysql-master-password:
+      task: rotate-mysql-master-password
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+        params:
+          AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
+          AWS_REGION: ((dataworks.aws_region))
+          AWS_DEFAULT_REGION: ((dataworks.aws_region))
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              source /assume-role
+              set +x
+              pip install boto3
+              ./rotate_rds_master_user_password_update_secrets_manager.py azkaban-database azkaban-master-rds-password
+          dir: secrets-management
+        inputs:
+          - name: secrets-management
+    rotate-mysql-password:
+      task: rotate-mysql-password
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            version: ((dataworks.docker_awscli_version))
+            tag: ((dataworks.docker_awscli_version))
+        params:
+          AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
+          AWS_REGION: ((dataworks.aws_region))
+          AWS_DEFAULT_REGION: ((dataworks.aws_region))
+          USERNAME: placeholder
+          PARAM_NAME: placeholder
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              source /assume-role
+              set +x
+              jq -n --arg Username "$USERNAME" --arg Paramname "$PARAM_NAME" '{mysql_user_username: $Username, mysql_user_password_secret_name: $Paramname}' > manifest.json
+              echo "Manifest is:"
+              cat manifest.json
+              aws lambda invoke --function-name manage-azkaban-mysql-user --invocation-type RequestResponse --payload file://manifest.json --cli-connect-timeout 600 --cli-read-timeout 600 output.json
+              cat output.json | jq -eC "if .errorMessage? then error(.errorMessage) else true end"
+    rotate-azkaban-webserver-password:
+      .: (( inject meta.plan.rotate-mysql-password ))
+      config:
+        params:
+          USERNAME: "azkaban-webserver"
+          PARAM_NAME: "azkaban-webserver-rds-password"
+    rotate-azkaban-executor-password:
+      .: (( inject meta.plan.rotate-mysql-password ))
+      config:
+        params:
+          USERNAME: "azkaban-executor"
+          PARAM_NAME: "azkaban-executor-rds-password"
 

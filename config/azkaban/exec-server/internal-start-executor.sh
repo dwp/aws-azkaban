@@ -57,6 +57,9 @@ else
 fi
 AZKABAN_OPTS="$AZKABAN_OPTS -server -Dcom.sun.management.jmxremote -Djava.io.tmpdir=$tmpdir -Dexecutorport=$executorport -Dserverpath=$serverpath"
 
-bash -c 'while true; do wget --server-response http://localhost:${azkaban_executor_port}/executor?action=activate 2>&1; if [ $? -ne 0 ]; then sleep 5; else break; fi done' &
+bash -c 'while true; do curl_response=`curl -k -w "%%{http_code}\\n" http://localhost:${azkaban_executor_port}/executor?action=activate -o /dev/null --connect-timeout 3 --max-time 5`; if [ $curl_response -ne "200" ]; then sleep 5; else break; fi done' &
+
+export SID=$(curl -k -X POST --data "action=login&username=${admin_username}&password=${admin_password}" https://${azkaban_webserver_hostname}:${azkaban_webserver_port}  | jq -r '."session.id"')
+bash -c 'sleep 20s; curl -k --data "session.id=$SID" https://${azkaban_webserver_hostname}:${azkaban_webserver_port}/executor?ajax=reloadExecutors' &
 
 java $AZKABAN_OPTS $JAVA_LIB_PATH -cp $CLASSPATH azkaban.execapp.AzkabanExecutorServer -conf $conf $@

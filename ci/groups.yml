@@ -3,6 +3,34 @@ groups:
     jobs:
       - development
       - qa
+      - integration
+      - preprod
+      - production
   - name: pull-request
     jobs:
       - aws-azkaban-pr
+  - name: admin-development
+    jobs:
+      - rotate-mysql-password-master-development
+      - rotate-azkaban-executor-password-development
+      - rotate-azkaban-webserver-password-development
+  - name: admin-qa
+    jobs:
+      - rotate-mysql-password-master-qa
+      - rotate-azkaban-executor-password-qa
+      - rotate-azkaban-webserver-password-qa
+  - name: admin-integration
+    jobs:
+      - rotate-mysql-password-master-integration
+      - rotate-azkaban-executor-password-integration
+      - rotate-azkaban-webserver-password-integration
+  - name: admin-preprod
+    jobs:
+      - rotate-mysql-password-master-preprod
+      - rotate-azkaban-executor-password-preprod
+      - rotate-azkaban-webserver-password-preprod
+  - name: admin-production
+    jobs:
+      - rotate-mysql-password-master-production
+      - rotate-azkaban-executor-password-production
+      - rotate-azkaban-webserver-password-production

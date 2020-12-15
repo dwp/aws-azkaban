@@ -2,21 +2,33 @@
 
 ## An AWS based azkaban platform
 
-This repo contains Makefile and base terraform folders and jinja2 files to fit the standard pattern.
-This repo is a base to create new Terraform repos, renaming the template files and adding the githooks submodule, making the repo ready for use.
+## Description
 
-Running aviator will create the pipeline required on the AWS-Concourse instance, in order pass a mandatory CI ran status check.  this will likely require you to login to Concourse, if you haven't already.
+## Local Development
 
-After cloning this repo, please generate `terraform.tf` and `terraform.tfvars` files:  
-`make bootstrap`
+### Requirements
 
-In addition, you may want to do the following: 
+* Terraform 0.12
+* Python 3
+* JQ
+* Access to Dataworks AWS Environments
 
-1. Create non-default Terraform workspaces as and if required:  
-    `make terraform-workspace-new workspace=<workspace_name>` e.g.  
-    ```make terraform-workspace-new workspace=qa```
+### Bootstrapping
 
-1. Configure Concourse CI pipeline:
-    1. Add/remove jobs in `./ci/jobs` as required 
-    1. Create CI pipeline:  
-`aviator`
+Before beginning you will need to generate some Terraform files from templates, to do this you will need to simply run the following:
+```bash
+make bootstrap
+```
+
+You will then be able to develop against the development account (default Terraform workspace)
+
+## High level infrastructure outline
+
+![AWS Azkaban Infrastructure](docs/high_level_design.jpg)
+
+## Azkaban Extensions
+
+**Cognito UserManager** - An extension to the XML UserManager that can also receive a Cognito JSON Web Token. The user manager decodes and validates the token and from this information is able to authenticate the user.
+
+**EMR JobType** - A job type that extends the process job type and can receive the script and arguments that need to be submitted to the cluster. Ensures the correct group that it needs to be run as is submitted along with the script.
+

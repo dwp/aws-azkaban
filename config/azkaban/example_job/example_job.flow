@@ -1,37 +1,12 @@
 nodes:
- - name: prepare_cluster
-   type: command
-   config:
-     command: bash ./submit_step.sh workflow-manager-prepare-cluster workflow-manager/azkaban/prepare_cluster.sh
-
  - name: step_1
-   type: command
-   dependsOn:
-     - prepare_cluster
+   type: emr
    config:
-     command: bash ./submit_step.sh step-1 workflow-manager/azkaban/dummy.sh
+     step: /test.sh
 
- - name: step_2a
+ - name: step_2
    type: command
    dependsOn:
      - step_1
    config:
-     command: bash ./submit_step.sh step-2a workflow-manager/azkaban/dummy.sh
-   condition: $${step_1:step_state} == "SUCCESS"
-
- - name: step_2b
-   type: command
-   dependsOn:
-     - step_1
-   config:
-     command: bash ./submit_step.sh step-2b workflow-manager/azkaban/dummy.sh
-   condition: $${step_1:step_state} == "FAILED"
-
- - name: step_3
-   type: command
-   dependsOn:
-     - step_2a
-     - step_2b
-   config:
-     command: bash ./submit_step.sh step-3 workflow-manager/azkaban/dummy.sh
-   condition: one_success
+     command: whoami

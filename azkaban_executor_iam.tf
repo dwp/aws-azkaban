@@ -29,6 +29,11 @@ resource "aws_iam_role_policy_attachment" "azkaban_executor_emr_attachment" {
   policy_arn = aws_iam_policy.azkaban_executor_emr.arn
 }
 
+resource "aws_iam_role_policy_attachment" "azkaban_executor_logs_attachment" {
+  role       = aws_iam_role.azkaban_executor.name
+  policy_arn = aws_iam_policy.azkaban_executor_logs.arn
+}
+
 resource "aws_iam_role_policy_attachment" "azkaban_executor_assume_cognito_role_attachment" {
   role       = aws_iam_role.azkaban_executor.name
   policy_arn = aws_iam_policy.azkaban_executor_assume_cognito_role.arn
@@ -44,6 +49,12 @@ resource "aws_iam_policy" "azkaban_executor_emr" {
   name        = "AzkabanExecutorEMRPolicy"
   description = "Allow Azkaban executor to interact with EMR api"
   policy      = data.aws_iam_policy_document.azkaban_executor_emr.json
+}
+
+resource "aws_iam_policy" "azkaban_executor_logs" {
+  name        = "AzkabanExecutorLogsPolicy"
+  description = "Allow Azkaban executor to interact with CloudWatch logs api"
+  policy      = data.aws_iam_policy_document.azkaban_executor_logs.json
 }
 
 resource "aws_iam_policy" "azkaban_executor_assume_cognito_role" {
@@ -110,6 +121,21 @@ data "aws_iam_policy_document" "azkaban_executor_emr" {
       "elasticmapreduce:ListClusters",
       "elasticmapreduce:ListSteps",
       "elasticmapreduce:DescribeCluster",
+      "elasticmapreduce:ModifyCluster",
+    ]
+
+    resources = [
+      "*",
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "azkaban_executor_logs" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "logs:GetLogEvents",
     ]
 
     resources = [
@@ -131,7 +157,7 @@ provider "aws" {
 
 resource "aws_iam_role" "aws_analytical_env_cognito_read_only_role" {
   provider           = aws.management
-  name               = "azkaban-executor-read-only-cognito"
+  name               = "azkaban-executor-read-only-cognito-${local.environment}"
   assume_role_policy = data.aws_iam_policy_document.assume_role_cross_acount.json
 
   tags = merge(local.common_tags, {
@@ -154,7 +180,7 @@ data "aws_iam_policy_document" "assume_role_cross_acount" {
 
 resource "aws_iam_policy" "aws_analytical_env_cognito_read_only" {
   provider    = aws.management
-  name        = "AzkabanExecutorCognitoReadOnlyPolicy"
+  name        = "AzkabanExecutorCognitoReadOnlyPolicy${title(local.environment)}"
   description = "Allow Azkaban executor to interact with cognito api"
   policy      = data.aws_iam_policy_document.aws_analytical_env_cognito_read_only.json
 }
@@ -180,4 +206,53 @@ data "aws_iam_policy_document" "aws_analytical_env_cognito_read_only" {
       data.terraform_remote_state.aws_analytical_environment_cognito.outputs.cognito.user_pool_arn
     ]
   }
+}
+
+resource "aws_iam_policy" "azkaban_executor_read_secret" {
+  name        = "AzkabanExecutorReadSecretPolicy"
+  description = "Allow Azkaban executor to read from secrets manager"
+  policy      = data.aws_iam_policy_document.azkaban_executor_read_secret.json
+}
+
+resource "aws_iam_role_policy_attachment" "azkaban_executor_read_secret_attachment" {
+  policy_arn = aws_iam_policy.azkaban_executor_read_secret.arn
+  role       = aws_iam_role.azkaban_executor.name
+}
+
+data "aws_iam_policy_document" "azkaban_executor_read_secret" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:ListSecretVersionIds"
+    ]
+
+    resources = [
+      data.aws_secretsmanager_secret.workflow_secret.arn,
+      aws_secretsmanager_secret.azkaban_executor_password.arn
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "azkaban_executor_execute_launcher" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "lambda:InvokeFunction",
+    ]
+
+    resources = [
+      data.terraform_remote_state.aws_analytical_env_app.outputs.emr_launcher_lambda.arn
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "azkaban_executor_execute_launcher_policy" {
+  name = "azkaban_executor_execute_launcher_policy"
+  role = aws_iam_role.azkaban_executor.id
+
+  policy = data.aws_iam_policy_document.azkaban_executor_execute_launcher.json
 }

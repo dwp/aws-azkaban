@@ -38,7 +38,11 @@ variable "fargate_cpu" {
 }
 
 variable "fargate_memory" {
-  default = "512"
+  default = "2048"
+}
+
+variable "internet_proxy_port" {
+  default = 3128
 }
 
 variable "https_port" {
