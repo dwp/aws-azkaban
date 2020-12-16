@@ -43,3 +43,20 @@ jobs:
           params:
             AWS_ACC: ((aws_account.production))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.production)):role/ci
+
+  - name: cycle-azkaban-executor-production
+    plan:
+      - get: aws-azkaban
+        trigger: false
+      - .: (( inject meta.plan.terraform-bootstrap ))
+      - .: (( inject meta.plan.terraform-output ))
+        params:
+          TF_WORKSPACE: 'production'
+      - .: (( inject meta.plan.cycle-azkaban-executor ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.production))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.production)):role/ci
+      - .: (( inject meta.plan.terraform-apply ))
+        params:
+          TF_WORKSPACE: 'production'
