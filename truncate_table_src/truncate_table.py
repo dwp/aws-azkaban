@@ -16,15 +16,15 @@ RDS_CLUSTER_ARN = os.environ["RDS_CLUSTER_ARN"]
 
 
 def execute_statement(sql, database_name=None):
-    args = {
+    kwargs = {
         "secretArn": RDS_CREDENTIALS_SECRET_ARN,
         "resourceArn": RDS_CLUSTER_ARN,
         "sql": sql
     }
     if database_name is not None:
-        args["database"] = database_name
+        kwargs["database"] = database_name
 
-    response = rds_client.execute_statement(**args)
+    response = rds_client.execute_statement(**kwargs)
     return response
 
 
