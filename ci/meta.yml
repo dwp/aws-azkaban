@@ -193,11 +193,10 @@ meta:
               source /assume-role
               MAX_RETRIES=60
 
-              RDS_CLUSTER_ARN=$(jq -r '.rds_db.value.arn' < ./terraform-output/outputs.json)
-              RDS_SECRET_ARN=$(jq -r '.secrets.value.executor.arn' < ./terraform-output/outputs.json)
+
               TRUNCATE_TABLE_FUNCTION_NAME=$(jq -r '.truncate_table_lambda.value.function_name' < ./terraform-output/outputs.json)
 
-              aws ecs update-service --cluster $CLUSTER --service $SERVICE --desired-count 0
+              aws ecs update-service --cluster $CLUSTER --service $SERVICE --desired-count 0 > /dev/null
               running_count=$(aws ecs describe-services --cluster $CLUSTER --services $SERVICE | jq -r '.services[0].runningCount')
 
               retries=0
