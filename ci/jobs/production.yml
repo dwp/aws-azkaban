@@ -48,6 +48,8 @@ jobs:
     plan:
       - get: aws-azkaban
         trigger: false
+      - get: manage-mysql-user-release
+        trigger: false
       - .: (( inject meta.plan.terraform-bootstrap ))
       - .: (( inject meta.plan.terraform-output ))
         params:
