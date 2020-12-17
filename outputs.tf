@@ -15,3 +15,7 @@ output "ecs_services" {
     webserver = aws_ecs_service.azkaban_executor
   }
 }
+
+output "truncate_table_lambda" {
+  value = aws_lambda_function.truncate_table
+}

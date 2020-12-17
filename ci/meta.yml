@@ -194,16 +194,20 @@ meta:
 
               RDS_CLUSTER_ARN=$(jq -r '.rds_db.value.arn' < ./terraform-output/outputs.json)
               RDS_SECRET_ARN=$(jq -r '.secrets.value.executor.arn' < ./terraform-output/outputs.json)
+              TRUNCATE_TABLE_FUNCTION_NAME=$(jq -r '.truncate_table_lambda.value.function_name' < ./terraform-output/outputs.json)
+
 
               aws ecs update-service --cluster $CLUSTER --service $SERVICE --desired-count 0
-              running_count=1
+              running_count=$(aws ecs describe-services --cluster $CLUSTER --services $SERVICE | jq -r '.services[0].runningCount')
               while [ "$running_count" -ne 0 ]; do
-                running_count=$(aws ecs describe-services --cluster $CLUSTER --services $SERVICE | jq -r '.services[0].runningCount');
+                  running_count=$(aws ecs describe-services --cluster $CLUSTER --services $SERVICE | jq -r '.services[0].runningCount');
                 sleep 5;
               done;
 
-              aws rds-data execute-statement --database "azkabans" \
-                                             --secret-arn $RDS_SECRET_ARN \
-                                             --resource-arn $RDS_CLUSTER_ARN \
-                                             --sql 'TRUNCATE TABLE `executors`'
+              aws lambda invoke --function-name $TRUNCATE_TABLE_FUNCTION_NAME \
+                                --invocation-type RequestResponse \
+                                --payload '{ "table_to_truncate": "executors" }' \
+                                --cli-connect-timeout 600 \
+                                --cli-read-timeout 600 output.json
 
+              jq -eC "if .errorMessage? then error(.errorMessage) else true end" < output.json
