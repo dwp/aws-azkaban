@@ -82,6 +82,26 @@ meta:
           - name: manage-mysql-user-release
       params:
         DETAILED_EXITCODE: -detailed-exitcode
+    terraform-output:
+      task: terraform-output
+      .: (( inject meta.plan.terraform-common-config ))
+      config:
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              cp ../terraform-bootstrap/terraform.tf .
+              cp ../terraform-bootstrap/terraform.tfvars .
+              terraform workspace show
+              terraform init
+              terraform output --json > ../terraform-output/outputs.json
+          dir: aws-azkaban
+        inputs:
+            - name: aws-azkaban
+            - name: terraform-bootstrap
+        outputs:
+            - name: terraform-output
     rotate-mysql-master-password:
       task: rotate-mysql-master-password
       config:
@@ -148,3 +168,53 @@ meta:
           USERNAME: "azkaban-executor"
           PARAM_NAME: "azkaban-executor-rds-password"
 
+
+    cycle-azkaban-executor:
+      task: cycle-azkaban-executor
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
+          type: docker-image
+        params:
+          AWS_DEFAULT_REGION: ((dataworks.aws_region))
+          CLUSTER: main
+          SERVICE: azkaban-executor
+        inputs:
+          - name: terraform-output
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              source /assume-role
+              MAX_RETRIES=60
+
+
+              TRUNCATE_TABLE_FUNCTION_NAME=$(jq -r '.truncate_table_lambda.value.function_name' < ./terraform-output/outputs.json)
+
+              aws ecs update-service --cluster $CLUSTER --service $SERVICE --desired-count 0 > /dev/null
+              running_count=$(aws ecs describe-services --cluster $CLUSTER --services $SERVICE | jq -r '.services[0].runningCount')
+
+              retries=0
+              while [ "$running_count" -ne 0 ]; do
+                if [ "$retries" -eq $MAX_RETRIES ]; then
+                  exit 1;
+                fi
+
+                running_count=$(aws ecs describe-services --cluster $CLUSTER --services $SERVICE | jq -r '.services[0].runningCount');
+
+                retries=$((retries + 1))
+                sleep 10;
+              done;
+
+              aws lambda invoke --function-name $TRUNCATE_TABLE_FUNCTION_NAME \
+                                --invocation-type RequestResponse \
+                                --payload '{ "table_to_truncate": "executors" }' \
+                                --cli-connect-timeout 600 \
+                                --cli-read-timeout 600 output.json
+
+              jq -eC "if .errorMessage? then error(.errorMessage) else true end" < output.json
