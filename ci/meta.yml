@@ -143,6 +143,7 @@ meta:
           AWS_DEFAULT_REGION: ((dataworks.aws_region))
           USERNAME: placeholder
           PARAM_NAME: placeholder
+          PRIVILEGES: ''
         run:
           path: sh
           args:
@@ -150,7 +151,7 @@ meta:
             - |
               source /assume-role
               set +x
-              jq -n --arg Username "$USERNAME" --arg Paramname "$PARAM_NAME" '{mysql_user_username: $Username, mysql_user_password_secret_name: $Paramname}' > manifest.json
+              jq -n --arg Username "$USERNAME" --arg Paramname "$PARAM_NAME" --arg Privileges "$PRIVILEGES" '{mysql_user_username: $Username, mysql_user_password_secret_name: $Paramname, privileges: $Privileges}' > manifest.json
               echo "Manifest is:"
               cat manifest.json
               aws lambda invoke --function-name manage-azkaban-mysql-user --invocation-type RequestResponse --payload file://manifest.json --cli-connect-timeout 600 --cli-read-timeout 600 output.json
@@ -161,12 +162,14 @@ meta:
         params:
           USERNAME: "azkaban-webserver"
           PARAM_NAME: "azkaban-webserver-rds-password"
+          PRIVILEGES: ALL
     rotate-azkaban-executor-password:
       .: (( inject meta.plan.rotate-mysql-password ))
       config:
         params:
           USERNAME: "azkaban-executor"
           PARAM_NAME: "azkaban-executor-rds-password"
+          PRIVILEGES: ALL
 
 
     cycle-azkaban-executor:
