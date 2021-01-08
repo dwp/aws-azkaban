@@ -1,5 +1,5 @@
 #!/bin/bash
-CLUSTER_ID=`aws emr list-clusters --cluster-states WAITING | jq '.Clusters[] | select(.Name == "aws-analytical-env") | .Id' | tr -d '\"'`
+CLUSTER_ID=`aws emr list-clusters --cluster-states WAITING | jq '.Clusters[] | select(.Name == "batch-analytical-env") | .Id' | tr -d '\"'`
 STEP_ID=`aws emr add-steps --cluster-id $CLUSTER_ID --steps Type=CUSTOM_JAR,Name=$1,ActionOnFailure=CONTINUE,Jar=command-runner.jar,Args=s3://${config_bucket}/$2 | jq .StepIds[] | tr -d "\""`
 STEP_STATE="PENDING"
 
