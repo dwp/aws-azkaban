@@ -27,7 +27,7 @@ sudo mv -f /tmp/config.json $CONFIG_FILE
 sudo amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:$CONFIG_FILE -s >/dev/null 2>&1
 
 # Synchronize external files on Batch EMR
-sudo /home/hadoop/get_scripts.sh component/uc_repos /opt/emr/repos
+/home/hadoop/get_scripts.sh component/uc_repos /opt/emr/repos
 
 sudo su -c "$1 $3" - $2
 
