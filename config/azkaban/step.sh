@@ -30,5 +30,3 @@ sudo amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:$CONFIG_FILE -s 
 /home/hadoop/get_scripts.sh component/uc_repos /opt/emr/repos
 
 sudo su -c "$1 $3" - $2
-
-
