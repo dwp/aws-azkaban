@@ -30,8 +30,7 @@ sudo cat $CONFIG_FILE | jq ".logs.logs_collected.files.collect_list += [{\"file_
 sudo mv -f /tmp/config.json $CONFIG_FILE
 sudo amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:$CONFIG_FILE -s >/dev/null 2>&1
 
-sudo su -c "$SCRIPT_NAME $SCRIPT_ARGUMENTS" - $USERNAME
-
 # Synchronize external files on Batch EMR
 /home/hadoop/get_scripts.sh component/uc_repos /opt/emr/repos
 
+sudo su -c "$SCRIPT_NAME $SCRIPT_ARGUMENTS" - $USERNAME
