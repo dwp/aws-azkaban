@@ -32,7 +32,7 @@ sudo amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:$CONFIG_FILE -s 
 
 # Synchronize external files on Batch EMR
 /home/hadoop/get_scripts.sh component/uc_repos /opt/emr/repos
-sudo chmod u+x /opt/emr/repos/chs-uc-lab/build_dataset.sh
-sudo chmod u+x /opt/emr/repos/chs-uc-lab/build_views.sh
+sudo chmod g+x /opt/emr/repos/chs-uc-lab/build_dataset.sh
+sudo chmod g+x /opt/emr/repos/chs-uc-lab/build_views.sh
 
 sudo su -c "$SCRIPT_NAME $SCRIPT_ARGUMENTS" - $USERNAME
