@@ -25,6 +25,15 @@ resources:
       uri: https://((dataworks.enterprise_github_url))/dip/secrets-management.git
     check_every: 5m
 
+  - name: dataworks-analytical-frontend-service
+    type: git
+    source:
+      branch: master
+      access_token: ((dataworks-secrets.concourse_github_pat))
+      uri: https://github.com/dwp/dataworks-analytical-frontend-service.git
+    check_every: 720h
+    webhook_token: ((dataworks.concourse_github_webhook_token))
+
   - name: manage-mysql-user-release
     type: github-release
     source:
