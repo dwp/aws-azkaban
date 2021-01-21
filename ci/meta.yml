@@ -263,8 +263,6 @@ meta:
           args:
             - -exc
             - |
-              ls ../../../../
-              ls ../../../
               cp ../../../../terraform-config/terraform.tf .
               cp ../../../../terraform-config/terraform.tfvars .
               terraform workspace show

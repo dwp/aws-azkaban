@@ -7,6 +7,9 @@ jobs:
         passed:
           - update-keystore-data-preprod
       - .: (( inject meta.plan.terraform-dataworks-analytical-frontend-service-bootstrap ))
+        config:
+          params:
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.production)):role/ci
       - .: (( inject meta.plan.terraform-output-frontend-service ))
         config:
           params:
