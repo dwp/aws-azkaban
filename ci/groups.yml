@@ -39,3 +39,10 @@ groups:
       - rotate-azkaban-executor-password-production
       - rotate-azkaban-webserver-password-production
       - cycle-azkaban-executor-production
+  - name: update-keystore-data
+    jobs:
+      - update-keystore-data-development
+      - update-keystore-data-qa
+      - update-keystore-data-integration
+      - update-keystore-data-preprod
+      - update-keystore-data-production
