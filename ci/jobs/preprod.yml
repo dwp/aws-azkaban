@@ -44,7 +44,7 @@ jobs:
             AWS_ACC: ((aws_account.preprod))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.preprod)):role/ci
 
-  - name: cycle-azkaban-executor-preprod
+  - name: cycle-azkaban-containers-preprod
     plan:
       - get: aws-azkaban
         trigger: false
@@ -56,7 +56,7 @@ jobs:
       - .: (( inject meta.plan.terraform-output ))
         params:
           TF_WORKSPACE: 'preprod'
-      - .: (( inject meta.plan.cycle-azkaban-executor ))
+      - .: (( inject meta.plan.cycle-azkaban-containers ))
         config:
           params:
             AWS_ACC: ((aws_account.preprod))

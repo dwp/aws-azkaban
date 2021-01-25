@@ -172,8 +172,8 @@ meta:
           PRIVILEGES: ALL
 
 
-    cycle-azkaban-executor:
-      task: cycle-azkaban-executor
+    cycle-azkaban-containers:
+      task: cycle-azkaban-containers
       config:
         platform: linux
         image_resource:
@@ -185,7 +185,6 @@ meta:
         params:
           AWS_DEFAULT_REGION: ((dataworks.aws_region))
           CLUSTER: main
-          SERVICE: azkaban-executor
         inputs:
           - name: terraform-output
         run:
@@ -196,19 +195,22 @@ meta:
               source /assume-role
               MAX_RETRIES=60
 
-
               TRUNCATE_TABLE_FUNCTION_NAME=$(jq -r '.truncate_table_lambda.value.function_name' < ./terraform-output/outputs.json)
 
-              aws ecs update-service --cluster $CLUSTER --service $SERVICE --desired-count 0 > /dev/null
-              running_count=$(aws ecs describe-services --cluster $CLUSTER --services $SERVICE | jq -r '.services[0].runningCount')
+              aws ecs update-service --cluster $CLUSTER --service azkaban-executor --desired-count 0 > /dev/null
+              aws ecs update-service --cluster $CLUSTER --service azkaban-webserver --desired-count 0 > /dev/null
+              executor_running_count=$(aws ecs describe-services --cluster $CLUSTER --services azkaban-executor | jq -r '.services[0].runningCount')
+              webserver_running_count=$(aws ecs describe-services --cluster $CLUSTER --services azkaban-webserver | jq -r '.services[0].runningCount')
 
               retries=0
-              while [ "$running_count" -ne 0 ]; do
+              while [ $executor_running_count -ne 0 ] || [ $webserver_running_count -ne 0 ]; do
                 if [ "$retries" -eq $MAX_RETRIES ]; then
-                  exit 1;
+                  echo "max retries, executor and webserver not shut down."
+                  exit 0;
                 fi
 
-                running_count=$(aws ecs describe-services --cluster $CLUSTER --services $SERVICE | jq -r '.services[0].runningCount');
+                executor_running_count=$(aws ecs describe-services --cluster $CLUSTER --services azkaban-executor | jq -r '.services[0].runningCount')
+                webserver_running_count=$(aws ecs describe-services --cluster $CLUSTER --services azkaban-webserver | jq -r '.services[0].runningCount')
 
                 retries=$((retries + 1))
                 sleep 10;
@@ -221,6 +223,20 @@ meta:
                                 --cli-read-timeout 600 output.json
 
               jq -eC "if .errorMessage? then error(.errorMessage) else true end" < output.json
+
+              aws ecs update-service --cluster $CLUSTER --service azkaban-executor --desired-count 1 > /dev/null
+              retries=0
+              while [ "$executor_running_count" -eq 0 ]; do
+                if [ "$retries" -eq $MAX_RETRIES ]; then
+                  echo "Azkaban executor not started and max retries... exitting"
+                  exit 0;
+                fi
+
+                executor_running_count=$(aws ecs describe-services --cluster $CLUSTER --services azkaban-executor | jq -r '.services[0].runningCount')
+
+                retries=$((retries + 1))
+                sleep 10;
+              done;
 
 
     terraform-dataworks-analytical-frontend-service-bootstrap:

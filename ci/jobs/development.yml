@@ -38,7 +38,7 @@ jobs:
             AWS_ACC: ((aws_account.development))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
 
-  - name: cycle-azkaban-executor-development
+  - name: cycle-azkaban-containers-development
     plan:
       - get: aws-azkaban
         trigger: false
@@ -48,7 +48,7 @@ jobs:
         trigger: true
       - .: (( inject meta.plan.terraform-bootstrap ))
       - .: (( inject meta.plan.terraform-output ))
-      - .: (( inject meta.plan.cycle-azkaban-executor ))
+      - .: (( inject meta.plan.cycle-azkaban-containers ))
         config:
           params:
             AWS_ACC: ((aws_account.development))
