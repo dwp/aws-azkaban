@@ -205,8 +205,8 @@ meta:
               retries=0
               while [ $executor_running_count -ne 0 ] || [ $webserver_running_count -ne 0 ]; do
                 if [ "$retries" -eq $MAX_RETRIES ]; then
-                  echo "max retries, executor and webserver not shut down."
-                  exit 0;
+                  echo "ERROR: MAX RETRIES Exceeded, Azkaban executor or webserver taking too long to shut down. Exiting..."
+                  exit 1;
                 fi
 
                 executor_running_count=$(aws ecs describe-services --cluster $CLUSTER --services azkaban-executor | jq -r '.services[0].runningCount')
@@ -228,8 +228,8 @@ meta:
               retries=0
               while [ "$executor_running_count" -eq 0 ]; do
                 if [ "$retries" -eq $MAX_RETRIES ]; then
-                  echo "Azkaban executor not started and max retries... exitting"
-                  exit 0;
+                  echo "ERROR: MAX RETRIES Exceeded, Azkaban executor taking too long to start. Exiting..."
+                  exit 1;
                 fi
 
                 executor_running_count=$(aws ecs describe-services --cluster $CLUSTER --services azkaban-executor | jq -r '.services[0].runningCount')

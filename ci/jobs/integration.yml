@@ -61,6 +61,7 @@ jobs:
           params:
             AWS_ACC: ((aws_account.integration))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.integration)):role/ci
-      - .: (( inject meta.plan.terraform-apply ))
+        ensure:
+          .: (( inject meta.plan.terraform-apply ))
         params:
           TF_WORKSPACE: 'integration'
