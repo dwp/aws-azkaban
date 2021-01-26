@@ -43,7 +43,7 @@ jobs:
             AWS_ACC: ((aws_account.qa))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
 
-  - name: cycle-azkaban-executor-qa
+  - name: cycle-azkaban-containers-qa
     plan:
       - get: aws-azkaban
         trigger: false
@@ -55,11 +55,12 @@ jobs:
       - .: (( inject meta.plan.terraform-output ))
         params:
           TF_WORKSPACE: 'qa'
-      - .: (( inject meta.plan.cycle-azkaban-executor ))
+      - .: (( inject meta.plan.cycle-azkaban-containers ))
         config:
           params:
             AWS_ACC: ((aws_account.qa))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
-      - .: (( inject meta.plan.terraform-apply ))
-        params:
-          TF_WORKSPACE: 'qa'
+        ensure:
+          .: (( inject meta.plan.terraform-apply ))
+          params:
+            TF_WORKSPACE: 'qa'
