@@ -62,5 +62,5 @@ jobs:
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
         ensure:
           .: (( inject meta.plan.terraform-apply ))
-        params:
-          TF_WORKSPACE: 'qa'
+          params:
+            TF_WORKSPACE: 'qa'
