@@ -315,3 +315,26 @@ meta:
               aws secretsmanager put-secret-value --secret-id /concourse/dataworks/workflow_manager --secret-binary "${UPDATED_SECRET}"
         inputs:
           - name: terraform-output-frontend-service
+
+    rotate-azkaban-admin-password:
+      task: rotate_azkaban_admin_password
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            version: ((dataworks.docker_awscli_version))
+            tag: ((dataworks.docker_awscli_version))
+        params:
+          AWS_REGION: ((dataworks.aws_region))
+          AWS_DEFAULT_REGION: ((dataworks.aws_region))
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              source /assume-role
+              RANDOM_PASSWORD=$(aws secretsmanager get-random-password --password-length 20 --require-each-included-type | jq -r .RandomPassword)
+              UPDATED_SECRET_BINARY="$(aws secretsmanager get-secret-value --secret-id /concourse/dataworks/workflow_manager --query SecretBinary --output text | base64 -d | jq -r --arg data "$RANDOM_PASSWORD" '.azkaban_password = $data')"
+              aws secretsmanager put-secret-value --secret-id /concourse/dataworks/workflow_manager --secret-binary "${UPDATED_SECRET_BINARY}"

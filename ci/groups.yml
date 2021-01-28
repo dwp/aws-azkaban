@@ -15,30 +15,35 @@ groups:
       - rotate-mysql-password-master-development
       - rotate-azkaban-executor-password-development
       - rotate-azkaban-webserver-password-development
+      - rotate-azkaban-admin-password-development
   - name: admin-qa
     jobs:
       - rotate-mysql-password-master-qa
       - rotate-azkaban-executor-password-qa
       - rotate-azkaban-webserver-password-qa
       - cycle-azkaban-containers-qa
+      - rotate-azkaban-admin-password-qa
   - name: admin-integration
     jobs:
       - rotate-mysql-password-master-integration
       - rotate-azkaban-executor-password-integration
       - rotate-azkaban-webserver-password-integration
       - cycle-azkaban-containers-integration
+      - rotate-azkaban-admin-password-integration
   - name: admin-preprod
     jobs:
       - rotate-mysql-password-master-preprod
       - rotate-azkaban-executor-password-preprod
       - rotate-azkaban-webserver-password-preprod
       - cycle-azkaban-containers-preprod
+      - rotate-azkaban-admin-password-preprod
   - name: admin-production
     jobs:
       - rotate-mysql-password-master-production
       - rotate-azkaban-executor-password-production
       - rotate-azkaban-webserver-password-production
       - cycle-azkaban-containers-production
+      - rotate-azkaban-admin-password-production
   - name: update-keystore-data
     jobs:
       - update-keystore-data-development

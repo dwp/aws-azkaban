@@ -65,3 +65,11 @@ jobs:
           .: (( inject meta.plan.terraform-apply ))
           params:
             TF_WORKSPACE: 'preprod'
+
+  - name: rotate-azkaban-admin-password-preprod
+    plan:
+      - .: (( inject meta.plan.rotate-azkaban-admin-password ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.preprod))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.preprod)):role/ci
