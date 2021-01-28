@@ -55,3 +55,11 @@ jobs:
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
         ensure:
           .: (( inject meta.plan.terraform-apply ))
+
+  - name: rotate-azkaban-admin-password-development
+    plan:
+      - .: (( inject meta.plan.rotate-azkaban-admin-password ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.development))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
