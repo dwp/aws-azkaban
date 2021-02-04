@@ -290,8 +290,8 @@ meta:
         outputs:
           - name: terraform-output-frontend-service
 
-    put_keystore_data:
-      task: put_keystore_data
+    put-keystore-data:
+      task: put-keystore-data
       config:
         platform: linux
         image_resource:
@@ -317,7 +317,7 @@ meta:
           - name: terraform-output-frontend-service
 
     rotate-azkaban-admin-password:
-      task: rotate_azkaban_admin_password
+      task: rotate-azkaban-admin-password
       config:
         platform: linux
         image_resource:
