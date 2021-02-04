@@ -49,8 +49,6 @@ jobs:
         trigger: false
       - get: manage-mysql-user-release
         trigger: false
-      - get: midnight-trigger
-        trigger: true
       - .: (( inject meta.plan.terraform-bootstrap ))
       - .: (( inject meta.plan.terraform-output ))
         params:

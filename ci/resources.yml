@@ -42,9 +42,9 @@ resources:
     check_every: 1h
     webhook_token: ((dataworks.concourse_github_webhook_token))
 
-  - name: midnight-trigger
-    type: time
-    source:
-      location: GB
-      start: 00:00
-      stop: 01:00
+#  - name: midnight-trigger
+#    type: time
+#    source:
+#      location: GB
+#      start: 00:00
+#      stop: 01:00
