@@ -57,6 +57,6 @@ resource "aws_lambda_permission" "zip_uploader_trigger_permission" {
   statement_id  = "AllowS3Invoke"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.zip_uploader.function_name
-  principal = "s3.amazonaws.com"
-  source_arn = data.terraform_remote_state.common.outputs.config_bucket.arn
+  principal     = "s3.amazonaws.com"
+  source_arn    = data.terraform_remote_state.common.outputs.config_bucket.arn
 }

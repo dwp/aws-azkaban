@@ -29,9 +29,9 @@ data "aws_iam_policy_document" "lambda_zip_uploader_document" {
   }
 
   statement {
-    sid       = "AllowRdsDataExecute"
-    effect    = "Allow"
-    actions   = [
+    sid    = "AllowRdsDataExecute"
+    effect = "Allow"
+    actions = [
       "s3:GetObject",
       "s3:GetObjectAcl"
     ]
@@ -41,9 +41,9 @@ data "aws_iam_policy_document" "lambda_zip_uploader_document" {
   }
 
   statement {
-    sid       = "FindConfigBucket"
-    effect    = "Allow"
-    actions   = [
+    sid    = "FindConfigBucket"
+    effect = "Allow"
+    actions = [
       "s3:ListBucket"
     ]
     resources = [
@@ -52,10 +52,10 @@ data "aws_iam_policy_document" "lambda_zip_uploader_document" {
   }
 
   statement {
-    sid     = "UseKmsToReadBucket"
-    effect  = "Allow"
+    sid    = "UseKmsToReadBucket"
+    effect = "Allow"
     actions = [
-      "kms:Decrypt",
+      "kms:Decrypt"
     ]
     resources = [
       data.terraform_remote_state.common.outputs.config_bucket_cmk.arn

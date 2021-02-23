@@ -58,6 +58,8 @@ def get_file(bucket_id, key, s3_client):
 
 def upload_to_azkaban_api(zip_file, zip_file_name, session_id, http, azkaban_url):
     project_name = os.path.splitext(zip_file_name)[0]
+
+    # creates project, if doesn't exist
     create_project(azkaban_url, http, session_id, project_name)
 
     boundary = "----WebKitFormBoundaryK42OAofX56OI15GD"
@@ -70,16 +72,15 @@ def upload_to_azkaban_api(zip_file, zip_file_name, session_id, http, azkaban_url
             'file': (zip_file_name, zip_file, 'application/zip'),
             'project': (None, project_name, None),
             'session.id': (None, session_id, None)
-
         }
     )
     try:
         auth_response_body = json.loads(auth_response_json.data.decode('utf-8'))
         if auth_response_body.get('error'):
-            raise urllib3.exceptions.RequestError(message=f"Failure uploading {project_name} to Azkaban API - Error in API response body.")
+            raise urllib3.exceptions.ResponseError(f"Failure uploading {project_name} to Azkaban API - Error in API response body.")
     except json.JSONDecodeError:
         if auth_response_json.status != 200:
-            raise urllib3.exceptions.RequestError(message=f"Failure uploading {project_name} to Azkaban API - non 200 status returned.")
+            raise urllib3.exceptions.ResponseError(f"Failure uploading {project_name} to Azkaban API - non 200 status returned.")
         pass
 
 def create_project(azkaban_url, http, session_id, project_name):
@@ -132,4 +133,4 @@ def establish_azkaban_session(http):
     if auth_response_body.get("status") == "success":
         return auth_response_body.get("session.id")
     else:
-        raise urllib3.exceptions.RequestError(message="Failure establising Azkaban API session.")
+        raise urllib3.exceptions.ResponseError("Failure establising Azkaban API session.")

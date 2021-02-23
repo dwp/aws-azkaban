@@ -21,13 +21,13 @@ resource "aws_lambda_function" "truncate_table" {
     mode = "PassThrough"
   }
   tags = merge(
-  local.common_tags,
-  {
-    "Name" = "azkaban-manage-mysql-user"
-  },
-  {
-    "ProtectsSensitiveData" = "False"
-  },
+    local.common_tags,
+    {
+      "Name" = "azkaban-manage-mysql-user"
+    },
+    {
+      "ProtectsSensitiveData" = "False"
+    },
   )
 
   depends_on = [data.archive_file.lambda_zip]
