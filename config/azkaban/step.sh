@@ -36,5 +36,6 @@ sudo amazon-cloudwatch-agent-ctl -a append-config -m ec2 -c file:$CONFIG_FILE -s
 sudo chmod g+x /opt/emr/repos/chs-uc-lab/build_dataset.sh
 sudo chmod g+x /opt/emr/repos/chs-uc-lab/build_views.sh
 sudo chmod g+x /opt/emr/repos/chs-payment-timelines/scripts/build_pt.sh
+sudo chmod g+x /opt/emr/repos/chs-cbol-data/build_table.sh
 
 sudo su -c "$SCRIPT_NAME $SCRIPT_ARGUMENTS" - $USERNAME
