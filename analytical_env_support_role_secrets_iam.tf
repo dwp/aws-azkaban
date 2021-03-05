@@ -9,7 +9,9 @@ data "aws_iam_policy_document" "analytical_env_support_azkaban_getsecrets" {
     effect = "Allow"
 
     actions = [
+      "secretsmanager:DescribeSecret",
       "secretsmanager:GetSecretValue",
+      "secretsmanager:ListSecretVersionIds"
     ]
 
     resources = [
