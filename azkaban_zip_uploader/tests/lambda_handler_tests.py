@@ -68,7 +68,7 @@ sm_stubber.add_response('get_secret_value', mock_secret_value_response)
 sm_stubber.activate()
 
 data_non_fail = json.dumps({
-    "error" : "ProjectExists",
+    "status" : "error",
     "message" : "Project already exists.",
 }).encode('utf-8')
 
@@ -76,7 +76,7 @@ http_non_fail_error= Mock()
 http_non_fail_error.data = data_non_fail
 
 data_fail = json.dumps({
-    "error" : "OtherError",
+    "error" : "error",
     "message" : "Other message.",
 }).encode('utf-8')
 
