@@ -97,7 +97,7 @@ def create_project(azkaban_url, http, session_id, project_name):
 
     if auth_response_body.get('status') == 'success':
         logger.info(f'Project \"{project_name}\" was created.')
-    elif auth_response_body.get('error') and auth_response_body.get('message') == 'Project already exists.':
+    elif auth_response_body.get('status') == 'error' and auth_response_body.get('message') == 'Project already exists.':
         logger.info(f'Project \"{project_name}\" already exists - using existing project.')
     else:
         raise urllib3.exceptions.ResponseError(
