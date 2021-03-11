@@ -39,6 +39,16 @@ resource "aws_security_group_rule" "allow_azkaban_webserver_ingress_loadbalancer
   source_security_group_id = aws_security_group.workflow_manager_loadbalancer.id
 }
 
+resource "aws_security_group_rule" "allow_azkaban_webserver_ingress_zip_uploader" {
+  description              = "Allows zip_uploader lambda to access azkaban webserver api endpoint"
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_webserver_port
+  to_port                  = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_webserver_port
+  security_group_id        = aws_security_group.azkaban_webserver.id
+  source_security_group_id = aws_security_group.azkaban_zip_uploader.id
+}
+
 resource "aws_security_group_rule" "allow_azkaban_webserver_ingress_azkaban_executor" {
   description              = "Allows azkaban webserver to access azkaban executor"
   type                     = "ingress"
