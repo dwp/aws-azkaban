@@ -54,6 +54,25 @@ data "template_file" "azkaban_executor_definition" {
   }
 }
 
+data "template_file" "azkaban_executor_jmx_exporter_definition" {
+  template = file("${path.module}/container_definition.tpl")
+  vars = {
+    name          = "azkaban-executor-jmx-exporter"
+    group_name    = "azkaban"
+    cpu           = var.fargate_cpu
+    image_url     = data.terraform_remote_state.management.outputs.ecr_azkaban_executor_url
+    memory        = var.fargate_memory
+    user          = "root"
+    ports         = jsonencode([5556])
+    log_group     = aws_cloudwatch_log_group.workflow_manager.name
+    region        = var.region
+    config_bucket = data.terraform_remote_state.common.outputs.config_bucket.id
+
+    mount_points = jsonencode([])
+
+  }
+}
+
 resource "aws_ecs_service" "azkaban_executor" {
   name             = "azkaban-executor"
   cluster          = data.terraform_remote_state.common.outputs.ecs_cluster_main.id
