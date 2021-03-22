@@ -60,7 +60,7 @@ data "template_file" "azkaban_executor_jmx_exporter_definition" {
     name          = "azkaban-executor-jmx-exporter"
     group_name    = "azkaban"
     cpu           = var.fargate_cpu
-    image_url     = data.terraform_remote_state.management.outputs.ecr_azkaban_executor_url
+    image_url     = data.terraform_remote_state.management.outputs.ecr_jmx_exporter_url
     memory        = var.fargate_memory
     user          = "root"
     ports         = jsonencode([5556])
@@ -69,6 +69,12 @@ data "template_file" "azkaban_executor_jmx_exporter_definition" {
     config_bucket = data.terraform_remote_state.common.outputs.config_bucket.id
 
     mount_points = jsonencode([])
+    environment_variables = jsonencode([
+      {
+        "name" : "AZKABAN_ROLE",
+        "value" : "exec-server"
+      }
+    ])
 
   }
 }
