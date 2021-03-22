@@ -8,7 +8,7 @@ get_release_information(){
 update_tfvars() {
     tfvars_line=`echo "$(echo ${REPO} | sed 's/-/_/g')_$extension = { base_path = \"../${REPO}-release\", version = \"${VERSION}\" }"`
     if ! cat terraform.tfvars | grep -q "$tfvars_line"; then
-        echo "$tfvars_line" >> terraform.tfvars
+        printf "\n$tfvars_line" >> terraform.tfvars
     fi
 }
 

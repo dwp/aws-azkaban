@@ -1,4 +1,4 @@
-  
+
 variable "manage_mysql_user_zip" {
   type = map(string)
   default = {
