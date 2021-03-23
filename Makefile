@@ -20,6 +20,7 @@ bootstrap: ## Bootstrap local environment for first use
 	}
 	terraform fmt -recursive
 	terraform init
+	make get-dependencies
 
 .PHONY: git-hooks
 git-hooks: ## Set up hooks in .githooks

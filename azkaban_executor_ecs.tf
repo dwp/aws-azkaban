@@ -15,7 +15,7 @@ data "template_file" "azkaban_executor_definition" {
     name          = "azkaban-executor"
     group_name    = "azkaban"
     cpu           = var.fargate_cpu
-    image_url     = format("%s:%s", data.terraform_remote_state.management.outputs.ecr_azkaban_executor_url, var.image_versions.jmx-exporter)
+    image_url     = data.terraform_remote_state.management.outputs.ecr_azkaban_executor_url
     memory        = var.fargate_memory
     user          = "root"
     ports         = jsonencode([jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_executor_port])
@@ -58,9 +58,9 @@ data "template_file" "azkaban_executor_jmx_exporter_definition" {
   template = file("${path.module}/container_definition.tpl")
   vars = {
     name          = "azkaban-executor-jmx-exporter"
-    group_name    = "azkaban"
+    group_name    = "jmx-exporter"
     cpu           = var.fargate_cpu
-    image_url     = data.terraform_remote_state.management.outputs.ecr_jmx_exporter_url
+    image_url     = format("%s:%s", data.terraform_remote_state.management.outputs.ecr_jmx_exporter_url, var.image_versions.jmx-exporter)
     memory        = var.fargate_memory
     user          = "root"
     ports         = jsonencode([5556])
@@ -86,6 +86,8 @@ resource "aws_ecs_service" "azkaban_executor" {
   platform_version = var.platform_version
   desired_count    = 1
   launch_type      = "FARGATE"
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent         = 200
 
   network_configuration {
     security_groups = [aws_security_group.azkaban_executor.id, aws_security_group.workflow_manager_common.id]
