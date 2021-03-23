@@ -58,7 +58,7 @@ data "template_file" "azkaban_executor_jmx_exporter_definition" {
   template = file("${path.module}/container_definition.tpl")
   vars = {
     name          = "azkaban-executor-jmx-exporter"
-    group_name    = "jmx-exporter"
+    group_name    = "jmx_exporter"
     cpu           = var.fargate_cpu
     image_url     = format("%s:%s", data.terraform_remote_state.management.outputs.ecr_jmx_exporter_url, var.image_versions.jmx-exporter)
     memory        = var.fargate_memory
@@ -71,7 +71,7 @@ data "template_file" "azkaban_executor_jmx_exporter_definition" {
     mount_points = jsonencode([])
     environment_variables = jsonencode([
       {
-        "name" : "AZKABAN_ROLE",
+        "name" : "JMX_EXPORTER_ROLE",
         "value" : "exec-server"
       }
     ])
