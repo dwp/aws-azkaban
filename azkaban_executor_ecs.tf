@@ -15,7 +15,7 @@ data "template_file" "azkaban_executor_definition" {
     name          = "azkaban-executor"
     group_name    = "azkaban"
     cpu           = var.fargate_cpu
-    image_url     = data.terraform_remote_state.management.outputs.ecr_azkaban_executor_url
+    image_url     = format("%s:%s", data.terraform_remote_state.management.outputs.ecr_azkaban_executor_url, var.image_versions.jmx-exporter)
     memory        = var.fargate_memory
     user          = "root"
     ports         = jsonencode([jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_executor_port])
