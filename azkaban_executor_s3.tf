@@ -79,7 +79,7 @@ resource "aws_s3_bucket_object" "azkaban_executor_script" {
 
 resource "aws_s3_bucket_object" "jmx_exporter_config" {
   bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
-  key        = "${local.name}/azkaban/exec-server/jmx-exporter.yml"
+  key        = "${local.name}/jmx_exporter/exec-server/jmx-exporter.yml"
   content    = data.template_file.jmx_exporter_config.rendered
   kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
 }
