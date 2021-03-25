@@ -1,6 +1,6 @@
 ---
-startDelaySeconds: 0
-hostPort: 127.0.0.1:9998
+startDelaySeconds: 120
+jmxUrl: service:jmx:rmi:///jndi/rmi://127.0.0.1:9998/jmxrmi
 ssl: false
 lowercaseOutputName: true
 lowercaseOutputLabelNames: true
