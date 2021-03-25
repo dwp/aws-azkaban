@@ -1,8 +1,6 @@
 ---
-startDelaySeconds: 120
+startDelaySeconds: 0
 jmxUrl: service:jmx:rmi:///jndi/rmi://127.0.0.1:9998/jmxrmi
 ssl: false
 lowercaseOutputName: true
 lowercaseOutputLabelNames: true
-rules:
-  - .*
