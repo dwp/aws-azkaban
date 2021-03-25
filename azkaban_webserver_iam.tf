@@ -61,6 +61,7 @@ data "aws_iam_policy_document" "azkaban_webserver_read_config" {
 
     resources = [
       "${data.terraform_remote_state.common.outputs.config_bucket.arn}/${local.name}/azkaban/*",
+      "${data.terraform_remote_state.common.outputs.config_bucket.arn}/${local.name}/jmx_exporter/*",
     ]
   }
 
