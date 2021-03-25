@@ -55,7 +55,7 @@ else
     echo "Exit with error: $conf/log4j.properties file doesn't exist."
     exit 1;
 fi
-AZKABAN_OPTS="$AZKABAN_OPTS -server -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.port=9998 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.io.tmpdir=$tmpdir -Dexecutorport=$executorport -Dserverpath=$serverpath"
+AZKABAN_OPTS="$AZKABAN_OPTS -server -Dcom.sun.management.jmxremote -Djava.io.tmpdir=$tmpdir -Dexecutorport=$executorport -Dserverpath=$serverpath"
 
 bash -c 'while true; do curl_response=`curl -k -w "%%{http_code}\\n" http://localhost:${azkaban_executor_port}/executor?action=activate -o /dev/null --connect-timeout 3 --max-time 5`; if [ $curl_response -ne "200" ]; then sleep 5; else break; fi done' &
 
