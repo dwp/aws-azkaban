@@ -57,6 +57,10 @@ data "template_file" "azkaban_webserver_jmx_exporter_definition" {
       {
         "name" : "JMX_EXPORTER_ROLE",
         "value" : "web-server"
+      },
+      {
+        name  = "PROMETHEUS",
+        value = "true"
       }
     ])
 
