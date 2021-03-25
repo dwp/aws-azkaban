@@ -32,7 +32,7 @@ data template_file "azkaban_executor_internal" {
 }
 
 data template_file "jmx_exporter_config" {
-  template = file("${path.module}/config/jmx-exporter/config.yml")
+  template = file("${path.module}/config/azkaban/exec-server/jmx-exporter/config.yml")
 }
 
 resource "aws_s3_bucket_object" "azkaban_executor_properties" {
