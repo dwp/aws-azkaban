@@ -6,7 +6,7 @@ resource "aws_ecs_task_definition" "azkaban_executor" {
   memory                   = "4096"
   task_role_arn            = aws_iam_role.azkaban_executor.arn
   execution_role_arn       = data.terraform_remote_state.common.outputs.ecs_task_execution_role.arn
-  container_definitions    = "[${data.template_file.azkaban_executor_definition.rendered}"
+  container_definitions    = "[${data.template_file.azkaban_executor_definition.rendered}]"
 }
 
 data "template_file" "azkaban_executor_definition" {
