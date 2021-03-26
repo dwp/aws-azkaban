@@ -74,6 +74,8 @@ resource "aws_ecs_service" "azkaban_webserver" {
   platform_version = var.platform_version
   desired_count    = 1
   launch_type      = "FARGATE"
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent         = 200
 
   network_configuration {
     security_groups = [aws_security_group.azkaban_webserver.id, aws_security_group.workflow_manager_common.id]
