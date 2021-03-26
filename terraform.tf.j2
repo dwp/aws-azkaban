@@ -123,6 +123,10 @@ data "terraform_remote_state" "certificate_authority" {
   }
 }
 
+variable "assume_role" {
+  default = "ci"
+}
+
 provider "aws" {
   version = "~> 2.66.0"
   region  = "{{terraform.provider_region}}"
