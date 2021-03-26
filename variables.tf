@@ -67,3 +67,10 @@ variable "subnets" {
     }
   }
 }
+
+variable "image_versions" {
+  description = "pinned image versions to use"
+  default = {
+    jmx-exporter = "0.0.10"
+  }
+}

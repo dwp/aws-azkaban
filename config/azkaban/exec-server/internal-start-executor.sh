@@ -7,35 +7,35 @@ azkaban_dir=/azkaban-exec-server
 conf=$azkaban_dir/conf
 
 if [[ -z "$tmpdir" ]]; then
-tmpdir=/tmp
+    tmpdir=/tmp
 fi
 
 for file in $azkaban_dir/lib/*.jar;
 do
-  CLASSPATH=$CLASSPATH:$file
+    CLASSPATH=$CLASSPATH:$file
 done
 
 for file in $azkaban_dir/extlib/*.jar;
 do
-  CLASSPATH=$CLASSPATH:$file
+    CLASSPATH=$CLASSPATH:$file
 done
 
 for file in $azkaban_dir/plugins/*/*.jar;
 do
-  CLASSPATH=$CLASSPATH:$file
+    CLASSPATH=$CLASSPATH:$file
 done
 
 if [ "$HADOOP_HOME" != "" ]; then
-        echo "Using Hadoop from $HADOOP_HOME"
-        CLASSPATH=$CLASSPATH:$HADOOP_HOME/conf:$HADOOP_HOME/*
-        JAVA_LIB_PATH="-Djava.library.path=$HADOOP_HOME/lib/native/Linux-amd64-64"
+    echo "Using Hadoop from $HADOOP_HOME"
+    CLASSPATH=$CLASSPATH:$HADOOP_HOME/conf:$HADOOP_HOME/*
+    JAVA_LIB_PATH="-Djava.library.path=$HADOOP_HOME/lib/native/Linux-amd64-64"
 else
-        echo "Error: HADOOP_HOME is not set. Hadoop job types will not run properly."
+    echo "Error: HADOOP_HOME is not set. Hadoop job types will not run properly."
 fi
 
 if [ "$HIVE_HOME" != "" ]; then
-        echo "Using Hive from $HIVE_HOME"
-        CLASSPATH=$CLASSPATH:$HIVE_HOME/conf:$HIVE_HOME/lib/*
+    echo "Using Hive from $HIVE_HOME"
+    CLASSPATH=$CLASSPATH:$HIVE_HOME/conf:$HIVE_HOME/lib/*
 fi
 
 echo $azkaban_dir;
@@ -46,14 +46,14 @@ echo "Starting AzkabanExecutorServer on port $executorport ..."
 serverpath=`pwd`
 
 if [[ -z "$AZKABAN_OPTS" ]]; then
-  AZKABAN_OPTS="-Xmx3G"
+    AZKABAN_OPTS="-Xmx3G"
 fi
 # Set the log4j configuration file
 if [ -f $conf/log4j.properties ]; then
-  AZKABAN_OPTS="$AZKABAN_OPTS -Dlog4j.configuration=file:$conf/log4j.properties -Dlog4j.log.dir=$azkaban_dir/logs"
+    AZKABAN_OPTS="$AZKABAN_OPTS -Dlog4j.configuration=file:$conf/log4j.properties -Dlog4j.log.dir=$azkaban_dir/logs"
 else
-  echo "Exit with error: $conf/log4j.properties file doesn't exist."
-  exit 1;
+    echo "Exit with error: $conf/log4j.properties file doesn't exist."
+    exit 1;
 fi
 AZKABAN_OPTS="$AZKABAN_OPTS -server -Dcom.sun.management.jmxremote -Djava.io.tmpdir=$tmpdir -Dexecutorport=$executorport -Dserverpath=$serverpath"
 

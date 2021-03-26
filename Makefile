@@ -19,6 +19,8 @@ bootstrap: ## Bootstrap local environment for first use
 		python3 bootstrap_terraform.py; \
 	}
 	terraform fmt -recursive
+	terraform init
+	make get-dependencies
 
 .PHONY: git-hooks
 git-hooks: ## Set up hooks in .githooks
@@ -41,3 +43,12 @@ terraform-apply: ## Run `terraform apply` from repo root
 .PHONY: terraform-workspace-new
 terraform-workspace-new: ## Creates new Terraform workspace with Concourse remote execution. Run `terraform-workspace-new workspace=<workspace_name>`
 	fly -t aws-concourse execute --config create-workspace.yml --input repo=. -v workspace="$(workspace)"
+
+.PHONY: get-dependencies
+get-dependencies: ## Get dependencies that are normally managed by pipeline
+	@{ \
+		for github_repository in manage-mysql-user; do \
+			export REPO=$${github_repository}; \
+			./get_lambda_release.sh; \
+		done \
+	}

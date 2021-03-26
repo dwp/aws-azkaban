@@ -13,6 +13,7 @@ meta:
           TF_CLI_ARGS_apply: -lock-timeout=300s
           TF_CLI_ARGS_plan: -lock-timeout=300s
           TF_VAR_costcode: ((dataworks.costcode))
+
     terraform-bootstrap:
       task: terraform-bootstrap
       config:
@@ -29,6 +30,7 @@ meta:
             - -exc
             - |
               python bootstrap_terraform.py
+              sed -i '/^assume_role/ d' terraform.tfvars
               cp terraform.tf ../terraform-bootstrap
               cp terraform.tfvars ../terraform-bootstrap
           dir: aws-azkaban
@@ -38,6 +40,7 @@ meta:
           - name: terraform-bootstrap
       params:
         AWS_REGION: eu-west-2
+
     terraform-apply:
       task: terraform-apply
       .: (( inject meta.plan.terraform-common-config ))
@@ -47,19 +50,31 @@ meta:
           args:
             - -exc
             - |
+              exit_status=0
               cp ../terraform-bootstrap/terraform.tf .
               cp ../terraform-bootstrap/terraform.tfvars .
-              export TF_VAR_manage_mysql_user_lambda_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
+              export TF_VAR_manage_mysql_user_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
               terraform workspace show
               terraform init
-              terraform plan -out terraform.plan
-              terraform apply -auto-approve terraform.plan
+              terraform plan -detailed-exitcode -out terraform.plan || exit_status=$?
+              if [ $exit_status -eq 0 ]; then
+                  echo "No changes, not applying"
+              elif [ $exit_status -eq 1 ]; then
+                  echo "Terraform plan failed"
+                  exit 1
+              elif [ $exit_status -eq 2 ]; then
+                  terraform apply -auto-approve terraform.plan
+                  touch ../terraform-success/success
+              fi
           dir: aws-azkaban
-          
+
         inputs:
           - name: aws-azkaban
           - name: terraform-bootstrap
           - name: manage-mysql-user-release
+        outputs:
+          - name: terraform-success
+
     terraform-plan:
       task: terraform-plan
       .: (( inject meta.plan.terraform-common-config ))
@@ -69,19 +84,32 @@ meta:
           args:
             - -exc
             - |
+              if [ -f ../terraform-success/success ]; then
               cp ../terraform-bootstrap/terraform.tf .
               cp ../terraform-bootstrap/terraform.tfvars .
-              export TF_VAR_manage_mysql_user_lambda_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
+              export TF_VAR_manage_mysql_user_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
               terraform workspace show
               terraform init
-              terraform plan $DETAILED_EXITCODE
+              if [[ "${SKIP_EXIT_CODE}" == "true" ]]; then
+                  echo "Performing plan with no exit code check due to SKIP_EXIT_CODE of '${SKIP_EXIT_CODE}'"
+                  terraform plan
+                else
+                  echo "Performing plan with exit code check due to SKIP_EXIT_CODE of '${SKIP_EXIT_CODE}'"
+                  terraform plan -detailed-exitcode
+                fi
+              else
+                  echo "Nothing to plan exiting"
+                  exit 0 
+              fi
           dir: aws-azkaban
         inputs:
           - name: aws-azkaban
           - name: terraform-bootstrap
           - name: manage-mysql-user-release
+          - name: terraform-success
       params:
         DETAILED_EXITCODE: -detailed-exitcode
+
     terraform-output:
       task: terraform-output
       .: (( inject meta.plan.terraform-common-config ))
@@ -98,10 +126,11 @@ meta:
               terraform output --json > ../terraform-output/outputs.json
           dir: aws-azkaban
         inputs:
-            - name: aws-azkaban
-            - name: terraform-bootstrap
+          - name: aws-azkaban
+          - name: terraform-bootstrap
         outputs:
-            - name: terraform-output
+          - name: terraform-output
+
     rotate-mysql-master-password:
       task: rotate-mysql-master-password
       config:
@@ -127,6 +156,7 @@ meta:
           dir: secrets-management
         inputs:
           - name: secrets-management
+
     rotate-mysql-password:
       task: rotate-mysql-password
       config:
@@ -143,7 +173,7 @@ meta:
           AWS_DEFAULT_REGION: ((dataworks.aws_region))
           USERNAME: placeholder
           PARAM_NAME: placeholder
-          PRIVILEGES: ''
+          PRIVILEGES: ""
         run:
           path: sh
           args:
@@ -156,6 +186,7 @@ meta:
               cat manifest.json
               aws lambda invoke --function-name manage-azkaban-mysql-user --invocation-type RequestResponse --payload file://manifest.json --cli-connect-timeout 600 --cli-read-timeout 600 output.json
               cat output.json | jq -eC "if .errorMessage? then error(.errorMessage) else true end"
+
     rotate-azkaban-webserver-password:
       .: (( inject meta.plan.rotate-mysql-password ))
       config:
@@ -163,6 +194,7 @@ meta:
           USERNAME: "azkaban-webserver"
           PARAM_NAME: "azkaban-webserver-rds-password"
           PRIVILEGES: ALL
+
     rotate-azkaban-executor-password:
       .: (( inject meta.plan.rotate-mysql-password ))
       config:
@@ -170,7 +202,6 @@ meta:
           USERNAME: "azkaban-executor"
           PARAM_NAME: "azkaban-executor-rds-password"
           PRIVILEGES: ALL
-
 
     cycle-azkaban-containers:
       task: cycle-azkaban-containers
@@ -237,7 +268,6 @@ meta:
                 retries=$((retries + 1))
                 sleep 10;
               done;
-
 
     terraform-dataworks-analytical-frontend-service-bootstrap:
       task: terraform-dataworks-analytical-frontend-service-bootstrap
@@ -338,3 +368,25 @@ meta:
               RANDOM_PASSWORD=$(aws secretsmanager get-random-password --password-length 25 --no-include-space --exclude-punctuation --require-each-included-type | jq -r .RandomPassword)
               UPDATED_SECRET_BINARY="$(aws secretsmanager get-secret-value --secret-id /concourse/dataworks/workflow_manager --query SecretBinary --output text | base64 -d | jq -r --arg data "$RANDOM_PASSWORD" '.azkaban_password = $data')"
               aws secretsmanager put-secret-value --secret-id /concourse/dataworks/workflow_manager --secret-binary "${UPDATED_SECRET_BINARY}"
+
+    create-terraform-success:
+      task: create-terraform-success
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: hashicorp/terraform
+            version: ((dataworks.terraform_version))
+            tag: ((dataworks.terraform_version))
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              touch ../terraform-success/success
+          dir: aws-azkaban
+        inputs:
+          - name: aws-azkaban
+        outputs:
+          - name: terraform-success

@@ -4,6 +4,7 @@
 **/*.tfvars
 **/*.tfstate
 **/*.tfstate*
+**/*.zip
 
 terraform.tf
 aviator_pipeline.yml

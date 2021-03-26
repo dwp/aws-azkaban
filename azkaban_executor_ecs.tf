@@ -55,12 +55,14 @@ data "template_file" "azkaban_executor_definition" {
 }
 
 resource "aws_ecs_service" "azkaban_executor" {
-  name             = "azkaban-executor"
-  cluster          = data.terraform_remote_state.common.outputs.ecs_cluster_main.id
-  task_definition  = aws_ecs_task_definition.azkaban_executor.arn
-  platform_version = var.platform_version
-  desired_count    = 1
-  launch_type      = "FARGATE"
+  name                               = "azkaban-executor"
+  cluster                            = data.terraform_remote_state.common.outputs.ecs_cluster_main.id
+  task_definition                    = aws_ecs_task_definition.azkaban_executor.arn
+  platform_version                   = var.platform_version
+  desired_count                      = 1
+  launch_type                        = "FARGATE"
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent         = 200
 
   network_configuration {
     security_groups = [aws_security_group.azkaban_executor.id, aws_security_group.workflow_manager_common.id]
