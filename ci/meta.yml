@@ -368,3 +368,25 @@ meta:
               RANDOM_PASSWORD=$(aws secretsmanager get-random-password --password-length 25 --no-include-space --exclude-punctuation --require-each-included-type | jq -r .RandomPassword)
               UPDATED_SECRET_BINARY="$(aws secretsmanager get-secret-value --secret-id /concourse/dataworks/workflow_manager --query SecretBinary --output text | base64 -d | jq -r --arg data "$RANDOM_PASSWORD" '.azkaban_password = $data')"
               aws secretsmanager put-secret-value --secret-id /concourse/dataworks/workflow_manager --secret-binary "${UPDATED_SECRET_BINARY}"
+
+    create-terraform-success:
+      task: create-terraform-success
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: hashicorp/terraform
+            version: ((dataworks.terraform_version))
+            tag: ((dataworks.terraform_version))
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              touch ../terraform-success/success
+          dir: aws-azkaban
+        inputs:
+          - name: aws-azkaban
+        outputs:
+          - name: terraform-success

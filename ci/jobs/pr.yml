@@ -10,14 +10,21 @@ jobs:
         params:
           path: aws-azkaban-pr
           status: pending
+
+      - .: (( inject meta.plan.create-terraform-success ))
+        input_mapping:
+          aws-azkaban: aws-azkaban-pr
+
       - .: (( inject meta.plan.terraform-bootstrap ))
         input_mapping:
           aws-azkaban: aws-azkaban-pr
+
       - .: (( inject meta.plan.terraform-plan ))
         input_mapping:
           aws-azkaban: aws-azkaban-pr
         params:
-          DETAILED_EXITCODE: ''
+          DETAILED_EXITCODE: ""
+          SKIP_EXIT_CODE: "true"
         on_failure:
           put: aws-azkaban-pr
           params:
