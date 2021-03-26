@@ -53,7 +53,7 @@ meta:
               exit_status=0
               cp ../terraform-bootstrap/terraform.tf .
               cp ../terraform-bootstrap/terraform.tfvars .
-              export TF_VAR_manage_mysql_user_lambda_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
+              export TF_VAR_manage_mysql_user_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
               terraform workspace show
               terraform init
               terraform plan -detailed-exitcode -out terraform.plan || exit_status=$?
@@ -87,7 +87,7 @@ meta:
               if [ -f ../terraform-success/success ]; then
               cp ../terraform-bootstrap/terraform.tf .
               cp ../terraform-bootstrap/terraform.tfvars .
-              export TF_VAR_manage_mysql_user_lambda_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
+              export TF_VAR_manage_mysql_user_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
               terraform workspace show
               terraform init
               if [[ "${SKIP_EXIT_CODE}" == "true" ]]; then
