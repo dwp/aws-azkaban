@@ -1,8 +1,9 @@
 #!/bin/bash
 
-USERNAME=$1
-SCRIPT_NAME=$2
-SCRIPT_ARGUMENTS=${@:3}
+FLOW_ID=$1
+USERNAME=$2
+SCRIPT_NAME=$3
+SCRIPT_ARGUMENTS=${@:4}
 
 LOG_GROUP_NAME=/aws/emr/azkaban
 LOG_DIR=$(ls -td -- /var/log/hadoop/steps/* | head -n 1)
@@ -34,4 +35,4 @@ sudo amazon-cloudwatch-agent-ctl -a append-config -m ec2 -c file:$CONFIG_FILE -s
 # Synchronize external files on Batch EMR
 /home/hadoop/get_scripts.sh component/uc_repos /opt/emr/repos
 
-sudo su -c "$SCRIPT_NAME $SCRIPT_ARGUMENTS" - $USERNAME
+sudo su -c "AZK_ID=$FLOW_ID $SCRIPT_NAME $SCRIPT_ARGUMENTS" - $USERNAME
