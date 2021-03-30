@@ -3,8 +3,23 @@
 ## An AWS based azkaban platform
 
 ## Description
+AWS Azkaban deploys a containerised version of [Azkaban](https://azkaban.github.io/azkaban/docs/latest/) that backs onto an AWS EMR cluster along with the peripheral infrastructure required for functionality and security. The frontend of the service is handled by the webserver containers from which, tasks are sent to and then handled by the executors. An Aurora Serverless database is used to track active executors that can be called by the webservers when needed.
 
-## Local Development
+There are 3 lambdas in this repo that carry out administrative tasks:
+
+**1. azkaban-truncate-table:**
+Used to truncate the active executors table to ensure no inactive executors are called upon redeployment of the service.
+
+**2. azkaban-zip-uploader:** 
+Used to upload .zip files containing Azkaban projects from AWS S3. The lambda is triggered by a `*.success` file being uploaded to a dir in the given S3 and is used to safely access the Azkaban API from within the VPC.
+
+**3. manage-azkaban-mysql-user**
+Used to rotate the credentials used to access the Aurora Serverless DB that is mentioned above.
+
+The deployment is handles using Concourse and the pipeline code can be found in the `/ci` directory.
+
+## Development
+This repo contains only the IAC and lambdas and these can be developed as they are found. The Azkaban containers themselves can be found [here](https://github.com/dwp/dataworks-hardened-images) along with further documentation on them. The containers are pushed to ECR and called by name by the infrastructure in this repo.
 
 ### Requirements
 
