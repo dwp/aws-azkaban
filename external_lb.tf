@@ -25,6 +25,7 @@ resource "aws_lb_target_group" "azkaban_external_webserver" {
   port     = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_webserver_port
   protocol = "HTTPS"
   vpc_id   = module.workflow_manager_vpc.vpc.id
+  target_type = "ip"
 
   health_check {
     protocol = "HTTPS"
