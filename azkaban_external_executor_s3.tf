@@ -1,8 +1,8 @@
 data template_file "azkaban_external_executor_properties" {
   template = file("${path.module}/config/azkaban_external/exec-server/azkaban.properties")
   vars = {
-    db_host                             = aws_rds_cluster.azkaban_database.endpoint
-    db_port                             = aws_rds_cluster.azkaban_database.port
+    db_host                             = aws_rds_cluster.azkaban_external_database.endpoint
+    db_port                             = aws_rds_cluster.azkaban_external_database.port
     azkaban_external_webserver_hostname = "azkaban-external-webserver.${local.service_discovery_fqdn}"
     environment                         = local.environment
   }
@@ -14,8 +14,8 @@ data template_file "azkaban_external_executor_internal" {
     azkaban_external_executor_port      = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_executor_port
     azkaban_external_webserver_hostname = "azkaban-external-webserver.${local.service_discovery_fqdn}"
     azkaban_external_webserver_port     = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_webserver_port
-    admin_username                      = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).azkaban_username
-    admin_password                      = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).azkaban_password
+    admin_username                      = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).azkaban_external_username
+    admin_password                      = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).azkaban_external_password
   }
 }
 

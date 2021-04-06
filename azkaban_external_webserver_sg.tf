@@ -9,14 +9,14 @@ resource "aws_security_group" "azkaban_external_webserver" {
   }
 }
 
-resource "aws_security_group_rule" "allow_azkaban_external_webserver_egress_azkaban_database" {
-  description              = "Allows azkaban webserver to access azkaban database"
+resource "aws_security_group_rule" "allow_azkaban_external_webserver_egress_azkaban_external_database" {
+  description              = "Allows azkaban webserver to access azkaban external database"
   type                     = "egress"
   protocol                 = "tcp"
-  from_port                = aws_rds_cluster.azkaban_database.port
-  to_port                  = aws_rds_cluster.azkaban_database.port
+  from_port                = aws_rds_cluster.azkaban_external_database.port
+  to_port                  = aws_rds_cluster.azkaban_external_database.port
   security_group_id        = aws_security_group.azkaban_external_webserver.id
-  source_security_group_id = aws_security_group.azkaban_database.id
+  source_security_group_id = aws_security_group.azkaban_external_database.id
 }
 
 resource "aws_security_group_rule" "allow_azkaban_external_webserver_egress_azkaban_external_executor" {
