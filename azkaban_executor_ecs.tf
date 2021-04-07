@@ -14,6 +14,7 @@ data "template_file" "azkaban_executor_definition" {
   vars = {
     name          = "azkaban-executor"
     group_name    = "azkaban"
+    group_value    = "azkaban"
     cpu           = var.fargate_cpu
     image_url     = data.terraform_remote_state.management.outputs.ecr_azkaban_executor_url
     memory        = var.fargate_memory

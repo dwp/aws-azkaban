@@ -14,6 +14,7 @@ data "template_file" "azkaban_webserver_definition" {
   vars = {
     name          = "azkaban-webserver"
     group_name    = "azkaban"
+    group_value    = "azkaban"
     cpu           = var.fargate_cpu
     image_url     = data.terraform_remote_state.management.outputs.ecr_azkaban_webserver_url
     memory        = var.fargate_memory
@@ -43,6 +44,7 @@ data "template_file" "azkaban_webserver_jmx_exporter_definition" {
   vars = {
     name          = "azkaban-webserver-jmx-exporter"
     group_name    = "jmx_exporter"
+    group_value    = "jmx_exporter"
     cpu           = var.fargate_cpu
     image_url     = format("%s:%s", data.terraform_remote_state.management.outputs.ecr_jmx_exporter_url, var.image_versions.jmx-exporter)
     memory        = var.fargate_memory
