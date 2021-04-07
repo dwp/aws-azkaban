@@ -70,8 +70,8 @@ resource "aws_security_group_rule" "allow_external_loadbalancer_ingress_azkaban_
   description       = "Allow external loadbalancer to access azkaban external webserver user interface"
   type              = "ingress"
   protocol          = "tcp"
-  from_port         = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_webserver_port
-  to_port           = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_webserver_port
+  from_port         = 443
+  to_port           = 443
   security_group_id = aws_security_group.azkaban_external_loadbalancer.id
   cidr_blocks       = var.whitelist_cidr_blocks
 }
