@@ -13,7 +13,7 @@ data "template_file" "azkaban_external_webserver_definition" {
   template = file("${path.module}/container_definition.tpl")
   vars = {
     name          = "azkaban-external-webserver"
-    group_name    = "azkaban"
+    group_name    = "azkaban_external"
     cpu           = var.fargate_cpu
     image_url     = data.terraform_remote_state.management.outputs.ecr_azkaban_webserver_url
     memory        = var.fargate_memory
