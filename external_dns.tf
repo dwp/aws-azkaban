@@ -1,0 +1,49 @@
+resource "aws_route53_record" "azkaban_external" {
+  provider = aws.management-dns
+
+  name    = local.fqdn
+  type    = "A"
+  zone_id = data.aws_route53_zone.main.zone_id
+
+  alias {
+    evaluate_target_health = false
+    name                   = aws_lb.azkaban_external.dns_name
+    zone_id                = aws_lb.azkaban_external.zone_id
+  }
+}
+
+provider "aws" {
+  alias  = "management-dns"
+  region = var.region
+
+  assume_role {
+    role_arn = var.role_arn.management-dns
+  }
+}
+
+locals {
+  root_dns_name = data.terraform_remote_state.aws_analytical_environment_infra.outputs.root_dns_name
+  dns_zone = data.terraform_remote_state.aws_analytical_environment_infra.outputs.parent_domain_name
+  fqdn = format("azkaban-external.%s.", local.root_dns_name)
+}
+
+data "aws_route53_zone" "main" {
+  provider = aws.management-dns
+
+  name = local.dns_zone
+}
+
+resource "aws_acm_certificate" "azkaban_external_loadbalancer" {
+  domain_name       = local.fqdn
+  validation_method = "DNS"
+
+  options {
+    certificate_transparency_logging_preference = "ENABLED"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = merge(local.common_tags, { Name = "azkaban-external-lb" })
+}

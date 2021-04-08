@@ -12,7 +12,7 @@ resource "aws_lb_listener" "azkaban_external" {
   port              = var.https_port
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
-  certificate_arn   = aws_acm_certificate.azkaban_loadbalancer.arn
+  certificate_arn   = aws_acm_certificate.azkaban_external_loadbalancer.arn
 
   default_action {
     type             = "forward"
