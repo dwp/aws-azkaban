@@ -3,7 +3,7 @@
 ## An AWS based azkaban platform
 
 ## Description
-AWS Azkaban deploys a containerised version of [Azkaban](https://azkaban.github.io/azkaban/docs/latest/) that backs onto an AWS EMR cluster along with the peripheral infrastructure required for functionality and security. The frontend of the service is handled by the webserver containers from which, tasks are sent to and then handled by the executors. An Aurora Serverless database is used to track active executors that can be called by the webservers when needed.
+AWS Azkaban deploys two containerised versions of [Azkaban](https://azkaban.github.io/azkaban/docs/latest/) that both back onto an AWS EMR cluster along with the peripheral infrastructure required for functionality and security. One of the versions is for users through the Analytical Env and the other for use by admins and engineers (referred to as azkaban_external), that is accessible directly through a URL. The frontend of the service is handled by the webserver containers from which, tasks are sent to and then handled by the executors. An Aurora Serverless database is used to track active executors that can be called by the webservers when needed.
 
 There are 3 lambdas in this repo that carry out administrative tasks:
 
