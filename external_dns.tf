@@ -17,14 +17,14 @@ provider "aws" {
   region = var.region
 
   assume_role {
-    role_arn = var.role_arn.management-dns
+    role_arn = "arn:aws:iam::${local.account[local.management_account[local.environment]]}:role/${var.assume_role}"
   }
 }
 
 locals {
   root_dns_name = data.terraform_remote_state.aws_analytical_environment_infra.outputs.root_dns_name
-  dns_zone = data.terraform_remote_state.aws_analytical_environment_infra.outputs.parent_domain_name
-  fqdn = format("azkaban-external.%s.", local.root_dns_name)
+  dns_zone      = data.terraform_remote_state.aws_analytical_environment_infra.outputs.parent_domain_name
+  fqdn          = format("azkaban-external.%s.", local.root_dns_name)
 }
 
 data "aws_route53_zone" "main" {
@@ -61,6 +61,6 @@ resource "aws_route53_record" "record_acm_verify" {
 }
 
 resource "aws_acm_certificate_validation" "cert" {
-  certificate_arn         = "${aws_acm_certificate.azkaban_external_loadbalancer.arn}"
-  validation_record_fqdns = ["${aws_route53_record.record_acm_verify.fqdn}"]
+  certificate_arn         = aws_acm_certificate.azkaban_external_loadbalancer.arn
+  validation_record_fqdns = [aws_route53_record.record_acm_verify.fqdn]
 }

@@ -150,7 +150,7 @@ provider "aws" {
   alias = "management"
 
   region  = "eu-west-2"
-  version = ">= 2.66.0"
+  version = "~> 2.70.0"
 
   assume_role {
     role_arn = "arn:aws:iam::${local.account[local.management_account[local.environment]]}:role/${var.assume_role}"
