@@ -43,7 +43,7 @@ resource "aws_rds_cluster" "azkaban_external_database" {
 
   depends_on = [aws_cloudwatch_log_group.azkaban_external_database_error, aws_cloudwatch_log_group.azkaban_external_database_general]
 
-  tags = merge(local.common_tags, { Name = "azkaban-database" })
+  tags = merge(local.common_tags, { Name = "azkaban-external-database" })
 }
 
 resource "aws_db_subnet_group" "azkaban_external_database" {

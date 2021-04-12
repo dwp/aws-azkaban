@@ -14,7 +14,7 @@ data template_file "azkaban_external_executor_internal" {
     azkaban_external_executor_port      = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_executor_port
     azkaban_external_webserver_hostname = "azkaban-external-webserver.${local.service_discovery_fqdn}"
     azkaban_external_webserver_port     = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_webserver_port
-    admin_username                      = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).azkaban_external_username
+    admin_username                      = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).db_username
     admin_password                      = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).azkaban_external_password
   }
 }
@@ -22,7 +22,7 @@ data template_file "azkaban_external_executor_internal" {
 resource "aws_s3_bucket_object" "azkaban_external_executor_internal" {
   bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
   key        = "${local.name}/azkaban_external/exec-server/internal-start-executor.sh"
-  content    = data.template_file.azkaban_executor_internal.rendered
+  content    = data.template_file.azkaban_external_executor_internal.rendered
   kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
 }
 
