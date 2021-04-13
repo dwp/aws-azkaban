@@ -11,11 +11,11 @@ data template_file "azkaban_external_executor_properties" {
 data template_file "azkaban_external_executor_internal" {
   template = file("${path.module}/config/azkaban_external/exec-server/internal-start-executor.sh")
   vars = {
-    azkaban_external_executor_port      = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_executor_port
+    azkaban_external_executor_port      = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_executor_port
     azkaban_external_webserver_hostname = "azkaban-external-webserver.${local.service_discovery_fqdn}"
-    azkaban_external_webserver_port     = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_webserver_port
-    admin_username                      = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).db_username
-    admin_password                      = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).azkaban_external_password
+    azkaban_external_webserver_port     = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_webserver_port
+    admin_username                      = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).azkaban_username
+    admin_password                      = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).azkaban_password
   }
 }
 

@@ -14,12 +14,12 @@ data "template_file" "azkaban_external_webserver_definition" {
   vars = {
     name          = "azkaban-external-webserver"
     group_name    = "azkaban"
-    group_value    = "azkaban_external"
+    group_value   = "azkaban_external"
     cpu           = var.fargate_cpu
     image_url     = data.terraform_remote_state.management.outputs.ecr_azkaban_webserver_url
     memory        = var.fargate_memory
     user          = "root"
-    ports         = jsonencode([jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_webserver_port])
+    ports         = jsonencode([jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_webserver_port])
     log_group     = aws_cloudwatch_log_group.workflow_manager.name
     region        = var.region
     config_bucket = data.terraform_remote_state.common.outputs.config_bucket.id
@@ -33,7 +33,7 @@ data "template_file" "azkaban_external_webserver_definition" {
       },
       {
         "name" : "KEYSTORE_DATA",
-        "value" : jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).keystore_data
+        "value" : jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).keystore_data
       }
     ])
   }
@@ -57,7 +57,7 @@ resource "aws_ecs_service" "azkaban_external_webserver" {
   load_balancer {
     target_group_arn = aws_lb_target_group.azkaban_external_webserver.arn
     container_name   = "azkaban-external-webserver"
-    container_port   = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_webserver_port
+    container_port   = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_webserver_port
   }
 
   service_registries {

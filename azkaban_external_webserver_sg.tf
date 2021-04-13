@@ -23,8 +23,8 @@ resource "aws_security_group_rule" "allow_azkaban_external_webserver_egress_azka
   description              = "Allows azkaban external webserver to access azkaban external executor"
   type                     = "egress"
   protocol                 = "tcp"
-  from_port                = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_executor_port
-  to_port                  = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_executor_port
+  from_port                = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_executor_port
+  to_port                  = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_executor_port
   security_group_id        = aws_security_group.azkaban_external_webserver.id
   source_security_group_id = aws_security_group.azkaban_external_executor.id
 }
@@ -33,8 +33,8 @@ resource "aws_security_group_rule" "allow_azkaban_external_webserver_ingress_azk
   description              = "Allows azkaban webserver to access azkaban executor"
   type                     = "ingress"
   protocol                 = "tcp"
-  from_port                = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_webserver_port
-  to_port                  = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_webserver_port
+  from_port                = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_webserver_port
+  to_port                  = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_webserver_port
   security_group_id        = aws_security_group.azkaban_external_webserver.id
   source_security_group_id = aws_security_group.azkaban_external_executor.id
 }
@@ -43,8 +43,8 @@ resource "aws_security_group_rule" "allow_azkaban_external_webserver_ingress_ext
   description              = "Allows loadbalancer to access azkaban webserver"
   type                     = "ingress"
   protocol                 = "tcp"
-  from_port                = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_webserver_port
-  to_port                  = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_webserver_port
+  from_port                = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_webserver_port
+  to_port                  = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_webserver_port
   security_group_id        = aws_security_group.azkaban_external_webserver.id
   source_security_group_id = aws_security_group.azkaban_external_loadbalancer.id
 }
@@ -53,8 +53,8 @@ resource "aws_security_group_rule" "allow_azkaban_external_webserver_ingress_zip
   description              = "Allows zip_uploader lambda to access azkaban webserver api endpoint"
   type                     = "ingress"
   protocol                 = "tcp"
-  from_port                = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_webserver_port
-  to_port                  = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_webserver_port
+  from_port                = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_webserver_port
+  to_port                  = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_webserver_port
   security_group_id        = aws_security_group.azkaban_external_webserver.id
   source_security_group_id = aws_security_group.azkaban_zip_uploader.id
 }

@@ -6,6 +6,14 @@ data "aws_secretsmanager_secret_version" "workflow_manager" {
   secret_id = data.aws_secretsmanager_secret.workflow_manager.id
 }
 
+data "aws_secretsmanager_secret" "azkaban_external" {
+  name = "/concourse/dataworks/workflow_manager/azkaban_external"
+}
+
+data "aws_secretsmanager_secret_version" "azkaban_external" {
+  secret_id = data.aws_secretsmanager_secret.azkaban_external.id
+}
+
 variable "assume_role" {
   type        = string
   default     = "ci"

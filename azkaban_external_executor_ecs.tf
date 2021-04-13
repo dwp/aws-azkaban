@@ -19,7 +19,7 @@ data "template_file" "azkaban_external_executor_definition" {
     image_url     = data.terraform_remote_state.management.outputs.ecr_azkaban_executor_url
     memory        = var.fargate_memory
     user          = "root"
-    ports         = jsonencode([jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_external_executor_port])
+    ports         = jsonencode([jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_executor_port])
     log_group     = aws_cloudwatch_log_group.workflow_manager.name
     region        = var.region
     config_bucket = data.terraform_remote_state.common.outputs.config_bucket.id
