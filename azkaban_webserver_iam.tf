@@ -95,7 +95,9 @@ data "aws_iam_policy_document" "azkaban_webserver_read_secret" {
 
     resources = [
       data.aws_secretsmanager_secret.workflow_secret.arn,
-      aws_secretsmanager_secret.azkaban_webserver_password.arn
+      aws_secretsmanager_secret.azkaban_webserver_password.arn,
+      data.aws_secretsmanager_secret.azkaban_external.arn,
+      aws_secretsmanager_secret.azkaban_external_webserver_password.arn
     ]
   }
 }
