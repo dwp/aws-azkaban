@@ -1,0 +1,35 @@
+---
+startDelaySeconds: 0
+jmxUrl: service:jmx:rmi:///jndi/rmi://127.0.0.1:9998/jmxrmi
+ssl: false
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+whitelistObjectNames:
+  - "azkaban.execapp.jmx.JmxFlowRunnerManager:*"
+  - "azkaban.execapp.jmx.JmxJobCallback:*"
+  - "azkaban.execapp.jmx.JmxJobMBeanManager:*"
+  - "azkaban.jmx.JmxExecutorManager:*"
+  - "azkaban.jmx.JmxJettyServer:*"
+  - "azkaban.jmx.JmxTriggerManager:*"
+rules:
+  - pattern: "azkaban\\.execapp\\.jmx\\.(.+?)<name=(.+?)><>(.+?): (.+)"
+    name: azkaban_exec_$1_$2_$3
+    labels:
+      clazz: $1
+      mbean: $2
+      attr: $3
+    attrNameSnakeCase: true
+  - pattern: "azkaban\\.jmx\\.(.+?)<name=(.+?), key=(.+?)><>(.+?): (.+)"
+    name: azkaban_web_$1_$2_$4
+    labels:
+      clazz: $1
+      mbean: $2
+      attr: $4
+    attrNameSnakeCase: true
+  - pattern: "azkaban\\.jmx\\.(.+?)<name=(.+?)><>(.+?): (.+)"
+    name: azkaban_web_$1_$2_$3
+    labels:
+      clazz: $1
+      mbean: $2
+      attr: $3
+    attrNameSnakeCase: true
