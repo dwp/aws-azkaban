@@ -33,6 +33,7 @@ data "template_file" "azkaban_external_webserver_definition" {
       },
       {
         "name" : "KEYSTORE_DATA",
+//        "value" : jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).keystore_data
         "value" : jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).keystore_data
       }
     ])

@@ -1,5 +1,0 @@
-nodes:
- - name: step_1
-   type: command
-   config:
-     command: whoami

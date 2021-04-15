@@ -26,7 +26,7 @@ resource "aws_rds_cluster" "azkaban_external_database" {
 //  master_username = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).db_username
 //  master_password = "password_already_rotated_${substr(random_id.password_salt_2.hex, 0, 16)}"
   master_username = "master"
-  master_password = "azkabans"
+  master_password = "azkaban_2_master"
 
   apply_immediately            = true
   backup_retention_period      = 7
