@@ -43,6 +43,8 @@ resource "aws_lb_target_group" "azkaban_external_webserver" {
     create_before_destroy = true
   }
 
+  depends_on = [aws_lb.azkaban_external]
+
   tags = merge(local.common_tags, { Name = "azkaban-external-webserver" })
 }
 
