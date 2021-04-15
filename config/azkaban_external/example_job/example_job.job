@@ -1,0 +1,12 @@
+nodes:
+ - name: step_1
+   type: emr
+   config:
+     step: /test.sh
+
+ - name: step_2
+   type: command
+   dependsOn:
+     - step_1
+   config:
+     command: whoami
