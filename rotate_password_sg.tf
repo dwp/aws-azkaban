@@ -18,14 +18,3 @@ resource "aws_security_group_rule" "allow_rotate_password_lambda_egress_azkaban_
   security_group_id        = aws_security_group.azkaban_rotate_password.id
   source_security_group_id = aws_security_group.azkaban_database.id
 }
-
-resource "aws_security_group_rule" "allow_rotate_password_lambda_egress_azkaban_external_database" {
-  description              = "Allows rotate password lambda to access azkaban external database"
-  type                     = "egress"
-  protocol                 = "tcp"
-  from_port                = aws_rds_cluster.azkaban_external_database.port
-  to_port                  = aws_rds_cluster.azkaban_external_database.port
-  security_group_id        = aws_security_group.azkaban_rotate_password.id
-  source_security_group_id = aws_security_group.azkaban_external_database.id
-}
-
