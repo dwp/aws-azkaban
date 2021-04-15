@@ -16,16 +16,17 @@ resource "aws_cloudwatch_log_group" "azkaban_external_database_general" {
 
 resource "aws_rds_cluster" "azkaban_external_database" {
   cluster_identifier   = "azkaban-external-database"
-  database_name        = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).db_name
+//  database_name        = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).db_name
+  database_name        = "external_azkaban_db"
   engine               = "aurora-mysql"
   engine_version       = "5.7.mysql_aurora.2.07.1"
   engine_mode          = "serverless"
   enable_http_endpoint = true
 
-  master_username = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).azkaban_username
-  master_password = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).azkaban_password
-  #### TODO: fix pw rotation ####
-  #master_password = "password_already_rotated_${substr(random_id.password_salt_2.hex, 0, 16)}"
+//  master_username = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).db_username
+//  master_password = "password_already_rotated_${substr(random_id.password_salt_2.hex, 0, 16)}"
+  master_username = "master"
+  master_password = "azkaban_2_master"
 
   apply_immediately            = true
   backup_retention_period      = 7
