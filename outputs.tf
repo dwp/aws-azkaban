@@ -20,6 +20,10 @@ output "truncate_table_lambda" {
   value = aws_lambda_function.truncate_table
 }
 
+output "truncate_external_table_lambda" {
+  value = aws_lambda_function.truncate_external_table
+}
+
 output "aws_route_table" {
   value = {
     workflow_manager_private = aws_route_table.workflow_manager_private

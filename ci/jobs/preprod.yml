@@ -71,3 +71,13 @@ jobs:
           params:
             AWS_ACC: ((aws_account.preprod))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.preprod)):role/ci
+            SECRET_ID: "/concourse/dataworks/workflow_manager"
+
+  - name: rotate-azkaban-external-admin-password-preprod
+    plan:
+      - .: (( inject meta.plan.rotate-azkaban-admin-password ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.preprod))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.preprod)):role/ci
+            SECRET_ID: "/concourse/dataworks/workflow_manager/azkaban_external"

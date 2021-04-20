@@ -40,7 +40,10 @@ data "aws_iam_policy_document" "lambda_manage_mysql_user" {
     resources = [
       aws_secretsmanager_secret.azkaban_master_password.arn,
       aws_secretsmanager_secret.azkaban_webserver_password.arn,
-      aws_secretsmanager_secret.azkaban_executor_password.arn
+      aws_secretsmanager_secret.azkaban_executor_password.arn,
+      aws_secretsmanager_secret.azkaban_external_master_password.arn,
+      aws_secretsmanager_secret.azkaban_external_webserver_password.arn,
+      aws_secretsmanager_secret.azkaban_external_executor_password.arn,
     ]
   }
 }
