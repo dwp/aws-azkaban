@@ -12,6 +12,7 @@ groups:
   - name: admin-development
     jobs:
       - cycle-azkaban-containers-development
+      - cycle-external-azkaban-containers-development
       - rotate-mysql-password-master-development
       - rotate-azkaban-executor-password-development
       - rotate-azkaban-webserver-password-development
