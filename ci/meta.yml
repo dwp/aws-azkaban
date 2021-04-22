@@ -173,6 +173,7 @@ meta:
           AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
           AWS_REGION: ((dataworks.aws_region))
           AWS_DEFAULT_REGION: ((dataworks.aws_region))
+          LAMBDA_NAME: ((LAMBDA_NAME))
           USERNAME: placeholder
           PARAM_NAME: placeholder
           PRIVILEGES: ""
@@ -186,7 +187,7 @@ meta:
               jq -n --arg Username "$USERNAME" --arg Paramname "$PARAM_NAME" --arg Privileges "$PRIVILEGES" '{mysql_user_username: $Username, mysql_user_password_secret_name: $Paramname, privileges: $Privileges}' > manifest.json
               echo "Manifest is:"
               cat manifest.json
-              aws lambda invoke --function-name manage-azkaban-mysql-user --invocation-type RequestResponse --payload file://manifest.json --cli-connect-timeout 600 --cli-read-timeout 600 output.json
+              aws lambda invoke --function-name $LAMBDA_NAME --invocation-type RequestResponse --payload file://manifest.json --cli-connect-timeout 600 --cli-read-timeout 600 output.json
               cat output.json | jq -eC "if .errorMessage? then error(.errorMessage) else true end"
 
     rotate-azkaban-webserver-password:
@@ -194,7 +195,8 @@ meta:
       config:
         params:
           USERNAME: "azkaban-webserver"
-          PARAM_NAME: "azkaban-webserver-rds-password"
+          PARAM_NAME: ((PARAM_NAME))
+          LAMBDA_NAME: ((LAMBDA_NAME))
           PRIVILEGES: ALL
 
     rotate-azkaban-executor-password:
