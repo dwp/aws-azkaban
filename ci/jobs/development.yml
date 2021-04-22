@@ -91,6 +91,28 @@ jobs:
           params:
             AWS_ACC: ((aws_account.development))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
+            EXECUTOR_NAME: "azkaban-executor"
+            WEBSERVER_NAME: "azkaban-webserver"
+            LAMBDA_NAME: "truncate_table_lambda"
+        ensure:
+          .: (( inject meta.plan.terraform-apply ))
+
+  - name: cycle-external-azkaban-containers-development
+    plan:
+      - get: aws-azkaban
+        trigger: false
+      - get: manage-mysql-user-release
+        trigger: false
+      - .: (( inject meta.plan.terraform-bootstrap ))
+      - .: (( inject meta.plan.terraform-output ))
+      - .: (( inject meta.plan.cycle-azkaban-containers ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.development))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
+            EXECUTOR_NAME: "azkaban-external-executor"
+            WEBSERVER_NAME: "azkaban-external-webserver"
+            LAMBDA_NAME: "truncate_external_table_lambda"
         ensure:
           .: (( inject meta.plan.terraform-apply ))
 

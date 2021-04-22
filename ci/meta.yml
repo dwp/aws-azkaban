@@ -221,6 +221,9 @@ meta:
         params:
           AWS_DEFAULT_REGION: ((dataworks.aws_region))
           CLUSTER: main
+          EXECUTOR_NAME: ((EXECUTOR_NAME))
+          WEBSERVER_NAME: ((WEBSERVER_NAME))
+          LAMBDA_NAME: ((LAMBDA_NAME))
         inputs:
           - name: terraform-output
         run:
@@ -231,12 +234,12 @@ meta:
               source /assume-role
               MAX_RETRIES=60
 
-              TRUNCATE_TABLE_FUNCTION_NAME=$(jq -r '.truncate_table_lambda.value.function_name' < ./terraform-output/outputs.json)
+              TRUNCATE_TABLE_FUNCTION_NAME=$(jq -r ".$LAMBDA_NAME.value.function_name" < ./terraform-output/outputs.json)
 
-              aws ecs update-service --cluster $CLUSTER --service azkaban-executor --desired-count 0 > /dev/null
-              aws ecs update-service --cluster $CLUSTER --service azkaban-webserver --desired-count 0 > /dev/null
-              executor_running_count=$(aws ecs describe-services --cluster $CLUSTER --services azkaban-executor | jq -r '.services[0].runningCount')
-              webserver_running_count=$(aws ecs describe-services --cluster $CLUSTER --services azkaban-webserver | jq -r '.services[0].runningCount')
+              aws ecs update-service --cluster $CLUSTER --service $EXECUTOR_NAME --desired-count 0 > /dev/null
+              aws ecs update-service --cluster $CLUSTER --service $WEBSERVER_NAME --desired-count 0 > /dev/null
+              executor_running_count=$(aws ecs describe-services --cluster $CLUSTER --services $EXECUTOR_NAME | jq -r '.services[0].runningCount')
+              webserver_running_count=$(aws ecs describe-services --cluster $CLUSTER --services $WEBSERVER_NAME | jq -r '.services[0].runningCount')
 
               retries=0
               while [ $executor_running_count -ne 0 ] || [ $webserver_running_count -ne 0 ]; do
@@ -245,8 +248,8 @@ meta:
                   exit 1;
                 fi
 
-                executor_running_count=$(aws ecs describe-services --cluster $CLUSTER --services azkaban-executor | jq -r '.services[0].runningCount')
-                webserver_running_count=$(aws ecs describe-services --cluster $CLUSTER --services azkaban-webserver | jq -r '.services[0].runningCount')
+                executor_running_count=$(aws ecs describe-services --cluster $CLUSTER --services $EXECUTOR_NAME | jq -r '.services[0].runningCount')
+                webserver_running_count=$(aws ecs describe-services --cluster $CLUSTER --services $WEBSERVER_NAME | jq -r '.services[0].runningCount')
 
                 retries=$((retries + 1))
                 sleep 10;
@@ -260,7 +263,7 @@ meta:
 
               jq -eC "if .errorMessage? then error(.errorMessage) else true end" < output.json
 
-              aws ecs update-service --cluster $CLUSTER --service azkaban-executor --desired-count 1 > /dev/null
+              aws ecs update-service --cluster $CLUSTER --service $EXECUTOR_NAME --desired-count 1 > /dev/null
               retries=0
               while [ "$executor_running_count" -eq 0 ]; do
                 if [ "$retries" -eq $MAX_RETRIES ]; then
@@ -268,7 +271,7 @@ meta:
                   exit 1;
                 fi
 
-                executor_running_count=$(aws ecs describe-services --cluster $CLUSTER --services azkaban-executor | jq -r '.services[0].runningCount')
+                executor_running_count=$(aws ecs describe-services --cluster $CLUSTER --services $EXECUTOR_NAME | jq -r '.services[0].runningCount')
 
                 retries=$((retries + 1))
                 sleep 10;
