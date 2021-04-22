@@ -20,7 +20,7 @@ jobs:
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.production)):role/ci
             SECRET_ID: "/concourse/dataworks/workflow_manager"
 
-  - name: update-keystore-data-production
+  - name: update-keystore-data-external-production
     max_in_flight: 1
     plan:
       - get: dataworks-analytical-frontend-service

@@ -14,10 +14,8 @@ data template_file "azkaban_external_executor_internal" {
     azkaban_external_executor_port      = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_executor_port
     azkaban_external_webserver_hostname = "azkaban-external-webserver.${local.service_discovery_fqdn}"
     azkaban_external_webserver_port     = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_webserver_port
-    admin_username                      = "azkaban_2"
-    admin_password                      = "azkaban_2"
-//    admin_username                      = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).azkaban_username
-//    admin_password                      = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).azkaban_password
+    admin_username                      = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).azkaban_username
+    admin_password                      = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).azkaban_password
   }
 }
 
