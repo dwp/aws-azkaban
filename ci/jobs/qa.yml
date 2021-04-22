@@ -15,6 +15,7 @@ jobs:
       - .: (( inject meta.plan.terraform-plan ))
         params:
           TF_WORKSPACE: 'qa'
+
   - name: rotate-mysql-password-master-qa
     plan:
       - get: secrets-management
@@ -24,6 +25,22 @@ jobs:
           params:
             AWS_ACC: ((aws_account.qa))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+            DB_NAME: "azkaban-database"
+            SECRET_ID: "azkaban-master-rds-password"
+          inputs:
+            - name: secrets-management
+
+  - name: rotate-mysql-password-external-master-qa
+    plan:
+      - get: secrets-management
+        trigger: false
+      - .: (( inject meta.plan.rotate-mysql-master-password ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.qa))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+            DB_NAME: "azkaban-external-database"
+            SECRET_ID: "azkaban-external-master-rds-password"
           inputs:
             - name: secrets-management
 

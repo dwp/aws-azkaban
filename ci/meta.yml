@@ -144,6 +144,8 @@ meta:
           AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
           AWS_REGION: ((dataworks.aws_region))
           AWS_DEFAULT_REGION: ((dataworks.aws_region))
+          DB_NAME: ((DB_NAME))
+          SECRET_ID: ((SECRET_ID))
         run:
           path: sh
           args:
@@ -152,7 +154,7 @@ meta:
               source /assume-role
               set +x
               pip install boto3
-              ./rotate_rds_master_user_password_update_secrets_manager.py azkaban-database azkaban-master-rds-password
+              ./rotate_rds_master_user_password_update_secrets_manager.py $DB_NAME $SECRET_ID
           dir: secrets-management
         inputs:
           - name: secrets-management
