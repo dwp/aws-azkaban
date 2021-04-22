@@ -19,6 +19,7 @@ groups:
       - rotate-azkaban-external-admin-password-development
       - rotate-mysql-password-external-master-development
       - rotate-azkaban-external-webserver-password-development
+      - rotate-azkaban-external-executor-password-development
   - name: admin-qa
     jobs:
       - rotate-mysql-password-master-qa
@@ -29,6 +30,7 @@ groups:
       - rotate-azkaban-external-admin-password-qa
       - rotate-mysql-password-external-master-qa
       - rotate-azkaban-external-webserver-password-qa
+      - rotate-azkaban-external-executor-password-qa
   - name: admin-integration
     jobs:
       - rotate-mysql-password-master-integration
@@ -39,6 +41,7 @@ groups:
       - rotate-azkaban-external-admin-password-integration
       - rotate-mysql-password-external-master-integration
       - rotate-azkaban-external-webserver-password-integration
+      - rotate-azkaban-external-executor-password-integration
   - name: admin-preprod
     jobs:
       - rotate-mysql-password-master-preprod
@@ -49,6 +52,7 @@ groups:
       - rotate-azkaban-external-admin-password-preprod
       - rotate-mysql-password-external-master-preprod
       - rotate-azkaban-external-webserver-password-preprod
+      - rotate-azkaban-external-executor-password-preprod
   - name: admin-production
     jobs:
       - rotate-mysql-password-master-production
@@ -59,6 +63,7 @@ groups:
       - rotate-azkaban-external-admin-password-production
       - rotate-mysql-password-external-master-production
       - rotate-azkaban-external-webserver-password-production
+      - rotate-azkaban-external-executor-password-production
   - name: update-keystore-data
     jobs:
       - update-keystore-data-development

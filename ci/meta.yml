@@ -204,7 +204,8 @@ meta:
       config:
         params:
           USERNAME: "azkaban-executor"
-          PARAM_NAME: "azkaban-executor-rds-password"
+          PARAM_NAME: ((PARAM_NAME))
+          LAMBDA_NAME: ((LAMBDA_NAME))
           PRIVILEGES: ALL
 
     cycle-azkaban-containers:

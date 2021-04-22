@@ -71,6 +71,18 @@ jobs:
           params:
             AWS_ACC: ((aws_account.integration))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.integration)):role/ci
+            PARAM_NAME: "azkaban-executor-rds-password"
+            LAMBDA_NAME: "manage-azkaban-mysql-user"
+
+  - name: rotate-azkaban-external-executor-password-integration
+    plan:
+      - .: (( inject meta.plan.rotate-azkaban-executor-password ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.integration))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.integration)):role/ci
+            PARAM_NAME: "azkaban-external-executor-rds-password"
+            LAMBDA_NAME: "manage-azkaban-external-mysql-user"
 
   - name: cycle-azkaban-containers-integration
     plan:
