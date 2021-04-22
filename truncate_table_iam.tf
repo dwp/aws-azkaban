@@ -36,6 +36,7 @@ data "aws_iam_policy_document" "lambda_truncate_table" {
     ]
     resources = [
       aws_secretsmanager_secret.azkaban_executor_password.arn,
+      aws_secretsmanager_secret.azkaban_external_executor_password.arn,
     ]
   }
 
@@ -43,7 +44,10 @@ data "aws_iam_policy_document" "lambda_truncate_table" {
     sid       = "AllowRdsDataExecute"
     effect    = "Allow"
     actions   = ["rds-data:ExecuteStatement"]
-    resources = [aws_rds_cluster.azkaban_database.arn]
+    resources = [
+      aws_rds_cluster.azkaban_database.arn,
+      aws_rds_cluster.azkaban_external_database.arn,
+    ]
   }
 }
 

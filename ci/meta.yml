@@ -333,6 +333,7 @@ meta:
         params:
           AWS_REGION: ((dataworks.aws_region))
           AWS_DEFAULT_REGION: ((dataworks.aws_region))
+          SECRET_ID: ((SECRET_ID))
         run:
           path: sh
           args:
@@ -341,8 +342,8 @@ meta:
               source /assume-role
               USERPOOL_ID="$(cat terraform-output-frontend-service/outputs.json |  jq -r '.app_client.value.user_pool_id')"
               ENCODED_DATA=$(curl https://cognito-idp.((dataworks.aws_region)).amazonaws.com/$USERPOOL_ID/.well-known/jwks.json | base64)
-              UPDATED_SECRET="$(aws secretsmanager get-secret-value --secret-id /concourse/dataworks/workflow_manager --query SecretBinary --output text | base64 -d | jq -r --arg data "$ENCODED_DATA" '.keystore_data = $data')"
-              aws secretsmanager put-secret-value --secret-id /concourse/dataworks/workflow_manager --secret-binary "${UPDATED_SECRET}"
+              UPDATED_SECRET="$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --query SecretBinary --output text | base64 -d | jq -r --arg data "$ENCODED_DATA" '.keystore_data = $data')"
+              aws secretsmanager put-secret-value --secret-id $SECRET_ID --secret-binary "${UPDATED_SECRET}"
         inputs:
           - name: terraform-output-frontend-service
 
@@ -359,6 +360,7 @@ meta:
         params:
           AWS_REGION: ((dataworks.aws_region))
           AWS_DEFAULT_REGION: ((dataworks.aws_region))
+          SECRET_ID: ((SECRET_ID))
         run:
           path: sh
           args:
@@ -366,8 +368,8 @@ meta:
             - |
               source /assume-role
               RANDOM_PASSWORD=$(aws secretsmanager get-random-password --password-length 25 --no-include-space --exclude-punctuation --require-each-included-type | jq -r .RandomPassword)
-              UPDATED_SECRET_BINARY="$(aws secretsmanager get-secret-value --secret-id /concourse/dataworks/workflow_manager --query SecretBinary --output text | base64 -d | jq -r --arg data "$RANDOM_PASSWORD" '.azkaban_password = $data')"
-              aws secretsmanager put-secret-value --secret-id /concourse/dataworks/workflow_manager --secret-binary "${UPDATED_SECRET_BINARY}"
+              UPDATED_SECRET_BINARY="$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --query SecretBinary --output text | base64 -d | jq -r --arg data "$RANDOM_PASSWORD" '.azkaban_password = $data')"
+              aws secretsmanager put-secret-value --secret-id $SECRET_ID --secret-binary "${UPDATED_SECRET_BINARY}"
 
     create-terraform-success:
       task: create-terraform-success
