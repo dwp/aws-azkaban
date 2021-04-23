@@ -11,7 +11,7 @@ resource "aws_lambda_function" "truncate_table" {
 
   environment {
     variables = {
-      RDS_DATABASE_NAME          = "azkabans"
+      RDS_DATABASE_NAME          = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).db_name
       RDS_CLUSTER_ARN            = aws_rds_cluster.azkaban_database.arn
       RDS_CREDENTIALS_SECRET_ARN = aws_secretsmanager_secret.azkaban_executor_password.arn
       LOG_LEVEL                  = "DEBUG"
@@ -46,7 +46,7 @@ resource "aws_lambda_function" "truncate_external_table" {
 
   environment {
     variables = {
-      RDS_DATABASE_NAME          = "external_azkaban_db"
+      RDS_DATABASE_NAME          = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).db_name
       RDS_CLUSTER_ARN            = aws_rds_cluster.azkaban_external_database.arn
       RDS_CREDENTIALS_SECRET_ARN = aws_secretsmanager_secret.azkaban_external_executor_password.arn
       LOG_LEVEL                  = "DEBUG"

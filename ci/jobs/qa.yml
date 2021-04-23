@@ -15,6 +15,7 @@ jobs:
       - .: (( inject meta.plan.terraform-plan ))
         params:
           TF_WORKSPACE: 'qa'
+
   - name: rotate-mysql-password-master-qa
     plan:
       - get: secrets-management
@@ -24,6 +25,22 @@ jobs:
           params:
             AWS_ACC: ((aws_account.qa))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+            DB_NAME: "azkaban-database"
+            SECRET_ID: "azkaban-master-rds-password"
+          inputs:
+            - name: secrets-management
+
+  - name: rotate-mysql-password-external-master-qa
+    plan:
+      - get: secrets-management
+        trigger: false
+      - .: (( inject meta.plan.rotate-mysql-master-password ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.qa))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+            DB_NAME: "azkaban-external-database"
+            SECRET_ID: "azkaban-external-master-rds-password"
           inputs:
             - name: secrets-management
 
@@ -34,6 +51,18 @@ jobs:
           params:
             AWS_ACC: ((aws_account.qa))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+            PARAM_NAME: "azkaban-webserver-rds-password"
+            LAMBDA_NAME: "manage-azkaban-mysql-user"
+
+  - name: rotate-azkaban-external-webserver-password-qa
+    plan:
+      - .: (( inject meta.plan.rotate-azkaban-webserver-password ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.qa))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+            PARAM_NAME: "azkaban-external-webserver-rds-password"
+            LAMBDA_NAME: "manage-azkaban-external-mysql-user"
 
   - name: rotate-azkaban-executor-password-qa
     plan:
@@ -42,6 +71,18 @@ jobs:
           params:
             AWS_ACC: ((aws_account.qa))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+            PARAM_NAME: "azkaban-executor-rds-password"
+            LAMBDA_NAME: "manage-azkaban-mysql-user"
+
+  - name: rotate-azkaban-external-executor-password-qa
+    plan:
+      - .: (( inject meta.plan.rotate-azkaban-executor-password ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.qa))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+            PARAM_NAME: "azkaban-external-executor-rds-password"
+            LAMBDA_NAME: "manage-azkaban-external-mysql-user"
 
   - name: cycle-azkaban-containers-qa
     plan:
@@ -58,6 +99,32 @@ jobs:
           params:
             AWS_ACC: ((aws_account.qa))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+            EXECUTOR_NAME: "azkaban-executor"
+            WEBSERVER_NAME: "azkaban-webserver"
+            LAMBDA_NAME: "truncate_table_lambda"
+        ensure:
+          .: (( inject meta.plan.terraform-apply ))
+          params:
+            TF_WORKSPACE: 'qa'
+
+  - name: cycle-external-azkaban-containers-qa
+    plan:
+      - get: aws-azkaban
+        trigger: false
+      - get: manage-mysql-user-release
+        trigger: false
+      - .: (( inject meta.plan.terraform-bootstrap ))
+      - .: (( inject meta.plan.terraform-output ))
+        params:
+          TF_WORKSPACE: 'qa'
+      - .: (( inject meta.plan.cycle-azkaban-containers ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.qa))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+            EXECUTOR_NAME: "azkaban-external-executor"
+            WEBSERVER_NAME: "azkaban-external-webserver"
+            LAMBDA_NAME: "truncate_external_table_lambda"
         ensure:
           .: (( inject meta.plan.terraform-apply ))
           params:
