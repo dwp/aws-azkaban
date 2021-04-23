@@ -5,6 +5,7 @@ data template_file "azkaban_external_executor_properties" {
     db_port                             = aws_rds_cluster.azkaban_external_database.port
     azkaban_external_webserver_hostname = "azkaban-external-webserver.${local.service_discovery_fqdn}"
     environment                         = local.environment
+    azkaban_service_user                = local.azkaban_service_user[local.management_account[local.environment]]
   }
 }
 

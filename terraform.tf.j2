@@ -194,4 +194,9 @@ locals {
           {{ key }} = "{{ value }}"{% endfor %}
       } {%- endfor %}
   }
+
+  azkaban_service_user = {
+    "management-dev" = "svc-azkaban515"
+    "management"     = "svc-azkabanbe9"
+  }
 }
