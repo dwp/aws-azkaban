@@ -13,7 +13,7 @@ resource "aws_internet_gateway" "igw_azkaban_external" {
 
 resource "aws_route_table" "azkaban_external_public" {
   vpc_id = module.workflow_manager_vpc.vpc.id
-  tags                   = merge(local.common_tags, { Name = "${local.name}-azkaban-external-public" })
+  tags   = merge(local.common_tags, { Name = "${local.name}-azkaban-external-public" })
 
   route {
     cidr_block = "0.0.0.0/0"
