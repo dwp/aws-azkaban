@@ -14,9 +14,6 @@ data template_file "azkaban_executor_start" {
 
 data template_file "azkaban_executor_commonprivate" {
   template = file("${path.module}/config/azkaban/exec-server/commonprivate.properties")
-  vars = {
-    azkaban_service_user = local.azkaban_service_user[local.management_account[local.environment]]
-  }
 }
 
 data template_file "azkaban_executor_private" {
