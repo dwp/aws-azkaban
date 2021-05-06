@@ -17,8 +17,8 @@ resource "aws_lambda_function" "zip_uploader" {
   environment {
     variables = {
       LOG_LEVEL       = "DEBUG"
-      AZKABAN_API_URL = "azkaban-webserver.${local.service_discovery_fqdn}"
-      AZKABAN_SECRET  = data.aws_secretsmanager_secret.workflow_manager.name
+      AZKABAN_API_URL = "azkaban-external-webserver.${local.service_discovery_fqdn}"
+      AZKABAN_SECRET  = data.aws_secretsmanager_secret.azkaban_external.name
     }
   }
   tracing_config {

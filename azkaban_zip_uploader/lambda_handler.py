@@ -65,7 +65,7 @@ def upload_to_azkaban_api(zip_file, zip_file_name, session_id, http, azkaban_url
     boundary = "----WebKitFormBoundaryK42OAofX56OI15GD"
     auth_response_json = http.request(
         'POST',
-        f'https://{azkaban_url}:8443/manager',
+        f'https://{azkaban_url}:7443/manager',
         multipart_boundary=boundary,
         fields={
             'ajax': (None, 'upload', None),
@@ -86,7 +86,7 @@ def upload_to_azkaban_api(zip_file, zip_file_name, session_id, http, azkaban_url
 def create_project(azkaban_url, http, session_id, project_name):
     auth_response_json = http.request(
         'POST',
-        f'https://{azkaban_url}:8443/manager?action=create',
+        f'https://{azkaban_url}:7443/manager?action=create',
         headers={
             "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -122,7 +122,7 @@ def establish_azkaban_session(http):
 
     auth_response_json = http.request(
         'POST',
-        f'https://{azkaban_url}:8443/manager?action=login',
+        f'https://{azkaban_url}:7443/manager?action=login',
         headers={
             "Content-Type": "application/x-www-form-urlencoded"
         },
