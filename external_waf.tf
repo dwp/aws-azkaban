@@ -1,5 +1,6 @@
 module "waf" {
-  source = "dwp/waf/aws"
+  source  = "dwp/waf/aws"
+  version = "0.0.4"
 
   name                  = local.external_name
   s3_log_bucket         = data.terraform_remote_state.security-tools.outputs.logstore_bucket.arn
