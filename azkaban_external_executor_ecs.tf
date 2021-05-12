@@ -32,6 +32,14 @@ data "template_file" "azkaban_external_executor_definition" {
         "value" : "exec-server"
       },
       {
+        "name" : "USER_POOL_ID",
+        "value" : data.terraform_remote_state.aws_analytical_environment_cognito.outputs.cognito.user_pool_id
+      },
+      {
+        "name" : "COGNITO_ROLE_ARN",
+        "value" : aws_iam_role.aws_analytical_env_cognito_read_only_role.arn
+      },
+      {
         "name" : "HTTP_PROXY",
         "value" : "http://${aws_vpc_endpoint.internet_proxy.dns_entry[0].dns_name}:${var.internet_proxy_port}"
       },
