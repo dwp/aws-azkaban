@@ -4,8 +4,6 @@ jobs:
     plan:
       - get: aws-azkaban
         trigger: true
-        passed:
-          - development
       - get: manage-mysql-user-release
         trigger: true
       - .: (( inject meta.plan.terraform-bootstrap ))
