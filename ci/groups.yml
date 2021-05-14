@@ -6,9 +6,11 @@ groups:
       - integration
       - preprod
       - production
+
   - name: pull-request
     jobs:
       - aws-azkaban-pr
+
   - name: admin-development
     jobs:
       - cycle-azkaban-containers-development
@@ -21,6 +23,7 @@ groups:
       - rotate-azkaban-external-webserver-password-development
       - rotate-azkaban-external-executor-password-development
       - cycle-external-azkaban-containers-development
+
   - name: admin-qa
     jobs:
       - rotate-mysql-password-master-qa
@@ -33,6 +36,7 @@ groups:
       - rotate-azkaban-external-webserver-password-qa
       - rotate-azkaban-external-executor-password-qa
       - cycle-external-azkaban-containers-qa
+
   - name: admin-integration
     jobs:
       - rotate-mysql-password-master-integration
@@ -45,6 +49,7 @@ groups:
       - rotate-azkaban-external-webserver-password-integration
       - rotate-azkaban-external-executor-password-integration
       - cycle-external-azkaban-containers-integration
+
   - name: admin-preprod
     jobs:
       - rotate-mysql-password-master-preprod
@@ -57,6 +62,7 @@ groups:
       - rotate-azkaban-external-webserver-password-preprod
       - rotate-azkaban-external-executor-password-preprod
       - cycle-external-azkaban-containers-preprod
+
   - name: admin-production
     jobs:
       - rotate-mysql-password-master-production
@@ -69,6 +75,7 @@ groups:
       - rotate-azkaban-external-webserver-password-production
       - rotate-azkaban-external-executor-password-production
       - cycle-external-azkaban-containers-production
+
   - name: update-keystore-data
     jobs:
       - update-keystore-data-development
@@ -81,3 +88,7 @@ groups:
       - update-keystore-data-external-integration
       - update-keystore-data-external-preprod
       - update-keystore-data-external-production
+      
+  - name: update-pipeline
+    jobs:
+      - update-pipeline

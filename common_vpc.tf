@@ -25,7 +25,7 @@ module "workflow_manager_vpc" {
     "elasticmapreduce",
     "sts",
     "dynamodb",
-    "sns,"
+    "sns",
   ]
   common_tags = local.common_tags
 }
