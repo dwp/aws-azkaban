@@ -7,6 +7,15 @@ module "waf" {
   s3_log_prefix         = "waf/${local.external_name}"
   whitelist_cidr_blocks = var.whitelist_cidr_blocks
 
+  enabled_rules = {
+    xss               = true
+    rfi_lfi_traversal = true
+    enforce_csrf      = false
+    sqli              = true
+    ssi               = true
+    bad_auth_tokens   = true
+  }
+
   tags = merge(local.common_tags, { Name = "${local.external_name}-azkaban-external-waf" })
 }
 
