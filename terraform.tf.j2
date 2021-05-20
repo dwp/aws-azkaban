@@ -125,7 +125,7 @@ data "terraform_remote_state" "orchestration_service" {
 
 data "terraform_remote_state" "certificate_authority" {
   backend   = "s3"
-  workspace = lookup(local.management_account, local.environment) == "management-dev" ? "default" : "management"
+  workspace = terraform.workspace
 
   config = {
     bucket         = "{{terraform.state_file_bucket}}"
