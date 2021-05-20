@@ -272,6 +272,8 @@ data "aws_iam_policy_document" "azkaban_executor_read_dynamo_db" {
       "dynamodb:Scan",
       "dynamodb:GetRecords",
       "dynamodb:Query",
+      "dynamodb:UpdateItem",
+      "dynamodb:PutItem",
     ]
 
     resources = [
