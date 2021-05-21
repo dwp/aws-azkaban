@@ -9,6 +9,16 @@ resource "aws_security_group" "azkaban_external_executor" {
   }
 }
 
+resource "aws_security_group_rule" "allow_azkaban_external_executor_egress_dynamodb" {
+  description       = "Allow azkaban external executor to reach DynamoDB"
+  type              = "egress"
+  prefix_list_ids   = [module.workflow_manager_vpc.prefix_list_ids.dynamodb]
+  protocol          = "tcp"
+  from_port         = 443
+  to_port           = 443
+  security_group_id = aws_security_group.azkaban_external_executor.id
+}
+
 resource "aws_security_group_rule" "allow_azkaban_external_executor_egress_azkaban_external_database" {
   description              = "Allows azkaban external executor to access azkaban external database"
   type                     = "egress"
