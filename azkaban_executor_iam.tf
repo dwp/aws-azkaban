@@ -302,6 +302,18 @@ data "aws_iam_policy_document" "azkaban_executor_post_sns" {
       data.terraform_remote_state.security-tools.outputs.sns_topic_london_monitoring.arn,
     ]
   }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sns:ListTopics",
+    ]
+
+    resources = [
+      "*"
+    ]
+  }
 }
 
 resource "aws_iam_role_policy" "azkaban_executor_post_sns_policy" {
