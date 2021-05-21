@@ -10,6 +10,7 @@ module "workflow_manager_vpc" {
   interface_vpce_source_security_group_ids = [
     aws_security_group.workflow_manager_common.id,
     aws_security_group.azkaban_external_executor.id,
+    aws_security_group.azkaban_executor.id,
   ]
   interface_vpce_subnet_ids    = aws_subnet.workflow_manager_private.*.id
   gateway_vpce_route_table_ids = aws_route_table.workflow_manager_private.*.id
