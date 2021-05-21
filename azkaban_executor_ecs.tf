@@ -1,3 +1,7 @@
+locals {
+  vpce_no_proxy = join(",", module.workflow_manager_vpc.no_proxy_list)
+}
+
 resource "aws_ecs_task_definition" "azkaban_executor" {
   family                   = "azkaban-executor"
   network_mode             = "awsvpc"
@@ -49,7 +53,7 @@ data "template_file" "azkaban_executor_definition" {
       },
       {
         "name" : "NO_PROXY",
-        "value" : "127.0.0.1,elasticmapreduce.${var.region}.amazonaws.com,s3.${var.region}.amazonaws.com,secretsmanager.${var.region}.amazonaws.com,sts.${var.region}.amazonaws.com,logs.${var.region}.amazonaws.com,azkaban-webserver.${local.service_discovery_fqdn},${aws_rds_cluster.azkaban_database.endpoint}"
+        "value" : "127.0.0.1,azkaban-webserver.${local.service_discovery_fqdn},${aws_rds_cluster.azkaban_database.endpoint},${local.vpce_no_proxy}"
       }
     ])
   }
