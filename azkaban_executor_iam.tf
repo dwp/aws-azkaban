@@ -124,6 +124,8 @@ data "aws_iam_policy_document" "azkaban_executor_emr" {
       "elasticmapreduce:DescribeCluster",
       "elasticmapreduce:ModifyCluster",
       "elasticmapreduce:CancelSteps",
+      "elasticmapreduce:ListInstances",
+      "elasticmapreduce:DescribeStep",
     ]
 
     resources = [
@@ -138,6 +140,7 @@ data "aws_iam_policy_document" "azkaban_executor_logs" {
 
     actions = [
       "logs:GetLogEvents",
+      "logs:DescribeLogStreams",
     ]
 
     resources = [
@@ -249,7 +252,9 @@ data "aws_iam_policy_document" "azkaban_executor_execute_launcher" {
     ]
 
     resources = [
-      data.terraform_remote_state.aws_analytical_env_app.outputs.emr_launcher_lambda.arn
+      data.terraform_remote_state.aws_analytical_env_app.outputs.emr_launcher_lambda.arn,
+      data.terraform_remote_state.aws_clive.outputs.aws_clive_emr_launcher_lambda.arn,
+      data.terraform_remote_state.dataworks_aws_mongo_latest.outputs.mongo_latest_emr_launcher_lambda.arn,
     ]
   }
 }
@@ -259,4 +264,64 @@ resource "aws_iam_role_policy" "azkaban_executor_execute_launcher_policy" {
   role = aws_iam_role.azkaban_executor.id
 
   policy = data.aws_iam_policy_document.azkaban_executor_execute_launcher.json
+}
+
+data "aws_iam_policy_document" "azkaban_executor_read_dynamo_db" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "dynamodb:GetItem",
+      "dynamodb:Scan",
+      "dynamodb:GetRecords",
+      "dynamodb:Query",
+      "dynamodb:UpdateItem",
+      "dynamodb:PutItem",
+    ]
+
+    resources = [
+      data.terraform_remote_state.aws_internal_compute.outputs.uc_export_crown_dynamodb_table.arn,
+      data.terraform_remote_state.aws_internal_compute.outputs.data_pipeline_metadata_dynamo.arn,
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "azkaban_executor_read_dynamo_db_policy" {
+  name = "azkaban_executor_read_dynamo_db_policy"
+  role = aws_iam_role.azkaban_executor.id
+
+  policy = data.aws_iam_policy_document.azkaban_executor_read_dynamo_db.json
+}
+
+data "aws_iam_policy_document" "azkaban_executor_post_sns" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sns:Publish",
+    ]
+
+    resources = [
+      data.terraform_remote_state.security-tools.outputs.sns_topic_london_monitoring.arn,
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sns:ListTopics",
+    ]
+
+    resources = [
+      "*"
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "azkaban_executor_post_sns_policy" {
+  name = "azkaban_executor_post_sns_policy"
+  role = aws_iam_role.azkaban_executor.id
+
+  policy = data.aws_iam_policy_document.azkaban_executor_post_sns.json
 }

@@ -43,7 +43,9 @@ You will then be able to develop against the development account (default Terraf
 
 ## Azkaban Extensions
 
-**Cognito UserManager** - An extension to the XML UserManager that can also receive a Cognito JSON Web Token. The user manager decodes and validates the token and from this information is able to authenticate the user.
+**CognitoUserManager** - An extension to the XML UserManager that can also receive a Cognito JSON Web Token. The user manager decodes and validates the token and from this information is able to authenticate the user.
+
+**CognitoUserManagerProxy** - An extension which validates a users name and password against an existing Cognito User Pool using USER_SRP_AUTH type authentication. The pool details are stored in the webservers azkaban.properties
 
 **EMR JobType** - A job type that extends the process job type and can receive the script and arguments that need to be submitted to the cluster. Ensures the correct group that it needs to be run as is submitted along with the script.
 

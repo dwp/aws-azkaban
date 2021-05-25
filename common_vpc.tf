@@ -2,14 +2,18 @@ data "aws_availability_zones" "current" {}
 
 
 module "workflow_manager_vpc" {
-  source                                   = "dwp/vpc/aws"
-  version                                  = "3.0.8"
-  vpc_name                                 = "workflow-manager"
-  region                                   = var.region
-  vpc_cidr_block                           = local.cidr_block[local.environment].workflow-manager-vpc
-  interface_vpce_source_security_group_ids = [aws_security_group.workflow_manager_common.id]
-  interface_vpce_subnet_ids                = aws_subnet.workflow_manager_private.*.id
-  gateway_vpce_route_table_ids             = aws_route_table.workflow_manager_private.*.id
+  source         = "dwp/vpc/aws"
+  version        = "3.0.8"
+  vpc_name       = "workflow-manager"
+  region         = var.region
+  vpc_cidr_block = local.cidr_block[local.environment].workflow-manager-vpc
+  interface_vpce_source_security_group_ids = [
+    aws_security_group.workflow_manager_common.id,
+    aws_security_group.azkaban_external_executor.id,
+    aws_security_group.azkaban_executor.id,
+  ]
+  interface_vpce_subnet_ids    = aws_subnet.workflow_manager_private.*.id
+  gateway_vpce_route_table_ids = aws_route_table.workflow_manager_private.*.id
   aws_vpce_services = [
     "kms",
     "logs",
@@ -20,7 +24,9 @@ module "workflow_manager_vpc" {
     "ecr.dkr",
     "ecs",
     "elasticmapreduce",
-    "sts"
+    "sts",
+    "dynamodb",
+    "sns",
   ]
   common_tags = local.common_tags
 }

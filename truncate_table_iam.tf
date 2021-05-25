@@ -41,9 +41,9 @@ data "aws_iam_policy_document" "lambda_truncate_table" {
   }
 
   statement {
-    sid       = "AllowRdsDataExecute"
-    effect    = "Allow"
-    actions   = ["rds-data:ExecuteStatement"]
+    sid     = "AllowRdsDataExecute"
+    effect  = "Allow"
+    actions = ["rds-data:ExecuteStatement"]
     resources = [
       aws_rds_cluster.azkaban_database.arn,
       aws_rds_cluster.azkaban_external_database.arn,

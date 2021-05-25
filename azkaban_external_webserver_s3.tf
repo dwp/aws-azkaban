@@ -4,6 +4,12 @@ data template_file "azkaban_external_webserver_properties" {
     db_host                         = aws_rds_cluster.azkaban_external_database.endpoint
     db_port                         = aws_rds_cluster.azkaban_external_database.port
     environment                     = local.environment
+    upperc_region                   = var.region
+    client_id                       = data.terraform_remote_state.dataworks_cognito.outputs.cognito.app_client.id
+    client_secret                   = data.terraform_remote_state.dataworks_cognito.outputs.cognito.app_client.client_secret
+    user_pool                       = data.terraform_remote_state.dataworks_cognito.outputs.cognito.app_client.user_pool_id
+    http_proxy_host                 = aws_vpc_endpoint.internet_proxy.dns_entry[0].dns_name
+    http_proxy_port                 = var.internet_proxy_port
     azkaban_external_webserver_port = jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_webserver_port
   }
 }

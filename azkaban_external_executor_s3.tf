@@ -32,10 +32,17 @@ data template_file "azkaban_external_executor_start" {
 
 data template_file "azkaban_external_executor_commonprivate" {
   template = file("${path.module}/config/azkaban_external/exec-server/commonprivate.properties")
+  vars = {
+    azkaban_service_user = local.azkaban_service_user[local.management_account[local.environment]]
+  }
 }
 
 data template_file "azkaban_external_executor_private" {
   template = file("${path.module}/config/azkaban_external/exec-server/private.properties")
+}
+
+data local_file "azkaban_external_executor_launchemr_private" {
+  filename = "config/azkaban_external/exec-server/launchemr-private.properties"
 }
 
 resource "aws_s3_bucket_object" "azkaban_external_executor_properties" {
@@ -63,6 +70,13 @@ resource "aws_s3_bucket_object" "azkaban_external_executor_private" {
   bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
   key        = "${local.name}/azkaban_external/exec-server/private.properties"
   content    = data.template_file.azkaban_external_executor_private.rendered
+  kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
+}
+
+resource "aws_s3_bucket_object" "azkaban_external_executor_launchemr_private" {
+  bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
+  key        = "${local.name}/azkaban_external/exec-server/launchemr-private.properties"
+  content    = data.local_file.azkaban_executor_launchemr_private.content
   kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
 }
 
