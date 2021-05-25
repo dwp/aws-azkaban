@@ -24,7 +24,7 @@ data "aws_iam_policy_document" "lambda_zip_uploader_document" {
       "secretsmanager:ListSecretVersionIds"
     ]
     resources = [
-      data.aws_secretsmanager_secret.workflow_manager.arn
+      data.aws_secretsmanager_secret.azkaban_external.arn
     ]
   }
 
