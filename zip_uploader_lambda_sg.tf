@@ -1,6 +1,6 @@
 resource "aws_security_group" "azkaban_zip_uploader" {
   name        = "azkaban-zip-uploader"
-  description = "Rule to allow API access for Azkaban External"
+  description = "Rule to allow API access for Azkaban"
   vpc_id      = module.workflow_manager_vpc.vpc.id
   tags        = merge(local.common_tags, { Name = "azkaban-zip-uploader" })
 
