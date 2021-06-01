@@ -4,7 +4,7 @@ jobs:
       - .: (( inject meta.plan.rotate-azkaban-admin-user ))
         config:
           params:
-            AWS_ACC: ((aws_account.development))
+            AWS_ACC: ((aws_account.management-dev))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.management-dev)):role/ci
 
   - name: rotate-azkaban-admin-management
