@@ -400,3 +400,18 @@ meta:
           - name: aws-azkaban
         outputs:
           - name: terraform-success
+
+    rotate-azkaban-admin-user:
+      task: rotate-azkaban-admin-user
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+            retrieve current secret
+            modify current secret azkaban password
+            push new scret
