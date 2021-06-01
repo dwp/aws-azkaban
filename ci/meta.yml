@@ -413,9 +413,11 @@ meta:
             - -exc
             - |
             aws secretsmanager get-secret-value --secret-id /concourse/dataworks/workflow_manager --output json > azkaban_secret.json
-            SECRET=jq '.SecretBinary' azkaban_secret.json
-            base64 -D <<< $SECRET
+            SECRET=$(jq -r '.SecretBinary' azkaban_secret.json | base64 -D)
+            #  create random 24 character password
+            RANDOM=$(tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' </dev/urandom | head -c 24; echo)
+            NEW_SECRET=$(jq --arg RANDOMPASS "$RANDOM" '. | .azkaban_password="$RANDOMPASS"' <<< $SECRET)
 
 #            TODO
             modify current secret azkaban password
-            push new scret
+           aws secretsmanager update-secret --secret-id /concourse/dataworks/workflow_manager
