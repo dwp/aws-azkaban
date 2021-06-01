@@ -412,6 +412,10 @@ meta:
           args:
             - -exc
             - |
-            retrieve current secret
+            aws secretsmanager get-secret-value --secret-id /concourse/dataworks/workflow_manager --output json > azkaban_secret.json
+            SECRET=jq '.SecretBinary' azkaban_secret.json
+            base64 -D <<< $SECRET
+
+#            TODO
             modify current secret azkaban password
             push new scret
