@@ -42,7 +42,7 @@ meta:
         AWS_REGION: eu-west-2
 
     terraform-bootstrap-dataworks-cognito:
-      task: terraform-bootstrap
+      task: terraform-bootstrap-dataworks-cognito
       config:
         platform: linux
         image_resource:
@@ -57,9 +57,10 @@ meta:
             - -exc
             - |
               python bootstrap_terraform.py
+              cd deploy
               sed -i '/^assume_role/ d' terraform.tfvars
-              cp terraform.tf ../terraform-bootstrap
-              cp terraform.tfvars ../terraform-bootstrap
+              cp terraform.tf ../../terraform-bootstrap
+              cp terraform.tfvars ../../terraform-bootstrap
           dir: dataworks-cognito
         inputs:
           - name: dataworks-cognito
@@ -154,6 +155,28 @@ meta:
           dir: aws-azkaban
         inputs:
           - name: aws-azkaban
+          - name: terraform-bootstrap
+        outputs:
+          - name: terraform-output
+
+    terraform-output-dataworks-cognito:
+      task: terraform-output-dataworks-cognito
+      .: (( inject meta.plan.terraform-common-config ))
+      config:
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              cd deploy
+              cp ../../terraform-bootstrap/terraform.tf .
+              cp ../../terraform-bootstrap/terraform.tfvars .
+              terraform workspace show
+              terraform init
+              terraform output --json > ../../terraform-output/outputs.json
+          dir: dataworks-cognito
+        inputs:
+          - name: dataworks-cognito
           - name: terraform-bootstrap
         outputs:
           - name: terraform-output
@@ -428,25 +451,32 @@ meta:
         outputs:
           - name: terraform-success
 
-    rotate-azkaban-admin-user:
+    rotate-azkaban-admin-cognito-user:
       task: rotate-azkaban-admin-user
       config:
         platform: linux
         image_resource:
           type: docker-image
+          repository: ((dataworks.docker_awscli_repository))
+          tag: ((dataworks.docker_awscli_version))
         run:
           path: sh
           args:
             - -exc
             - |
-              aws secretsmanager get-secret-value --secret-id $SECRETNAME --output json > azkaban_secret.json
-              SECRET=$(jq -r '.SecretBinary' azkaban_secret.json | base64 -D)
-              NEWPASSWORD=$(openssl rand -base64 32)
-              NEW_SECRET=$(jq --arg NEWPASS $NEWPASSWORD 'to_entries | map(if .azkaban_username == "azkaban_admin" then . + {"azkaban_password":"$NEWPASS"} else . end) | from_entries' <<< $SECRET)
-              NEW_SECRET_BLOB=$(base64 <<< $NEW_SECRET)
+              source /assume-role
+              RANDOM_PASSWORD=$(aws secretsmanager get-random-password --password-length 25 --no-include-space --exclude-punctuation --require-each-included-type | jq -r .RandomPassword)
+              UPDATED_SECRET_BINARY="$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --query SecretBinary --output text | base64 -d | jq -r --arg data "$RANDOM_PASSWORD" '.azkaban_password = $data')"
+              aws secretsmanager put-secret-value --secret-id $SECRET_ID --secret-binary "${UPDATED_SECRET_BINARY}"
 
-              jq -r ../terraform-output/outputs.json
-  #            aws cognito-idp admin-set-user-password --user-pool-id eu-west-2_nnnnnnnn --username azkaban --password $NEWPASSWORD --permanent --region eu-west-2
-  #            aws secretsmanager update-secret --secret-id /concourse/dataworks/workflow_manager --secret-binary $NEW_SECRET_BLOB
+              USER_POOL_ID=$(jq -r '.cognito.user_pool.id' ../terraform-output/outputs.json)
+              aws cognito-idp admin-set-user-password --user-pool-id $USER_POOL_ID --username azkaban_admin --password RANDOM_PASSWORD --permanent --region $AWS_REGION
+
+
+#              aws secretsmanager get-secret-value --secret-id $SECRETNAME --output json > azkaban_secret.json
+#              SECRET=$(jq -r '.SecretBinary' azkaban_secret.json | base64 -D)
+#              NEWPASSWORD=$(openssl rand -base64 32)
+#              NEW_SECRET=$(jq --arg NEWPASS $NEWPASSWORD 'to_entries | map(if .azkaban_username == "azkaban_admin" then . + {"azkaban_password":"$NEWPASS"} else . end) | from_entries' <<< $SECRET)
+#              NEW_SECRET_BLOB=$(base64 <<< $NEW_SECRET)
         inputs:
           - name: terraform-output
