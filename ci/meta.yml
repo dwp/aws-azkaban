@@ -452,13 +452,14 @@ meta:
           - name: terraform-success
 
     rotate-azkaban-admin-cognito-user:
-      task: rotate-azkaban-admin-user
+      task: rotate-azkaban-admin-cognito-user
       config:
         platform: linux
         image_resource:
           type: docker-image
-          repository: ((dataworks.docker_awscli_repository))
-          tag: ((dataworks.docker_awscli_version))
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
         run:
           path: sh
           args:
