@@ -45,7 +45,8 @@ class AzkabanSchedulerSpec(unittest.TestCase):
                 self._environment_1: self._expression_1
             },
             self._flow_2: {
-                self._environment_1: self._expression_2
+                self._environment_1: self._expression_2,
+                self._environment_2: self._expression_1
             }
         })
 

@@ -28,7 +28,7 @@ def handler(event, context):
     zips = project_object_keys(bucket_id, prefix, s3_client)
     logger.info(f"List of zips from s3 returned: {zips}")
 
-    schedules = schedule_object_summaries(bucket_id, prefix, s3_client)
+    schedules = schedule_object_keys(bucket_id, prefix, s3_client)
     scheduler = AzkabanScheduler(os.getenv('AZKABAN_API_URL'), os.getenv('ENVIRONMENT'), azkaban_session_id)
     for zip in zips:
         logger.info(f"Getting file: {zip}")
@@ -57,7 +57,7 @@ def project_object_keys(s3_client, bucket, prefix):
     return get_files_from_s3(bucket, prefix, s3_client, ".zip")
 
 
-def schedule_object_summaries(s3_client, bucket, prefix):
+def schedule_object_keys(s3_client, bucket, prefix):
     return get_files_from_s3(bucket, prefix, s3_client, ".json")
 
 
