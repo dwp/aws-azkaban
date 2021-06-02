@@ -98,7 +98,7 @@ http_session.status = 200
 
 class LambdaHandlerTests(TestCase):
     def test_get_files_from_s3(self):
-        result = lambda_handler.get_files_from_s3("bucket_id", "s3_dir", mock_s3_client)
+        result = lambda_handler.project_object_keys(mock_s3_client, "bucket_id", "s3_dir")
 
         assert result == ['return1.zip', 'return2.zip']
 
