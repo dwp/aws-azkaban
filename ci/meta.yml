@@ -415,9 +415,9 @@ meta:
             aws secretsmanager get-secret-value --secret-id /concourse/dataworks/workflow_manager --output json > azkaban_secret.json
             SECRET=$(jq -r '.SecretBinary' azkaban_secret.json | base64 -D)
             #  create random 24 character password
-            RANDOM=$(tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' </dev/urandom | head -c 24; echo)
-            NEW_SECRET=$(jq --arg RANDOMPASS "$RANDOM" '. | .azkaban_password="$RANDOMPASS"' <<< $SECRET)
+            NEWPASSWORD=$(tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' </dev/urandom | head -c 24; echo)
+            NEW_SECRET=$(jq --arg NEWPASS $NEWPASSWORD 'to_entries | map(if .azkaban_username == "azkaban" then . + {"azkaban_password":"$NEWPASS"} else . end) | from_entries' <<< $SECRET)
+            NEW_SECRET_BLOB=$(base64 <<< $NEW_SECRET)
 
-#            TODO
-            modify current secret azkaban password
-           aws secretsmanager update-secret --secret-id /concourse/dataworks/workflow_manager
+            aws cognito-idp admin-set-user-password --user-pool-id eu-west-2_nnnnnnnn --username azkaban --password $NEWPASSWORD --permanent --region eu-west-2
+            aws secretsmanager update-secret --secret-id /concourse/dataworks/workflow_manager --secret-binary $NEW_SECRET_BLOB
