@@ -91,8 +91,8 @@ groups:
 
   - name: rotate-password
     jobs:
-      - rotate-azkaban-admin-management-dev
-      - rotate-azkaban-admin-management
+      - azkaban-admin-mgmt-dev
+      - azkaban-admin-management
 
   - name: update-pipeline
     jobs:

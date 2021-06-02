@@ -1,17 +1,32 @@
 jobs:
-  - name: rotate-azkaban-admin-management-dev
+  - name: azkaban-admin-mgmt-dev
     plan:
+      - get: dataworks-cognito
+      - .: (( inject meta.plan.terraform-bootstrap-dataworks-cognito ))
+        params:
+          AWS_PROFILE_MGT_DEV: "dataworks-management-dev"
+      - .: (( inject meta.plan.terraform-output ))
       - .: (( inject meta.plan.rotate-azkaban-admin-user ))
         config:
           params:
             AWS_ACC: ((aws_account.management-dev))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.management-dev)):role/ci
+            AWS_REGION: "eu-west-2"
+            SECRET_NAME: "/concourse/dataworks/workflow_manager/azkaban_external/cognito"
+          inputs:
+            - name: terraform-output
 
-  - name: rotate-azkaban-admin-management
+  - name: azkaban-admin-management
     plan:
+      - get: dataworks-cognito
+      - .: (( inject meta.plan.terraform-bootstrap-dataworks-cognito ))
+      - .: (( inject meta.plan.terraform-output ))
       - .: (( inject meta.plan.rotate-azkaban-admin-user ))
         config:
           params:
-            AWS_ACC: ((aws_account.qa))
+            AWS_ACC: ((aws_account.management))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.management)):role/ci
+            SECRET_NAME: "/concourse/dataworks/workflow_manager/azkaban_external/cognito"
+          inputs:
+            - name: terraform-output
 

@@ -41,6 +41,33 @@ meta:
       params:
         AWS_REGION: eu-west-2
 
+    terraform-bootstrap-dataworks-cognito:
+      task: terraform-bootstrap
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: dwpdigital/jinja-yaml-aws
+            version: 0.0.19
+            tag: 0.0.19
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              python bootstrap_terraform.py
+              sed -i '/^assume_role/ d' terraform.tfvars
+              cp terraform.tf ../terraform-bootstrap
+              cp terraform.tfvars ../terraform-bootstrap
+          dir: dataworks-cognito
+        inputs:
+          - name: dataworks-cognito
+        outputs:
+          - name: terraform-bootstrap
+      params:
+        AWS_REGION: eu-west-2
+
     terraform-apply:
       task: terraform-apply
       .: (( inject meta.plan.terraform-common-config ))
@@ -412,12 +439,14 @@ meta:
           args:
             - -exc
             - |
-            aws secretsmanager get-secret-value --secret-id /concourse/dataworks/workflow_manager --output json > azkaban_secret.json
-            SECRET=$(jq -r '.SecretBinary' azkaban_secret.json | base64 -D)
-            #  create random 24 character password
-            NEWPASSWORD=$(tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' </dev/urandom | head -c 24; echo)
-            NEW_SECRET=$(jq --arg NEWPASS $NEWPASSWORD 'to_entries | map(if .azkaban_username == "azkaban" then . + {"azkaban_password":"$NEWPASS"} else . end) | from_entries' <<< $SECRET)
-            NEW_SECRET_BLOB=$(base64 <<< $NEW_SECRET)
+              aws secretsmanager get-secret-value --secret-id $SECRETNAME --output json > azkaban_secret.json
+              SECRET=$(jq -r '.SecretBinary' azkaban_secret.json | base64 -D)
+              NEWPASSWORD=$(openssl rand -base64 32)
+              NEW_SECRET=$(jq --arg NEWPASS $NEWPASSWORD 'to_entries | map(if .azkaban_username == "azkaban_admin" then . + {"azkaban_password":"$NEWPASS"} else . end) | from_entries' <<< $SECRET)
+              NEW_SECRET_BLOB=$(base64 <<< $NEW_SECRET)
 
-            aws cognito-idp admin-set-user-password --user-pool-id eu-west-2_nnnnnnnn --username azkaban --password $NEWPASSWORD --permanent --region eu-west-2
-            aws secretsmanager update-secret --secret-id /concourse/dataworks/workflow_manager --secret-binary $NEW_SECRET_BLOB
+              jq -r ../terraform-output/outputs.json
+  #            aws cognito-idp admin-set-user-password --user-pool-id eu-west-2_nnnnnnnn --username azkaban --password $NEWPASSWORD --permanent --region eu-west-2
+  #            aws secretsmanager update-secret --secret-id /concourse/dataworks/workflow_manager --secret-binary $NEW_SECRET_BLOB
+        inputs:
+          - name: terraform-output
