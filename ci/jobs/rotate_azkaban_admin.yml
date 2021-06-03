@@ -13,7 +13,7 @@ jobs:
             AWS_ACC: ((aws_account.management-dev))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.management-dev)):role/ci
             AWS_REGION: "eu-west-2"
-            SECRET_NAME: "/concourse/dataworks/workflow_manager/azkaban_external/cognito"
+            SECRET_ID: "/concourse/dataworks/workflow_manager/azkaban_external/cognito"
           inputs:
             - name: terraform-output
 
