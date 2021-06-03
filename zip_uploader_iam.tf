@@ -24,7 +24,8 @@ data "aws_iam_policy_document" "lambda_zip_uploader_document" {
       "secretsmanager:ListSecretVersionIds"
     ]
     resources = [
-      data.aws_secretsmanager_secret.azkaban_external.arn
+      data.aws_secretsmanager_secret.azkaban_external.arn,
+      local.azkaban_external_cognito_secret.arn
     ]
   }
 
