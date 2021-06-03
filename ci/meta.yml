@@ -451,8 +451,8 @@ meta:
         outputs:
           - name: terraform-success
 
-    rotate-azkaban-admin-cognito-user:
-      task: rotate-azkaban-admin-cognito-user
+    generate-random-password:
+      task: generate-random-password
       config:
         platform: linux
         image_resource:
@@ -463,19 +463,62 @@ meta:
         params:
           AWS_REGION: ((dataworks.aws_region))
           AWS_DEFAULT_REGION: ((dataworks.aws_region))
-          SECRET_ID: ((SECRET_ID))
         run:
           path: sh
           args:
             - -exc
             - |
               source /assume-role
-              RANDOM_PASSWORD=$(aws secretsmanager get-random-password --password-length 25 --no-include-space --require-each-included-type | jq -r .RandomPassword)
-              UPDATED_SECRET_BINARY=$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --query SecretBinary --output text | base64 -d | jq -r --arg data "$RANDOM_PASSWORD" '.azkaban_password = $data')
-              aws secretsmanager put-secret-value --secret-id $SECRET_ID --secret-binary "${UPDATED_SECRET_BINARY}"
+              aws secretsmanager get-random-password --password-length 25 --no-include-space --require-each-included-type | jq -r .RandomPassword >> random-password/random-password.txt
+        outputs:
+          - name: random-password
 
+
+    update-cognito-user-password:
+      task: update-cognito-user-password
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+        params:
+          AWS_REGION: ((dataworks.aws_region))
+          AWS_DEFAULT_REGION: ((dataworks.aws_region))
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              source /assume-role
+              RANDOM_PASSWORD=$(cat random-password/random-password.txt)
               USER_POOL_ID=$(jq -r '.cognito.value.user_pool.id' terraform-output/outputs.json)
               aws cognito-idp admin-set-user-password --user-pool-id $USER_POOL_ID --username azkaban_admin --password $RANDOM_PASSWORD --permanent --region $AWS_REGION
-
         inputs:
           - name: terraform-output
+          - name: random-password
+
+    update-secretsmanager-secret-password:
+      task: update-secretsmanager-secret-password
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+        params:
+          AWS_REGION: ((dataworks.aws_region))
+          AWS_DEFAULT_REGION: ((dataworks.aws_region))
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              source /assume-role
+              RANDOM_PASSWORD=$(cat random-password/random-password.txt)
+              UPDATED_SECRET_BINARY=$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --query SecretBinary --output text | base64 -d | jq -r --arg data "$RANDOM_PASSWORD" '.azkaban_password = $data')
+              aws secretsmanager put-secret-value --secret-id $SECRET_ID --secret-binary "${UPDATED_SECRET_BINARY}"
+        inputs:
+          - name: random-password
