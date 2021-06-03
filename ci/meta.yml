@@ -471,11 +471,11 @@ meta:
             - |
               source /assume-role
               RANDOM_PASSWORD=$(aws secretsmanager get-random-password --password-length 25 --no-include-space --exclude-punctuation --require-each-included-type | jq -r .RandomPassword)
-              UPDATED_SECRET_BINARY="$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --query SecretBinary --output text | base64 -d | jq --arg NEWPASS $RANDOM_PASSWORD 'to_entries | map(if .azkaban_username == "azkaban_admin" then . + {"azkaban_password":"$NEWPASS"} else . end) | from_entries')"
+              UPDATED_SECRET_BINARY=$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --query SecretBinary --output text | base64 -d | jq -r --arg data "$RANDOM_PASSWORD" '.azkaban_password = $data')
               aws secretsmanager put-secret-value --secret-id $SECRET_ID --secret-binary "${UPDATED_SECRET_BINARY}"
 
               USER_POOL_ID=$(jq -r '.cognito.value.user_pool.id' terraform-output/outputs.json)
-              aws cognito-idp admin-set-user-password --user-pool-id $USER_POOL_ID --username azkaban_admin --password RANDOM_PASSWORD --permanent --region $AWS_REGION
+              aws cognito-idp admin-set-user-password --user-pool-id $USER_POOL_ID --username azkaban_admin --password $RANDOM_PASSWORD --permanent --region $AWS_REGION
 
         inputs:
           - name: terraform-output
