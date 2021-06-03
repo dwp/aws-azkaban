@@ -11,6 +11,9 @@ jobs:
           AWS_ACC: ((aws_account.management-dev))
           AWS_ROLE_ARN: arn:aws:iam::((aws_account.management-dev)):role/ci
       - .: (( inject meta.plan.terraform-output-dataworks-cognito ))
+        params:
+          TF_WORKSPACE: management-dev
+          AWS_SECRETS_ROLE: arn:aws:iam::((aws_account.management-dev)):role/ci
       - .: (( inject meta.plan.update-cognito-user-password ))
         params:
           AWS_ACC: ((aws_account.management-dev))
@@ -38,13 +41,16 @@ jobs:
       - get: dataworks-cognito
       - .: (( inject meta.plan.terraform-bootstrap-dataworks-cognito ))
         params:
-          TF_WORKSPACE: management-dev
+          TF_WORKSPACE: management
           AWS_SECRETS_ROLE: arn:aws:iam::((aws_account.management)):role/ci
       - .: (( inject meta.plan.generate-random-password ))
         params:
           AWS_ACC: ((aws_account.management))
           AWS_ROLE_ARN: arn:aws:iam::((aws_account.management)):role/ci
       - .: (( inject meta.plan.terraform-output-dataworks-cognito ))
+        params:
+          TF_WORKSPACE: management
+          AWS_SECRETS_ROLE: arn:aws:iam::((aws_account.management)):role/ci
       - .: (( inject meta.plan.update-cognito-user-password ))
         params:
           AWS_ACC: ((aws_account.management))
