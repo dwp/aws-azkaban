@@ -41,6 +41,34 @@ meta:
       params:
         AWS_REGION: eu-west-2
 
+    terraform-bootstrap-dataworks-cognito:
+      task: terraform-bootstrap-dataworks-cognito
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: dwpdigital/jinja-yaml-aws
+            version: 0.0.19
+            tag: 0.0.19
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              python bootstrap_terraform.py
+              cd deploy
+              sed -i '/^assume_role/ d' terraform.tfvars
+              cp terraform.tf ../../terraform-bootstrap
+              cp terraform.tfvars ../../terraform-bootstrap
+          dir: dataworks-cognito
+        inputs:
+          - name: dataworks-cognito
+        outputs:
+          - name: terraform-bootstrap
+      params:
+        AWS_REGION: eu-west-2
+
     terraform-apply:
       task: terraform-apply
       .: (( inject meta.plan.terraform-common-config ))
@@ -127,6 +155,28 @@ meta:
           dir: aws-azkaban
         inputs:
           - name: aws-azkaban
+          - name: terraform-bootstrap
+        outputs:
+          - name: terraform-output
+
+    terraform-output-dataworks-cognito:
+      task: terraform-output-dataworks-cognito
+      .: (( inject meta.plan.terraform-common-config ))
+      config:
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              cd deploy
+              cp ../../terraform-bootstrap/terraform.tf .
+              cp ../../terraform-bootstrap/terraform.tfvars .
+              terraform workspace show
+              terraform init
+              terraform output --json > ../../terraform-output/outputs.json
+          dir: dataworks-cognito
+        inputs:
+          - name: dataworks-cognito
           - name: terraform-bootstrap
         outputs:
           - name: terraform-output
@@ -400,3 +450,32 @@ meta:
           - name: aws-azkaban
         outputs:
           - name: terraform-success
+
+    rotate-azkaban-admin-cognito-user:
+      task: rotate-azkaban-admin-cognito-user
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+        params:
+          AWS_REGION: ((dataworks.aws_region))
+          AWS_DEFAULT_REGION: ((dataworks.aws_region))
+          SECRET_ID: ((SECRET_ID))
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              source /assume-role
+              RANDOM_PASSWORD=$(aws secretsmanager get-random-password --password-length 25 --no-include-space --require-each-included-type | jq -r .RandomPassword)
+              UPDATED_SECRET_BINARY=$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --query SecretBinary --output text | base64 -d | jq -r --arg data "$RANDOM_PASSWORD" '.azkaban_password = $data')
+              aws secretsmanager put-secret-value --secret-id $SECRET_ID --secret-binary "${UPDATED_SECRET_BINARY}"
+
+              USER_POOL_ID=$(jq -r '.cognito.value.user_pool.id' terraform-output/outputs.json)
+              aws cognito-idp admin-set-user-password --user-pool-id $USER_POOL_ID --username azkaban_admin --password $RANDOM_PASSWORD --permanent --region $AWS_REGION
+
+        inputs:
+          - name: terraform-output
