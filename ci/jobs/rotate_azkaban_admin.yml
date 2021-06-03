@@ -6,16 +6,35 @@ jobs:
         params:
           TF_WORKSPACE: management-dev
           AWS_SECRETS_ROLE: arn:aws:iam::((aws_account.management-dev)):role/ci
+      - .: (( inject meta.plan.generate-random-password ))
+        params:
+          AWS_ACC: ((aws_account.management-dev))
+          AWS_ROLE_ARN: arn:aws:iam::((aws_account.management-dev)):role/ci
       - .: (( inject meta.plan.terraform-output-dataworks-cognito ))
-      - .: (( inject meta.plan.rotate-azkaban-admin-cognito-user ))
-        config:
+        params:
+          TF_WORKSPACE: management-dev
+          AWS_SECRETS_ROLE: arn:aws:iam::((aws_account.management-dev)):role/ci
+      - .: (( inject meta.plan.update-cognito-user-password ))
+        params:
+          AWS_ACC: ((aws_account.management-dev))
+          AWS_ROLE_ARN: arn:aws:iam::((aws_account.management-dev)):role/ci
+      - in_parallel:
+        - .: (( inject meta.plan.update-secretsmanager-secret-password ))
           params:
-            AWS_ACC: ((aws_account.management-dev))
-            AWS_ROLE_ARN: arn:aws:iam::((aws_account.management-dev)):role/ci
-            AWS_REGION: "eu-west-2"
+            AWS_ACC: ((aws_account.development))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
             SECRET_ID: "/concourse/dataworks/workflow_manager/azkaban_external/cognito"
-          inputs:
-            - name: terraform-output
+        - .: (( inject meta.plan.update-secretsmanager-secret-password ))
+          params:
+            AWS_ACC: ((aws_account.qa))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+            SECRET_ID: "/concourse/dataworks/workflow_manager/azkaban_external/cognito"
+        - .: (( inject meta.plan.update-secretsmanager-secret-password ))
+          params:
+            AWS_ACC: ((aws_account.integration))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.integration)):role/ci
+            SECRET_ID: "/concourse/dataworks/workflow_manager/azkaban_external/cognito"
+
 
   - name: azkaban-admin-cognito-management
     plan:
@@ -24,20 +43,27 @@ jobs:
         params:
           TF_WORKSPACE: management
           AWS_SECRETS_ROLE: arn:aws:iam::((aws_account.management)):role/ci
+      - .: (( inject meta.plan.generate-random-password ))
+        params:
+          AWS_ACC: ((aws_account.management))
+          AWS_ROLE_ARN: arn:aws:iam::((aws_account.management)):role/ci
       - .: (( inject meta.plan.terraform-output-dataworks-cognito ))
-        config:
-          params:
-            TF_WORKSPACE: management
-            AWS_ACC: ((aws_account.management))
-            AWS_ROLE_ARN: arn:aws:iam::((aws_account.management)):role/ci
-            AWS_REGION: "eu-west-2"
-      - .: (( inject meta.plan.rotate-azkaban-admin-cognito-user ))
-        config:
-          params:
-            AWS_ACC: ((aws_account.management))
-            AWS_ROLE_ARN: arn:aws:iam::((aws_account.management)):role/ci
-            AWS_REGION: "eu-west-2"
-            SECRET_ID: "/concourse/dataworks/workflow_manager/azkaban_external/cognito"
-          inputs:
-            - name: terraform-output
+        params:
+          TF_WORKSPACE: management
+          AWS_SECRETS_ROLE: arn:aws:iam::((aws_account.management)):role/ci
+      - .: (( inject meta.plan.update-cognito-user-password ))
+        params:
+          AWS_ACC: ((aws_account.management))
+          AWS_ROLE_ARN: arn:aws:iam::((aws_account.management)):role/ci
+      - in_parallel:
+          - .: (( inject meta.plan.update-secretsmanager-secret-password ))
+            params:
+              AWS_ACC: ((aws_account.preprod))
+              AWS_ROLE_ARN: arn:aws:iam::((aws_account.preprod)):role/ci
+              SECRET_ID: "/concourse/dataworks/workflow_manager/azkaban_external/cognito"
+          - .: (( inject meta.plan.update-secretsmanager-secret-password ))
+            params:
+              AWS_ACC: ((aws_account.production))
+              AWS_ROLE_ARN: arn:aws:iam::((aws_account.production)):role/ci
+              SECRET_ID: "/concourse/dataworks/workflow_manager/azkaban_external/cognito"
 
