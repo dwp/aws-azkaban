@@ -10,6 +10,10 @@ data "aws_secretsmanager_secret" "azkaban_external" {
   name = "/concourse/dataworks/workflow_manager/azkaban_external"
 }
 
+data "aws_secretsmanager_secret" "azkaban_external_cognito" {
+  name = "/concourse/dataworks/workflow_manager/azkaban_external/cognito"
+}
+
 data "aws_secretsmanager_secret_version" "azkaban_external" {
   secret_id = data.aws_secretsmanager_secret.azkaban_external.id
 }
