@@ -25,10 +25,10 @@ def handler(event, context):
     prefix = os.path.dirname(key) if '/' in key else key
 
     logger.info("Getting list of files from s3")
-    zips = project_object_keys(bucket_id, prefix, s3_client)
+    zips = project_object_keys(s3_client, bucket_id, prefix)
     logger.info(f"List of zips from s3 returned: {zips}")
 
-    schedules = schedule_object_keys(bucket_id, prefix, s3_client)
+    schedules = schedule_object_keys(s3_client, bucket_id, prefix)
     scheduler = AzkabanScheduler(os.getenv('AZKABAN_API_URL'), os.getenv('ENVIRONMENT'), azkaban_session_id)
     for zip in zips:
         logger.info(f"Getting file: {zip}")
@@ -47,6 +47,7 @@ def handler(event, context):
             if schedule_object is not None:
                 logger.info(f"Got schedule contents {schedule_object}")
                 json_object = json.loads(schedule_object)
+                logger.info(f"Schedule JSON '{json_object}'")
                 job_name = utility.job_name(schedule_key)
                 scheduler.schedule_flows(job_name, json_object)
         else:
