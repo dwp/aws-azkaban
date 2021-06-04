@@ -8,3 +8,8 @@
 
 terraform.tf
 aviator_pipeline.yml
+venv/
+artefact/
+build/
+__pycache__/
+.DS_Store

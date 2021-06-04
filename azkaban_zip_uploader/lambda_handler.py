@@ -4,10 +4,14 @@ import json
 import urllib3
 import boto3
 
+import utility
+from scheduler import AzkabanScheduler
+
 logger = logging.getLogger(__name__)
 log_level = os.environ["LOG_LEVEL"] if "LOG_LEVEL" in os.environ else "INFO"
 logger.setLevel(logging.getLevelName(log_level.upper()))
 logger.info("Logging at {} level".format(log_level.upper()))
+
 
 def handler(event, context):
     s3_client = boto3.client("s3")
@@ -21,9 +25,11 @@ def handler(event, context):
     prefix = os.path.dirname(key) if '/' in key else key
 
     logger.info("Getting list of files from s3")
-    zips = get_files_from_s3(bucket_id, prefix, s3_client)
-    logger.info(f"List of files from s3 returned: {zips}")
+    zips = project_object_keys(s3_client, bucket_id, prefix)
+    logger.info(f"List of zips from s3 returned: {zips}")
 
+    schedules = schedule_object_keys(s3_client, bucket_id, prefix)
+    scheduler = AzkabanScheduler(os.getenv('AZKABAN_API_URL'), os.getenv('AZKABAN_API_PORT'), os.getenv('ENVIRONMENT'), azkaban_session_id)
     for zip in zips:
         logger.info(f"Getting file: {zip}")
         file = get_file(bucket_id, zip, s3_client)
@@ -34,17 +40,35 @@ def handler(event, context):
         logger.info(f"Uploading {zip} to Azkaban")
         upload_to_azkaban_api(file, basename, azkaban_session_id, http, os.getenv('AZKABAN_API_URL'))
         logger.info(f"{zip} successfully uploaded to Azkaban")
+        schedule_key = utility.job_schedule_entry(schedules, zip)
+        if schedule_key is not None:
+            logger.info(f"Got job schedule key {schedule_key}")
+            schedule_object = get_file(bucket_id, schedule_key, s3_client)
+            if schedule_object is not None:
+                logger.info(f"Got schedule contents {schedule_object}")
+                json_object = json.loads(schedule_object)
+                logger.info(f"Schedule JSON '{json_object}'")
+                job_name = utility.job_name(schedule_key)
+                scheduler.schedule_flows(job_name, json_object)
+        else:
+            logger.info(f"No schedule found for {zip}")
 
 
-def get_files_from_s3(bucket_id, s3_dir, s3_client):
+def project_object_keys(s3_client, bucket, prefix):
+    return get_files_from_s3(bucket, prefix, s3_client, ".zip")
 
+
+def schedule_object_keys(s3_client, bucket, prefix):
+    return get_files_from_s3(bucket, prefix, s3_client, ".json")
+
+
+def get_files_from_s3(bucket_id, s3_dir, s3_client, extension):
     files_in_s3 = s3_client.list_objects_v2(
         Prefix=s3_dir,
         Bucket=bucket_id
     )['Contents']
 
-    return [file['Key'] for file in files_in_s3 if file['Key'].endswith(".zip")]
-
+    return [file['Key'] for file in files_in_s3 if file['Key'].endswith(extension)]
 
 
 def get_file(bucket_id, key, s3_client):
@@ -77,11 +101,14 @@ def upload_to_azkaban_api(zip_file, zip_file_name, session_id, http, azkaban_url
     try:
         auth_response_body = json.loads(auth_response_json.data.decode('utf-8'))
         if auth_response_body.get('error'):
-            raise urllib3.exceptions.ResponseError(f"Failure uploading {project_name} to Azkaban API - Error in API response body.")
+            raise urllib3.exceptions.ResponseError(
+                f"Failure uploading {project_name} to Azkaban API - Error in API response body.")
     except json.JSONDecodeError:
         if auth_response_json.status != 200:
-            raise urllib3.exceptions.ResponseError(f"Failure uploading {project_name} to Azkaban API - non 200 status returned.")
+            raise urllib3.exceptions.ResponseError(
+                f"Failure uploading {project_name} to Azkaban API - non 200 status returned.")
         pass
+
 
 def create_project(azkaban_url, http, session_id, project_name):
     auth_response_json = http.request(
@@ -104,6 +131,7 @@ def create_project(azkaban_url, http, session_id, project_name):
             auth_response_body.get('message') or 'Response not recognised for project creation call.'
         )
 
+
 def establish_azkaban_session(http):
     azkaban_url = os.getenv('AZKABAN_API_URL')
     azkaban_secret = os.getenv('AZKABAN_SECRET')
@@ -120,6 +148,7 @@ def establish_azkaban_session(http):
     azkaban_username = binary_dict.get("azkaban_username")
     azkaban_password = binary_dict.get("azkaban_password")
 
+    logger.info(f"Logging in to https://{azkaban_url}:7443/manager?action=login")
     auth_response_json = http.request(
         'POST',
         f'https://{azkaban_url}:7443/manager?action=login',

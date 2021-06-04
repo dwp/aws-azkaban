@@ -21,6 +21,11 @@ The deployment is handles using Concourse and the pipeline code can be found in 
 ## Development
 This repo contains only the IAC and lambdas and these can be developed as they are found. The Azkaban containers themselves can be found [here](https://github.com/dwp/dataworks-hardened-images) along with further documentation on them. The containers are pushed to ECR and called by name by the infrastructure in this repo.
 
+## Secrets in use
+Currently two instances of Azkaban are deployed. `user` and `external`. They use differing authentication methods. External uses cognito.
+In order to accommodate programmatic access to Azkaban external, a cognito user was created. The details are stored in the `../azkaban_external/cognito` secret.
+In order to accommodate programmatic access to Azkaban user, a traditional user is created. The details are stored in the `../workflow_manager` secret.
+
 ### Requirements
 
 * Terraform 0.12
