@@ -53,6 +53,7 @@ get-dependencies: ## Get dependencies that are normally managed by pipeline
 		done \
 	}
 
+.PHONY: unittest
 unittest:
 	tox
 
