@@ -30,9 +30,16 @@ class AzkabanScheduler:
             "flow": flow,
             "cronExpression": cron_expression
         }
+
+        headers={
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+
         query = urllib.parse.urlencode(data).encode('utf-8')
         self._logger.info(f"Attempting to post schedule. Data is '{data}', query is '{query}'")
-        response = requests.get(self._url, data=query, verify=False)
+
+        response = requests.get(self._url, params=query, verify=False, headers=headers)
+
         self._logger.info(f"Request response '{response.text}' with a status of '{response.status_code}'")
         response.raise_for_status()
 
