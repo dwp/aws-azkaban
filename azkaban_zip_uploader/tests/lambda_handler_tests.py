@@ -7,7 +7,7 @@ import json
 from botocore.stub import Stubber
 import urllib3
 
-mock_s3_client = boto3.client('s3')
+mock_s3_client = boto3.client('s3', region="eu-west-2")
 s3_stubber = Stubber(mock_s3_client)
 list_objects_response = {
     'IsTruncated': False,
