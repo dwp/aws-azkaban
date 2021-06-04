@@ -53,6 +53,9 @@ get-dependencies: ## Get dependencies that are normally managed by pipeline
 		done \
 	}
 
+unittest:
+	tox
+
 .PHONY: artefact
 artefact:
 	rm -rf artefact build
