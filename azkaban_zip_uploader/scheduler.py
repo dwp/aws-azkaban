@@ -5,8 +5,8 @@ import urllib
 
 class AzkabanScheduler:
 
-    def __init__(self, url: str, environment: str, session_id: str):
-        self._url = f"https://{url}:7443/schedule"
+    def __init__(self, url: str, port: str, environment: str, session_id: str):
+        self._url = f"https://{url}:{port}/schedule"
         self._environment = environment
         self._session_id = session_id
         self._logger = logging.getLogger(__name__)

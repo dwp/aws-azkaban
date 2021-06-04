@@ -2,16 +2,26 @@ import unittest
 from unittest.mock import patch, call
 
 import requests
+import urllib
 from requests import HTTPError
 
 from scheduler import AzkabanScheduler
 
 
 class AzkabanSchedulerSpec(unittest.TestCase):
+    _url = "url"
+    _environment_1 = "environment_1"
+    _environment_2 = "environment_2"
+    _session_id = "session_id"
+    _project = "project"
+    _flow_1 = "flow_1"
+    _flow_2 = "flow_2"
+    _expression_1 = "1 * * * *"
+    _expression_2 = "2 * * * *"
 
-    @patch("requests.post")
-    def test_schedules_single_flow(self, post):
-        post.return_value = self._successful_response()
+    @patch("requests.get")
+    def test_schedules_single_flow(self, get):
+        get.return_value = self._successful_response()
 
         scheduler = self._scheduler()
         scheduler.schedule_flows(self._project, {
@@ -21,10 +31,10 @@ class AzkabanSchedulerSpec(unittest.TestCase):
             }
         })
 
-        post.assert_called_once_with(f"{self._url}/schedule", data=self._data_1())
+        get.assert_called_once_with(f"{self._url}/schedule", data=self._data_1())
 
-    @patch("requests.post")
-    def test_does_not_schedule_other_environments(self, post):
+    @patch("requests.get")
+    def test_does_not_schedule_other_environments(self, get):
         scheduler = self._scheduler()
         scheduler.schedule_flows(self._project, {
             self._flow_1: {
@@ -34,11 +44,11 @@ class AzkabanSchedulerSpec(unittest.TestCase):
                 self._environment_2: self._expression_1
             }
         })
-        post.assert_not_called()
+        get.assert_not_called()
 
-    @patch("requests.post")
-    def test_schedules_multiple_flows(self, post):
-        post.return_value = self._successful_response()
+    @patch("requests.get")
+    def test_schedules_multiple_flows(self, get):
+        get.return_value = self._successful_response()
         scheduler = self._scheduler()
         scheduler.schedule_flows(self._project, {
             self._flow_1: {
@@ -52,11 +62,11 @@ class AzkabanSchedulerSpec(unittest.TestCase):
 
         call_1 = call(f"{self._url}/schedule", data=self._data_1())
         call_2 = call(f"{self._url}/schedule", data=self._data_2())
-        post.assert_has_calls([call_1, call_2])
+        get.assert_has_calls([call_1, call_2])
 
-    @patch("requests.post")
-    def test_throws_error_on_failure(self, post):
-        post.return_value = self._unsuccessful_response()
+    @patch("requests.get")
+    def test_throws_error_on_failure(self, get):
+        get.return_value = self._unsuccessful_response()
 
         scheduler = self._scheduler()
 
@@ -82,29 +92,21 @@ class AzkabanSchedulerSpec(unittest.TestCase):
         return AzkabanScheduler(self._url, self._environment_1, self._session_id)
 
     def _data_1(self):
-        return {
+        data = {
             "session.id": self._session_id,
             "ajax": "scheduleCronFlow",
             "projectName": self._project,
             "flow": self._flow_1,
             "cronExpression": self._expression_1
         }
+        return urllib.parse.urlencode(data)
 
     def _data_2(self):
-        return {
+        data = {
             "session.id": self._session_id,
             "ajax": "scheduleCronFlow",
             "projectName": self._project,
             "flow": self._flow_2,
             "cronExpression": self._expression_2
         }
-
-    _url = "https://url"
-    _environment_1 = "environment_1"
-    _environment_2 = "environment_2"
-    _session_id = "session_id"
-    _project = "project"
-    _flow_1 = "flow_1"
-    _flow_2 = "flow_2"
-    _expression_1 = "1 * * * *"
-    _expression_2 = "2 * * * *"
+        return urllib.parse.urlencode(data)
