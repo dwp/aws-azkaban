@@ -145,7 +145,7 @@ resource "aws_cloudwatch_metric_alarm" "external_web_zero_healthy_hosts_but_runn
       metric_name = "HealthyHostCount"
       namespace   = "AWS/ApplicationELB"
       period      = "60"
-      stat        = "Sum"
+      stat        = "Average"
       unit        = "Count"
 
       dimensions = {
@@ -162,7 +162,7 @@ resource "aws_cloudwatch_metric_alarm" "external_web_zero_healthy_hosts_but_runn
       metric_name = "RunningTaskCount"
       namespace   = "ECS/ContainerInsights"
       period      = "60"
-      stat        = "Sum"
+      stat        = "Average"
       unit        = "Count"
 
       dimensions = {
