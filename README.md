@@ -24,7 +24,7 @@ This repo contains only the IAC and lambdas and these can be developed as they a
 ## Secrets in use
 Currently two instances of Azkaban are deployed. `user` and `external`. They use differing authentication methods. External uses cognito.
 In order to accommodate programmatic access to Azkaban external, a cognito user was created. The details are stored in the `../azkaban_external/cognito` secret.
-In order to accommodate programmatic access to Azkaban user, a traditional user is created. The details are stored in the `/workflow_manager` secret.
+In order to accommodate programmatic access to Azkaban user, a traditional user is created. The details are stored in the `../workflow_manager` secret.
 
 ### Requirements
 
