@@ -40,4 +40,4 @@ jobs:
           git push
 
       - name: unit-tests
-        run: make unittest
+        run: tox
