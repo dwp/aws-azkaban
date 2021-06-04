@@ -1,0 +1,15 @@
+{
+  "build_pt_minus_1": {
+    "production": "1 * * * *",
+    "preprod": "* 2 * * *",
+    "integration": "* * 3 * *",
+    "qa": "* * * 4 *"
+  },
+
+  "build_pt_minus_2": {
+    "production": "* * * * 5",
+    "preprod": "6 * * * *",
+    "integration": "* 7 * * *",
+    "qa": "* * 8 * *"
+  }
+}

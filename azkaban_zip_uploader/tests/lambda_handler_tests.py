@@ -7,7 +7,7 @@ import json
 from botocore.stub import Stubber
 import urllib3
 
-mock_s3_client = boto3.client('s3')
+mock_s3_client = boto3.client('s3', region_name="eu-west-2")
 s3_stubber = Stubber(mock_s3_client)
 list_objects_response = {
     'IsTruncated': False,
@@ -54,7 +54,7 @@ list_objects_response = {
 s3_stubber.add_response('list_objects_v2', list_objects_response)
 s3_stubber.activate()
 
-mock_sm_client = boto3.client('secretsmanager')
+mock_sm_client = boto3.client('secretsmanager', region_name="eu-west-2")
 sm_stubber = Stubber(mock_sm_client)
 mock_secret_value_response = {
     'ARN': 'arn:aws:secretsmanager:eu-west-7:123456789012:secret:tutorials/MyFirstSecret-jiObOV',
@@ -98,7 +98,7 @@ http_session.status = 200
 
 class LambdaHandlerTests(TestCase):
     def test_get_files_from_s3(self):
-        result = lambda_handler.get_files_from_s3("bucket_id", "s3_dir", mock_s3_client)
+        result = lambda_handler.project_object_keys(mock_s3_client, "bucket_id", "s3_dir")
 
         assert result == ['return1.zip', 'return2.zip']
 

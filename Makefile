@@ -52,3 +52,18 @@ get-dependencies: ## Get dependencies that are normally managed by pipeline
 			./get_lambda_release.sh; \
 		done \
 	}
+
+.PHONY: unittest
+unittest:
+	tox
+
+.PHONY: artefact
+artefact:
+	rm -rf artefact build
+	mkdir artefact build
+	pip install -r requirements.txt -t artefact
+	cp azkaban_zip_uploader/*.py artefact/
+	cd artefact && zip -r ../build/azkaban_zip_uploader.zip ./ && cd -
+
+clean:
+	rm -rf artefact build
