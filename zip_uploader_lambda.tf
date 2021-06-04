@@ -16,11 +16,11 @@ resource "aws_lambda_function" "zip_uploader" {
 
   environment {
     variables = {
-      LOG_LEVEL       = local.azkaban_zip_uploader_log_level[local.environment]
-      AZKABAN_API_URL = "azkaban-external-webserver.${local.service_discovery_fqdn}"
+      LOG_LEVEL        = local.azkaban_zip_uploader_log_level[local.environment]
+      AZKABAN_API_URL  = "azkaban-external-webserver.${local.service_discovery_fqdn}"
       AZKABAN_API_PORT = "7443"
-      AZKABAN_SECRET  = data.aws_secretsmanager_secret.azkaban_external_cognito.name
-      ENVIRONMENT     = local.environment
+      AZKABAN_SECRET   = data.aws_secretsmanager_secret.azkaban_external_cognito.name
+      ENVIRONMENT      = local.environment
     }
   }
   tracing_config {
