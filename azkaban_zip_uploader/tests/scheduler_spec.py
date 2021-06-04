@@ -10,6 +10,7 @@ from scheduler import AzkabanScheduler
 
 class AzkabanSchedulerSpec(unittest.TestCase):
     _url = "url"
+    _port = "7443"
     _environment_1 = "environment_1"
     _environment_2 = "environment_2"
     _session_id = "session_id"
@@ -18,6 +19,9 @@ class AzkabanSchedulerSpec(unittest.TestCase):
     _flow_2 = "flow_2"
     _expression_1 = "1 * * * *"
     _expression_2 = "2 * * * *"
+    _headers = {
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
 
     @patch("requests.get")
     def test_schedules_single_flow(self, get):
@@ -31,7 +35,7 @@ class AzkabanSchedulerSpec(unittest.TestCase):
             }
         })
 
-        get.assert_called_once_with(f"{self._url}/schedule", data=self._data_1())
+        get.assert_called_once_with(f"https://{self._url}:{self._port}/schedule", params=self._data_1().encode('utf-8'), verify=False, headers=self._headers)
 
     @patch("requests.get")
     def test_does_not_schedule_other_environments(self, get):
@@ -60,8 +64,8 @@ class AzkabanSchedulerSpec(unittest.TestCase):
             }
         })
 
-        call_1 = call(f"{self._url}/schedule", data=self._data_1())
-        call_2 = call(f"{self._url}/schedule", data=self._data_2())
+        call_1 = call(f"https://{self._url}:{self._port}/schedule", params=self._data_1().encode('utf-8'), verify=False, headers=self._headers)
+        call_2 = call(f"https://{self._url}:{self._port}/schedule", params=self._data_2().encode('utf-8'), verify=False, headers=self._headers)
         get.assert_has_calls([call_1, call_2])
 
     @patch("requests.get")
@@ -89,7 +93,7 @@ class AzkabanSchedulerSpec(unittest.TestCase):
         return response
 
     def _scheduler(self) -> AzkabanScheduler:
-        return AzkabanScheduler(self._url, self._environment_1, self._session_id)
+        return AzkabanScheduler(self._url, self._port, self._environment_1, self._session_id)
 
     def _data_1(self):
         data = {
