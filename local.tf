@@ -15,7 +15,7 @@ locals {
     development = true
     qa          = false
     integration = false
-    preprod     = false
+    preprod     = true
     production  = true
   }
 
@@ -23,7 +23,7 @@ locals {
     development = true
     qa          = false
     integration = false
-    preprod     = false
+    preprod     = true
     production  = true
   }
 
@@ -31,7 +31,7 @@ locals {
     development = true
     qa          = false
     integration = false
-    preprod     = false
+    preprod     = true
     production  = true
   }
 
