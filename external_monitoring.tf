@@ -188,13 +188,13 @@ resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_zero_but_runn
   alarm_description   = "Managed by ${local.common_tags.Application} repository"
   alarm_actions       = [local.monitoring_topic_arn]
   treat_missing_data  = "breaching"
-  evaluation_periods  = 5
+  evaluation_periods  = 1
   threshold           = 0
   comparison_operator = "GreaterThanThreshold"
 
   metric_query {
     id          = "e1"
-    expression  = "IF(m1 == 0 && m2 > 1, 1, 0)"
+    expression  = "IF(m1 == 0 && m2 >= 1, 1, 0)"
     label       = "NoHealthyHosts"
     return_data = "true"
   }
