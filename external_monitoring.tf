@@ -112,12 +112,12 @@ resource "aws_cloudwatch_metric_alarm" "external_web_running_tasks_less_than_des
   }
 
   tags = merge(
-  local.common_tags,
-  {
-    Name              = "azkaban-external-desired-task-alert",
-    notification_type = "Warning",
-    severity          = "Critical"
-  },
+    local.common_tags,
+    {
+      Name              = "azkaban-external-desired-task-alert",
+      notification_type = "Warning",
+      severity          = "Critical"
+    },
   )
 }
 
@@ -149,7 +149,7 @@ resource "aws_cloudwatch_metric_alarm" "external_web_zero_healthy_hosts_but_runn
       unit        = "Count"
 
       dimensions = {
-        TargetGroup = aws_lb_target_group.azkaban_external_webserver.arn_suffix
+        TargetGroup  = aws_lb_target_group.azkaban_external_webserver.arn_suffix
         LoadBalancer = aws_lb.azkaban_external.arn_suffix
       }
     }
@@ -173,12 +173,37 @@ resource "aws_cloudwatch_metric_alarm" "external_web_zero_healthy_hosts_but_runn
   }
 
   tags = merge(
-  local.common_tags,
-  {
-    Name              = "azkaban-external-desired-task-alert",
-    notification_type = "Warning",
-    severity          = "Critical"
-  },
+    local.common_tags,
+    {
+      Name              = "azkaban-external-desired-task-alert",
+      notification_type = "Warning",
+      severity          = "Critical"
+    },
   )
 }
 
+resource "aws_cloudwatch_metric_alarm" "external_web_5xx_errors" {
+  alarm_name          = "External Web 5xx errors"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "HTTPCode_ELB_5XX_Count"
+  namespace           = "AWS/ApplicationELB"
+  period              = "300"
+  statistic           = "Sum"
+
+  dimensions = {
+    LoadBalancer = aws_lb.azkaban_external.arn_suffix
+  }
+
+  alarm_description = "This metric monitors 5xx errors on Azkaban external LB"
+  alarm_actions     = [local.monitoring_topic_arn]
+
+  tags = merge(
+    local.common_tags,
+    {
+      Name              = "azkaban-external-5xx-alert",
+      notification_type = "Warning",
+      severity          = "Critical"
+    },
+  )
+}
