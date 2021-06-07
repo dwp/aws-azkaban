@@ -61,7 +61,7 @@ data "template_file" "azkaban_executor_definition" {
 
 resource "aws_ecs_service" "azkaban_executor" {
   name                               = "azkaban-executor"
-  cluster                            = data.terraform_remote_state.common.outputs.ecs_cluster_main.id
+  cluster                            = local.azkaban_external_ecs_cluster.id
   task_definition                    = aws_ecs_task_definition.azkaban_executor.arn
   platform_version                   = var.platform_version
   desired_count                      = 1
