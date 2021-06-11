@@ -34,10 +34,8 @@ output "workflow_manager_vpc" {
   value = module.workflow_manager_vpc
 }
 
-output "azkaban_executor_sg" {
-  value = aws_security_group.azkaban_executor
-}
-
 output "azkaban_webserver_sg" {
-  value = aws_security_group.azkaban_webserver
+  value = {
+      id = aws_security_group.azkaban_webserver.id
+  }
 }
