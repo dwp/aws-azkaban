@@ -15,7 +15,7 @@ resource "aws_route53_record" "azkaban_external" {
 locals {
   root_dns_name = data.terraform_remote_state.aws_analytical_environment_infra.outputs.root_dns_name
   dns_zone      = data.terraform_remote_state.aws_analytical_environment_infra.outputs.parent_domain_name
-  fqdn          = format("azkaban-external.%s.", local.root_dns_name)
+  fqdn          = format("azkaban-external.%s", local.root_dns_name)
 }
 
 data "aws_route53_zone" "main" {
