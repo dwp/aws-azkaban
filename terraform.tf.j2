@@ -212,6 +212,16 @@ provider "aws" {
   }
 }
 
+provider "aws" {
+  alias = "management"
+  version = "~> 3.42.0"
+  region  = "{{terraform.provider_region}}"
+
+  assume_role {
+    role_arn = "arn:aws:iam::${local.account[local.management_account[local.environment]]}:role/${var.assume_role}"
+  }
+}
+
 locals {
   name        = "workflow-manager"
   external_name = "azkaban-external"

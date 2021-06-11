@@ -149,17 +149,6 @@ data "aws_iam_policy_document" "azkaban_executor_logs" {
   }
 }
 
-provider "aws" {
-  alias = "management"
-
-  region  = "eu-west-2"
-  version = "~> 3.42.0"
-
-  assume_role {
-    role_arn = "arn:aws:iam::${local.account[local.management_account[local.environment]]}:role/${var.assume_role}"
-  }
-}
-
 resource "aws_iam_role" "aws_analytical_env_cognito_read_only_role" {
   provider           = aws.management
   name               = "azkaban-executor-read-only-cognito-${local.environment}"
