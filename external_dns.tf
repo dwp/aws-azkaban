@@ -14,6 +14,7 @@ resource "aws_route53_record" "azkaban_external" {
 
 provider "aws" {
   alias  = "management-dns"
+  version = "~> 3.42.0"
   region = var.region
 
   assume_role {
