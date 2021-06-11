@@ -12,16 +12,6 @@ resource "aws_route53_record" "azkaban_external" {
   }
 }
 
-provider "aws" {
-  alias  = "management-dns"
-  version = "~> 3.42.0"
-  region = var.region
-
-  assume_role {
-    role_arn = "arn:aws:iam::${local.account[local.management_account[local.environment]]}:role/${var.assume_role}"
-  }
-}
-
 locals {
   root_dns_name = data.terraform_remote_state.aws_analytical_environment_infra.outputs.root_dns_name
   dns_zone      = data.terraform_remote_state.aws_analytical_environment_infra.outputs.parent_domain_name
