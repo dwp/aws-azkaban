@@ -83,7 +83,7 @@ data "aws_iam_policy_document" "azkaban_executor_read_config" {
     ]
 
     resources = [
-      "${data.terraform_remote_state.common.outputs.config_bucket.arn}",
+      data.terraform_remote_state.common.outputs.config_bucket.arn,
     ]
   }
 
@@ -108,7 +108,7 @@ data "aws_iam_policy_document" "azkaban_executor_read_config" {
     ]
 
     resources = [
-      "${data.terraform_remote_state.common.outputs.config_bucket_cmk.arn}",
+      data.terraform_remote_state.common.outputs.config_bucket_cmk.arn,
     ]
   }
 }
@@ -153,7 +153,7 @@ provider "aws" {
   alias = "management"
 
   region  = "eu-west-2"
-  version = "~> 2.70.0"
+  version = "~> 3.42.0"
 
   assume_role {
     role_arn = "arn:aws:iam::${local.account[local.management_account[local.environment]]}:role/${var.assume_role}"
