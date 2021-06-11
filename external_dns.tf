@@ -12,19 +12,10 @@ resource "aws_route53_record" "azkaban_external" {
   }
 }
 
-provider "aws" {
-  alias  = "management-dns"
-  region = var.region
-
-  assume_role {
-    role_arn = "arn:aws:iam::${local.account[local.management_account[local.environment]]}:role/${var.assume_role}"
-  }
-}
-
 locals {
   root_dns_name = data.terraform_remote_state.aws_analytical_environment_infra.outputs.root_dns_name
   dns_zone      = data.terraform_remote_state.aws_analytical_environment_infra.outputs.parent_domain_name
-  fqdn          = format("azkaban-external.%s.", local.root_dns_name)
+  fqdn          = format("azkaban-external.%s", local.root_dns_name)
 }
 
 data "aws_route53_zone" "main" {
@@ -51,13 +42,13 @@ resource "aws_acm_certificate" "azkaban_external_loadbalancer" {
 resource "aws_route53_record" "record_acm_verify" {
   provider = aws.management-dns
 
-  name    = aws_acm_certificate.azkaban_external_loadbalancer.domain_validation_options.0.resource_record_name
-  type    = aws_acm_certificate.azkaban_external_loadbalancer.domain_validation_options.0.resource_record_type
+  name    = element(tolist(aws_acm_certificate.azkaban_external_loadbalancer.domain_validation_options), 0).resource_record_name
+  type    = element(tolist(aws_acm_certificate.azkaban_external_loadbalancer.domain_validation_options), 0).resource_record_type
   zone_id = data.aws_route53_zone.main.zone_id
 
   ttl = "600"
 
-  records = [aws_acm_certificate.azkaban_external_loadbalancer.domain_validation_options.0.resource_record_value]
+  records = [element(tolist(aws_acm_certificate.azkaban_external_loadbalancer.domain_validation_options), 0).resource_record_value]
 }
 
 resource "aws_acm_certificate_validation" "cert" {

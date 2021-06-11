@@ -1,5 +1,5 @@
 terraform {
-  required_version = "{{terraform.terraform_12_version}}"
+  required_version = "{{terraform.terraform_13_version}}"
 
   backend "s3" {
     bucket         = "{{terraform.state_file_bucket}}"
@@ -194,11 +194,31 @@ data "terraform_remote_state" "aws_internal_compute" {
 }
 
 provider "aws" {
-  version = "~> 2.70.0"
+  version = "~> 3.42.0"
   region  = "{{terraform.provider_region}}"
 
   assume_role {
     role_arn = "arn:aws:iam::${lookup(local.account, local.environment)}:role/${var.assume_role}"
+  }
+}
+
+provider "aws" {
+  alias  = "management-dns"
+  version = "~> 3.42.0"
+  region  = "{{terraform.provider_region}}"
+
+  assume_role {
+    role_arn = "arn:aws:iam::${local.account[local.management_account[local.environment]]}:role/${var.assume_role}"
+  }
+}
+
+provider "aws" {
+  alias = "management"
+  version = "~> 3.42.0"
+  region  = "{{terraform.provider_region}}"
+
+  assume_role {
+    role_arn = "arn:aws:iam::${local.account[local.management_account[local.environment]]}:role/${var.assume_role}"
   }
 }
 
