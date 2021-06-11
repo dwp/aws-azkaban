@@ -1,7 +1,3 @@
-output "rds_db" {
-  value = aws_rds_cluster.azkaban_database
-}
-
 output "secrets" {
   value = {
     executor  = aws_secretsmanager_secret.azkaban_executor_password
