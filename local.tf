@@ -41,4 +41,6 @@ locals {
   azkaban_external_web_unhealthy_hosts      = "Azkaban External Web - Number of healthy nodes don't match running tasks for more than 5 minutes"
   azkaban_external_web_zero_unhealthy_hosts = "Azkaban External Web - No healthy hosts but tasks are running"
 
+  azkaban_external_web_5xx_errors = "Azkaban External Web - External Web HTTP 500 errors"
+
 }
