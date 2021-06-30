@@ -97,7 +97,7 @@ data "terraform_remote_state" "aws_analytical_env_app" {
 
 data "terraform_remote_state" "aws_pdm_dataset_generation" {
   backend   = "s3"
-  workspace = lookup(local.common_workspace, terraform.workspace)
+  workspace = terraform.workspace
 
   config = {
     bucket         = "{{terraform.state_file_bucket}}"
