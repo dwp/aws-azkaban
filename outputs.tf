@@ -32,6 +32,6 @@ output "workflow_manager_vpc" {
 
 output "azkaban_webserver_sg" {
   value = {
-      id = aws_security_group.azkaban_webserver.id
+    id = aws_security_group.azkaban_webserver.id
   }
 }
