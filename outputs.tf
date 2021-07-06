@@ -39,5 +39,6 @@ output "azkaban_webserver_sg" {
 output "azkaban_webserver_url" {
   value = {
     host = "azkaban-external-webserver.${local.service_discovery_fqdn}"
+    secret = data.aws_secretsmanager_secret.azkaban_external_cognito.name
   }
 }

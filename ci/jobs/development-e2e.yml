@@ -3,8 +3,8 @@ jobs:
     max_in_flight: 1
     plan:
       - get: aws-azkaban-e2e
-      - .: (( inject meta.plan.terraform-bootstrap ))
-      - .: (( inject meta.plan.terraform-output ))
+      - .: (( inject meta.plan.terraform-bootstrap-e2e ))
+      - .: (( inject meta.plan.terraform-output-e2e ))
       - .: (( inject meta.plan.check-running-jobs ))
         config:
           params:

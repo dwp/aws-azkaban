@@ -19,9 +19,11 @@ meta:
               curl --version
               python --version
               ls
-              ls terraform-output
+              ls terraform-output-e2e
+              azkaban_host=$(jq .azkaban_webserver_url.value.host < terraform-output-e2e/outputs.json)
+              echo azkaban_host: $azkaban_host
         inputs:
-          - name: terraform-output
+          - name: terraform-output-e2e
 
 
     terraform-common-config:
@@ -62,6 +64,33 @@ meta:
           - name: aws-azkaban
         outputs:
           - name: terraform-bootstrap
+      params:
+        AWS_REGION: eu-west-2
+
+    terraform-bootstrap-e2e:
+      task: terraform-bootstrap-e2e
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: dwpdigital/jinja-yaml-aws
+            version: 0.0.19
+            tag: 0.0.19
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              python bootstrap_terraform.py
+              sed -i '/^assume_role/ d' terraform.tfvars
+              cp terraform.tf ../terraform-bootstrap-e2e
+              cp terraform.tfvars ../terraform-bootstrap-e2e
+          dir: aws-azkaban-e2e
+        inputs:
+          - name: aws-azkaban-e2e
+        outputs:
+          - name: terraform-bootstrap-e2e
       params:
         AWS_REGION: eu-west-2
 
@@ -182,6 +211,27 @@ meta:
           - name: terraform-bootstrap
         outputs:
           - name: terraform-output
+
+    terraform-output-e2e:
+      task: terraform-output-e2e
+      .: (( inject meta.plan.terraform-common-config ))
+      config:
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              cp ../terraform-bootstrap-e2e/terraform.tf .
+              cp ../terraform-bootstrap-e2e/terraform.tfvars .
+              terraform workspace show
+              terraform init
+              terraform output --json > ../terraform-output-e2e/outputs.json
+          dir: aws-azkaban-e2e
+        inputs:
+          - name: aws-azkaban-e2e
+          - name: terraform-bootstrap-e2e
+        outputs:
+          - name: terraform-output-e2e
 
     terraform-output-dataworks-cognito:
       task: terraform-output-dataworks-cognito
