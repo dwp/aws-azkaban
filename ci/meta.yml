@@ -1,5 +1,29 @@
 meta:
   plan:
+    check-running-jobs:
+      task: check-if-jobs-are-running
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -c
+            - |
+              echo hello, world
+              curl --version
+              python --version
+              ls
+              ls terraform-output
+        inputs:
+          - name: terraform-output
+
+
     terraform-common-config:
       config:
         platform: linux
@@ -239,6 +263,7 @@ meta:
               cat manifest.json
               aws lambda invoke --function-name $LAMBDA_NAME --invocation-type RequestResponse --payload file://manifest.json --cli-connect-timeout 600 --cli-read-timeout 600 output.json
               cat output.json | jq -eC "if .errorMessage? then error(.errorMessage) else true end"
+
 
     rotate-azkaban-webserver-password:
       .: (( inject meta.plan.rotate-mysql-password ))
@@ -522,3 +547,4 @@ meta:
               aws secretsmanager put-secret-value --secret-id $SECRET_ID --secret-binary "${UPDATED_SECRET_BINARY}"
         inputs:
           - name: random-password
+

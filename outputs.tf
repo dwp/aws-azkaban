@@ -35,3 +35,9 @@ output "azkaban_webserver_sg" {
     id = aws_security_group.azkaban_webserver.id
   }
 }
+
+output "azkaban_webserver_url" {
+  value = {
+    host = "azkaban-external-webserver.${local.service_discovery_fqdn}"
+  }
+}

@@ -2,6 +2,7 @@ groups:
   - name: master
     jobs:
       - development
+      - e2e
       - qa
       - integration
       - preprod
