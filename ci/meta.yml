@@ -96,13 +96,13 @@ meta:
               python bootstrap_terraform.py
               cd deploy
               sed -i '/^assume_role/ d' terraform.tfvars
-              cp terraform.tf ../../terraform-bootstrap
-              cp terraform.tfvars ../../terraform-bootstrap
+              cp terraform.tf ../../terraform-bootstrap-dataworks-cognito
+              cp terraform.tfvars ../../terraform-bootstrap-dataworks-cognito
           dir: dataworks-cognito
         inputs:
           - name: dataworks-cognito
         outputs:
-          - name: terraform-bootstrap
+          - name: terraform-bootstrap-dataworks-cognito
       params:
         AWS_REGION: eu-west-2
 
@@ -116,8 +116,8 @@ meta:
             - -exc
             - |
               exit_status=0
-              cp ../terraform-bootstrap/terraform.tf .
-              cp ../terraform-bootstrap/terraform.tfvars .
+              cp ../terraform-bootstrap-azkaban/terraform.tf .
+              cp ../terraform-bootstrap-azkaban/terraform.tfvars .
               export TF_VAR_manage_mysql_user_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
               terraform workspace show
               terraform init
@@ -135,7 +135,7 @@ meta:
 
         inputs:
           - name: aws-azkaban
-          - name: terraform-bootstrap
+          - name: terraform-bootstrap-azkaban
           - name: manage-mysql-user-release
         outputs:
           - name: terraform-success
@@ -150,8 +150,8 @@ meta:
             - -exc
             - |
               if [ -f ../terraform-success/success ]; then
-              cp ../terraform-bootstrap/terraform.tf .
-              cp ../terraform-bootstrap/terraform.tfvars .
+              cp ../terraform-bootstrap-azkaban/terraform.tf .
+              cp ../terraform-bootstrap-azkaban/terraform.tfvars .
               export TF_VAR_manage_mysql_user_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
               terraform workspace show
               terraform init
@@ -169,7 +169,7 @@ meta:
           dir: aws-azkaban
         inputs:
           - name: aws-azkaban
-          - name: terraform-bootstrap
+          - name: terraform-bootstrap-azkaban
           - name: manage-mysql-user-release
           - name: terraform-success
       params:
@@ -206,15 +206,15 @@ meta:
             - -exc
             - |
               cd deploy
-              cp ../../terraform-bootstrap/terraform.tf .
-              cp ../../terraform-bootstrap/terraform.tfvars .
+              cp ../../terraform-bootstrap-dataworks-cognito/terraform.tf .
+              cp ../../terraform-bootstrap-dataworks-cognito/terraform.tfvars .
               terraform workspace show
               terraform init
               terraform output --json > ../../terraform-output/outputs.json
           dir: dataworks-cognito
         inputs:
           - name: dataworks-cognito
-          - name: terraform-bootstrap
+          - name: terraform-bootstrap-dataworks-cognito
         outputs:
           - name: terraform-output
 
