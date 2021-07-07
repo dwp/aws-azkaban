@@ -38,6 +38,7 @@ output "azkaban_webserver_sg" {
 
 output "azkaban_external" {
   value = {
-    fqdn = aws_route53_record.azkaban_external.fqdn
+    fqdn        = aws_route53_record.azkaban_external.fqdn
+    secret_name = data.aws_secretsmanager_secret.azkaban_external_cognito.name
   }
 }
