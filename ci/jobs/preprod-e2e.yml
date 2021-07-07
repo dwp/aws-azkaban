@@ -6,6 +6,8 @@ jobs:
         resource: aws-azkaban-e2e
       - .: (( inject meta.plan.terraform-bootstrap-azkaban ))
       - .: (( inject meta.plan.terraform-output-azkaban ))
+        params:
+          TF_WORKSPACE: 'preprod'
       - .: (( inject meta.plan.check-running-jobs ))
         config:
           params:
