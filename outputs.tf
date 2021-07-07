@@ -36,9 +36,8 @@ output "azkaban_webserver_sg" {
   }
 }
 
-output "azkaban_webserver_url" {
+output "azkaban_external" {
   value = {
-    host = "azkaban-external-webserver.${local.service_discovery_fqdn}"
-    secret = data.aws_secretsmanager_secret.azkaban_external_cognito.name
+    fqdn = aws_route53_record.azkaban_external.fqdn
   }
 }
