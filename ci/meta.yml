@@ -25,9 +25,9 @@ meta:
               azkaban_username=$(echo $azkaban_secret_value | jq -r .azkaban_username)
               azkaban_password=$(echo $azkaban_secret_value | jq -r .azkaban_password)
               echo azkaban_username: \'$azkaban_username\'.
-              echo curl -k -X POST --data "action=login&username=$azkaban_username&password=$azkaban_password" https://$azkaban_host/manager
-              curl -k -X POST --data "action=login&username=$azkaban_username&password=$azkaban_password" https://$azkaban_host/manager
-              ping $azkaban_host
+
+              echo curl https://$azkaban_host -v -X POST --data-urlencode "action=login" --data-urlencode "username=$azkaban_username" --data-urlencode password=$azkaban_password
+              curl https://$azkaban_host -v -X POST --data-urlencode "action=login" --data-urlencode "username=$azkaban_username" --data-urlencode password="$azkaban_password"
         inputs:
           - name: terraform-output-azkaban
       params:
