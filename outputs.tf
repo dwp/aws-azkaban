@@ -35,3 +35,9 @@ output "azkaban_webserver_sg" {
     id = aws_security_group.azkaban_webserver.id
   }
 }
+
+output "azkaban_external" {
+  value = {
+    fqdn = aws_route53_record.azkaban_external.fqdn
+  }
+}
