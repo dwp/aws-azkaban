@@ -2,9 +2,10 @@ jobs:
   - name: e2e
     max_in_flight: 1
     plan:
-      - get: aws-azkaban-e2e
-      - .: (( inject meta.plan.terraform-bootstrap-e2e ))
-      - .: (( inject meta.plan.terraform-output-e2e ))
+      - get: aws-azkaban
+        resource: aws-azkaban-e2e
+      - .: (( inject meta.plan.terraform-bootstrap-azkaban ))
+      - .: (( inject meta.plan.terraform-output-azkaban ))
       - .: (( inject meta.plan.check-running-jobs ))
         config:
           params:
@@ -17,8 +18,8 @@ jobs:
         trigger: false
       - get: manage-mysql-user-release
         trigger: false
-      - .: (( inject meta.plan.terraform-bootstrap ))
-      - .: (( inject meta.plan.terraform-output ))
+      - .: (( inject meta.plan.terraform-bootstrap-azkaban ))
+      - .: (( inject meta.plan.terraform-output-azkaban ))
       - .: (( inject meta.plan.cycle-azkaban-containers ))
         config:
           params:
@@ -36,8 +37,8 @@ jobs:
         trigger: false
       - get: manage-mysql-user-release
         trigger: false
-      - .: (( inject meta.plan.terraform-bootstrap ))
-      - .: (( inject meta.plan.terraform-output ))
+      - .: (( inject meta.plan.terraform-bootstrap-azkaban ))
+      - .: (( inject meta.plan.terraform-output-azkaban ))
       - .: (( inject meta.plan.cycle-azkaban-containers ))
         config:
           params:

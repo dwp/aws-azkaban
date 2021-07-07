@@ -17,8 +17,8 @@ meta:
             - |
               source /assume-role
               set +x
-              azkaban_host=$(jq -r .azkaban_webserver_url.value.host < terraform-output-e2e/outputs.json)
-              azkaban_secret=$(jq -r .azkaban_webserver_url.value.secret < terraform-output-e2e/outputs.json)
+              azkaban_host=$(jq -r .azkaban_external.value.fqdn < terraform-output-azkaban/outputs.json)
+              azkaban_secret=$(jq -r .azkaban_webserver_url.value.secret < terraform-output-azkaban/outputs.json)
               echo azkaban_host: \'$azkaban_host\'.
               echo azkaban_secret: \'$azkaban_secret\'.
               azkaban_secret_value=$(aws secretsmanager get-secret-value --secret-id $azkaban_secret | jq -r .SecretBinary | base64 -d)
@@ -26,12 +26,12 @@ meta:
               azkaban_password=$(echo $azkaban_secret_value | jq -r .azkaban_password)
               echo azkaban_username: \'$azkaban_username\'.
               echo curl -X POST --data-urlencode "action=login" --data-urlencode "username=$azkaban_username" \
-                --data-urlencode "password=$azkaban_password" https://$azkaban_host:7443
+                --data-urlencode "password=$azkaban_password" https://$azkaban_host
               curl -X POST --data-urlencode "action=login" --data-urlencode "username=$azkaban_username" \
-                --data-urlencode "password=$azkaban_password" https://$azkaban_host:7443
+                --data-urlencode "password=$azkaban_password" https://$azkaban_host
               ping $azkaban_host
         inputs:
-          - name: terraform-output-e2e
+          - name: terraform-output-azkaban
       params:
         AWS_REGION: eu-west-2
         AWS_DEFAULT_REGION: eu-west-2
@@ -51,8 +51,8 @@ meta:
           TF_CLI_ARGS_plan: -lock-timeout=300s
           TF_VAR_costcode: ((dataworks.costcode))
 
-    terraform-bootstrap:
-      task: terraform-bootstrap
+    terraform-bootstrap-azkaban:
+      task: terraform-bootstrap-azkaban
       config:
         platform: linux
         image_resource:
@@ -68,40 +68,13 @@ meta:
             - |
               python bootstrap_terraform.py
               sed -i '/^assume_role/ d' terraform.tfvars
-              cp terraform.tf ../terraform-bootstrap
-              cp terraform.tfvars ../terraform-bootstrap
+              cp terraform.tf ../terraform-bootstrap-azkaban
+              cp terraform.tfvars ../terraform-bootstrap-azkaban
           dir: aws-azkaban
         inputs:
           - name: aws-azkaban
         outputs:
-          - name: terraform-bootstrap
-      params:
-        AWS_REGION: eu-west-2
-
-    terraform-bootstrap-e2e:
-      task: terraform-bootstrap-e2e
-      config:
-        platform: linux
-        image_resource:
-          type: docker-image
-          source:
-            repository: dwpdigital/jinja-yaml-aws
-            version: 0.0.19
-            tag: 0.0.19
-        run:
-          path: sh
-          args:
-            - -exc
-            - |
-              python bootstrap_terraform.py
-              sed -i '/^assume_role/ d' terraform.tfvars
-              cp terraform.tf ../terraform-bootstrap-e2e
-              cp terraform.tfvars ../terraform-bootstrap-e2e
-          dir: aws-azkaban-e2e
-        inputs:
-          - name: aws-azkaban-e2e
-        outputs:
-          - name: terraform-bootstrap-e2e
+          - name: terraform-bootstrap-azkaban
       params:
         AWS_REGION: eu-west-2
 
@@ -202,8 +175,8 @@ meta:
       params:
         DETAILED_EXITCODE: -detailed-exitcode
 
-    terraform-output:
-      task: terraform-output
+    terraform-output-azkaban:
+      task: terraform-output-azkaban
       .: (( inject meta.plan.terraform-common-config ))
       config:
         run:
@@ -211,38 +184,17 @@ meta:
           args:
             - -exc
             - |
-              cp ../terraform-bootstrap/terraform.tf .
-              cp ../terraform-bootstrap/terraform.tfvars .
+              cp ../terraform-bootstrap-azkaban/terraform.tf .
+              cp ../terraform-bootstrap-azkaban/terraform.tfvars .
               terraform workspace show
               terraform init
-              terraform output --json > ../terraform-output/outputs.json
+              terraform output --json > ../terraform-output-azkaban/outputs.json
           dir: aws-azkaban
         inputs:
           - name: aws-azkaban
-          - name: terraform-bootstrap
+          - name: terraform-bootstrap-azkaban
         outputs:
-          - name: terraform-output
-
-    terraform-output-e2e:
-      task: terraform-output-e2e
-      .: (( inject meta.plan.terraform-common-config ))
-      config:
-        run:
-          path: sh
-          args:
-            - -exc
-            - |
-              cp ../terraform-bootstrap-e2e/terraform.tf .
-              cp ../terraform-bootstrap-e2e/terraform.tfvars .
-              terraform workspace show
-              terraform init
-              terraform output --json > ../terraform-output-e2e/outputs.json
-          dir: aws-azkaban-e2e
-        inputs:
-          - name: aws-azkaban-e2e
-          - name: terraform-bootstrap-e2e
-        outputs:
-          - name: terraform-output-e2e
+          - name: terraform-output-azkaban
 
     terraform-output-dataworks-cognito:
       task: terraform-output-dataworks-cognito

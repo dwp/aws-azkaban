@@ -6,7 +6,7 @@ jobs:
         trigger: true
       - get: manage-mysql-user-release
         trigger: true
-      - .: (( inject meta.plan.terraform-bootstrap ))
+      - .: (( inject meta.plan.terraform-bootstrap-azkaban ))
       - .: (( inject meta.plan.terraform-apply ))
         params:
           TF_WORKSPACE: 'qa'
@@ -88,8 +88,8 @@ jobs:
         trigger: false
       - get: manage-mysql-user-release
         trigger: false
-      - .: (( inject meta.plan.terraform-bootstrap ))
-      - .: (( inject meta.plan.terraform-output ))
+      - .: (( inject meta.plan.terraform-bootstrap-azkaban ))
+      - .: (( inject meta.plan.terraform-output-azkaban ))
         params:
           TF_WORKSPACE: 'qa'
       - .: (( inject meta.plan.cycle-azkaban-containers ))
@@ -111,8 +111,8 @@ jobs:
         trigger: false
       - get: manage-mysql-user-release
         trigger: false
-      - .: (( inject meta.plan.terraform-bootstrap ))
-      - .: (( inject meta.plan.terraform-output ))
+      - .: (( inject meta.plan.terraform-bootstrap-azkaban ))
+      - .: (( inject meta.plan.terraform-output-azkaban ))
         params:
           TF_WORKSPACE: 'qa'
       - .: (( inject meta.plan.cycle-azkaban-containers ))
