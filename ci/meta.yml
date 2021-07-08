@@ -15,7 +15,8 @@ meta:
           args:
             - -c
             - |
-              source ./ci/utility/environment.sh
+              find . -type f
+              source ./aws-azkaban/ci/utility/environment.sh
               check_running_executions
         inputs:
           - name: terraform-output-azkaban

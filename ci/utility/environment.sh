@@ -6,8 +6,8 @@ check_running_executions() {
   azkaban_username=$(echo $azkaban_secret_value | jq -r .azkaban_username)
   azkaban_password=$(echo $azkaban_secret_value | jq -r .azkaban_password)
   azkaban_session_id=$(curl -sS https://$azkaban_host -X POST --data-urlencode "action=login" --data-urlencode "username=$azkaban_username" --data-urlencode password="$azkaban_password" | jq -r .\"session.id\")
-  pip -qq install -r ./ci/utility/py/requirements.txt
-  running_jobs=$(python ./ci/utility/py/azkaban_jobs.py --session-id $azkaban_session_id https://$azkaban_host)
+  pip -qq install -r $(source_directory)/requirements.txt
+  running_jobs=$(python $(source_directory)/azkaban_jobs.py --session-id $azkaban_session_id https://$azkaban_host)
   count=$(echo $running_jobs | wc -l)
   if [ $count -gt 0 ]; then
     echo $count executions are running: >&2
@@ -16,4 +16,8 @@ check_running_executions() {
   else
     echo No executions are running
   fi
+}
+
+source_directory() {
+  echo ./aws-azkaban/ci/utility/py
 }
