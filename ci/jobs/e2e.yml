@@ -1,18 +1,16 @@
 jobs:
-  - name: preprod-e2e
+  - name: e2e
     max_in_flight: 1
     plan:
       - get: aws-azkaban
         resource: aws-azkaban-e2e
       - .: (( inject meta.plan.terraform-bootstrap-azkaban ))
       - .: (( inject meta.plan.terraform-output-azkaban ))
-        params:
-          TF_WORKSPACE: 'preprod'
       - .: (( inject meta.plan.check-running-jobs ))
         config:
           params:
-            AWS_ACC: ((aws_account.preprod))
-            AWS_ROLE_ARN: arn:aws:iam::((aws_account.preprod)):role/ci
+            AWS_ACC: ((aws_account.development))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
 
   - name: cycle-azkaban-containers-development
     plan:
