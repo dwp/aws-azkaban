@@ -1,5 +1,5 @@
 init() {
-  source /assume-role && set +x
+  source /assume-role
   pip -qq install -r $(source_directory)/requirements.txt
 }
 
@@ -27,6 +27,7 @@ azkaban_running_jobs() {
   local -r azkaban_session_id=${2:?Usage: ${FUNCNAME[0]} azkaban_host azkaban_session_id}
   python $(source_directory)/azkaban_jobs.py --session-id $azkaban_session_id https://$azkaban_host
 }
+
 azkaban_host() {
   jq -r .azkaban_external.value.fqdn < terraform-output-azkaban/outputs.json
 }
