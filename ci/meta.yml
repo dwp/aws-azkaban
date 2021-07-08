@@ -15,7 +15,6 @@ meta:
           args:
             - -c
             - |
-              find . -type f
               source ./aws-azkaban/ci/utility/environment.sh
               check_running_executions
         inputs:
