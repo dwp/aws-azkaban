@@ -6,8 +6,11 @@ init() {
 check_running_executions() {
   init
   azkaban_host=$(azkaban_host)
+  echo azkaban_host: \'$azkaban_host\'
   azkaban_secret=$(azkaban_secret)
+  echo azkaban_secret: \`$azkaban_secret\`
   azkaban_secret_value=$(azkaban_secret_value $azkaban_secret)
+  echo azkaban_secret_value: \`$azkaban_secret_value\`
   azkaban_username=$(azkaban_username $azkaban_secret_value)
   azkaban_password=$(azkaban_password $azkaban_secret_value)
   azkaban_session_id=$(azkaban_session_id $azkaban_host $azkaban_username $azkaban_password)
