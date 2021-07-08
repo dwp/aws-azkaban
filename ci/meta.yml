@@ -15,7 +15,8 @@ meta:
           args:
             - -c
             - |
-              source ./aws-azkaban//ci/utility/environment.sh
+              source ./aws-azkaban/ci/utility/environment.sh
+              init
               azkaban_host=$(azkaban_host)
               azkaban_secret=$(azkaban_secret)
               azkaban_secret_value=$(azkaban_secret_value $azkaban_secret)
