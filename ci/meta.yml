@@ -15,14 +15,8 @@ meta:
           args:
             - -c
             - |
-              source /assume-role
-              find . -type f
-              azkaban_host=$(jq -r .azkaban_external.value.fqdn < terraform-output-azkaban/outputs.json)
-              azkaban_secret=$(jq -r .azkaban_external.value.secret_name < terraform-output-azkaban/outputs.json)
-              azkaban_secret_value=$(aws secretsmanager get-secret-value --secret-id $azkaban_secret | jq -r .SecretBinary | base64 -d)
-              azkaban_username=$(echo $azkaban_secret_value | jq -r .azkaban_username)
-              azkaban_password=$(echo $azkaban_secret_value | jq -r .azkaban_password)
-              curl https://$azkaban_host -X POST --data-urlencode "action=login" --data-urlencode "username=$azkaban_username" --data-urlencode password="$azkaban_password"
+              source ./ci/utility/environment.sh
+              check_running_executions
         inputs:
           - name: terraform-output-azkaban
           - name: aws-azkaban
