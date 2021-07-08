@@ -3,6 +3,15 @@ init() {
   pip -qq install -r $(source_directory)/requirements.txt
 }
 
+azkaban_authenticate() {
+  azkaban_host=$(azkaban_host)
+  azkaban_secret=$(azkaban_secret)
+  azkaban_secret_value=$(azkaban_secret_value "$azkaban_secret")
+  azkaban_username=$(azkaban_username "$azkaban_secret_value")
+  azkaban_password=$(azkaban_password "$azkaban_secret_value")
+  azkaban_session_id "$azkaban_host" "$azkaban_username" "$azkaban_password"
+}
+
 azkaban_running_jobs() {
   local azkaban_host=${1:?}
   local azkaban_session_id=${2:?}
