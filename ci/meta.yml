@@ -22,9 +22,8 @@ meta:
               running_jobs=$(azkaban_running_jobs $azkaban_host $azkaban_session_id)
               count=$(echo $running_jobs | wc -l)
               if [ $count -gt 0 ]; then
-                echo $count executions are running: >&2
+                echo Executions are running: >&2
                 echo $running_jobs >&2
-                return 1
               else
                 echo No executions are running
               fi
