@@ -1,5 +1,5 @@
 init() {
-  source /assume-role && set +x
+  source /assume-role
   pip -qq install -r $(source_directory)/requirements.txt
 }
 
