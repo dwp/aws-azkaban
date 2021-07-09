@@ -16,7 +16,7 @@ meta:
             - -cx
             - |
               source ./aws-azkaban/ci/utility/environment.sh
-              init
+              source /assume-role && set +x
               azkaban_host=$(azkaban_host)
               azkaban_authenticate > azkaban-session-id.txt
         inputs:
@@ -49,6 +49,7 @@ meta:
               azkaban_session_id=$(azkaban_authenticate)
               echo azkaban_session_id \'$azkaban_session_id\'.
               ls
+              ls azkaban-session-id
 #              running_jobs=$(azkaban_running_jobs $azkaban_host $azkaban_session_id)
 #              count=$(echo $running_jobs | wc -l)
 #              if [ $count -gt 0 ]; then
