@@ -638,8 +638,13 @@ meta:
           args:
             - -c
             - |
-              echo hello
-              ls
+              source ./aws-azkaban/ci/utility/environment.sh
+              source /assume-role
+              azkaban_session_id=$(azkaban_session_id)
+              azkaban_host=$(azkaban_host)
+              azkaban_delete_project $azkaban_host $azkaban_session_id e2e
+              azkaban_create_project $azkaban_host $azkaban_session_id e2e
+              azkaban_upload_project $azkaban_host $azkaban_session_id e2e ./e2e-job/e2e.zip
         inputs:
         - name: terraform-output-azkaban
         - name: aws-azkaban
