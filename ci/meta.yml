@@ -638,8 +638,9 @@ meta:
           args:
             - -c
             - |
+              set +x
               source ./aws-azkaban/ci/utility/environment.sh
-              source /assume-role
+              source /assume-role && set +x
               azkaban_session_id=$(azkaban_session_id)
               azkaban_host=$(azkaban_host)
               azkaban_delete_project $azkaban_host $azkaban_session_id e2e

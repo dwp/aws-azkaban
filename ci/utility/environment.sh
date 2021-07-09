@@ -60,7 +60,7 @@ azkaban_upload_project() {
   local azkaban_project_name=${3:?}
   local azkaban_zip_file=${4:?}
 
-  curl -i -X POST -L \
+  curl -X POST \
     -H "X-Requested-With: XMLHttpRequest" \
     --form "ajax=upload" \
     --form "session.id=$azkaban_session_id" \
