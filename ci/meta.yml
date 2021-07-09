@@ -1,7 +1,7 @@
 meta:
   plan:
     azkaban-session-id:
-      task: get-azkaban-session-id
+      task: azkaban-session-id
       config:
         platform: linux
         image_resource:
@@ -13,11 +13,10 @@ meta:
         run:
           path: sh
           args:
-            - -cx
+            - -c
             - |
               source ./aws-azkaban/ci/utility/environment.sh
               source /assume-role && set +x
-              azkaban_host=$(azkaban_host)
               azkaban_authenticate > azkaban-session-id/azkaban-session-id.txt
         inputs:
           - name: terraform-output-azkaban
@@ -28,8 +27,8 @@ meta:
         AWS_REGION: eu-west-2
         AWS_DEFAULT_REGION: eu-west-2
 
-    check-running-jobs:
-      task: check-running-jobs
+    running-jobs:
+      task: running-jobs
       config:
         platform: linux
         image_resource:
@@ -45,21 +44,19 @@ meta:
             - |
               source ./aws-azkaban/ci/utility/environment.sh
               init
-              azkaban_session_id=$(azkaban_session_id)
-              echo azkaban_session_id \'$azkaban_session_id\'.
-#              running_jobs=$(azkaban_running_jobs $azkaban_host $azkaban_session_id)
-#              count=$(echo $running_jobs | wc -l)
-#              if [ $count -gt 0 ]; then
-#                echo Executions are running: >&2
-#                echo $running_jobs >&2
-#                return 1
-#              else
-#                echo No executions are running
-#              fi
+              running_jobs=$(azkaban_running_jobs $(azkaban_host) $(azkaban_session_id))
+              count=$(echo -n $running_jobs | wc -l)
+              echo running_jobs: \'$running_jobs\': count \'$count\'.
+              if [ $count -gt 0 ]; then
+                echo Executions are running: >&2
+                echo $running_jobs >&2
+                return 1
+              else
+                echo No executions are running
+              fi
         inputs:
           - name: terraform-output-azkaban
           - name: aws-azkaban
-          - name: azkaban-session-id
       params:
         AWS_REGION: eu-west-2
         AWS_DEFAULT_REGION: eu-west-2

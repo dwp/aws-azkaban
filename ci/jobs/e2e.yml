@@ -6,12 +6,7 @@ jobs:
         resource: aws-azkaban-e2e
       - .: (( inject meta.plan.terraform-bootstrap-azkaban ))
       - .: (( inject meta.plan.terraform-output-azkaban ))
-      - .: (( inject meta.plan.azkaban-session-id ))
-        config:
-          params:
-            AWS_ACC: ((aws_account.development))
-            AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
-      - .: (( inject meta.plan.check-running-jobs ))
+      - .: (( inject meta.plan.running-jobs ))
         config:
           params:
             AWS_ACC: ((aws_account.development))

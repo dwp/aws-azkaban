@@ -8,13 +8,13 @@ azkaban_shared_session_id() {
   cat azkaban-session-id/azkaban-session-id.txt
 }
 
-azkaban_authenticate() {
+azkaban_session_id() {
   azkaban_host=$(azkaban_host)
   azkaban_secret=$(azkaban_secret)
   azkaban_secret_value=$(azkaban_secret_value "$azkaban_secret")
   azkaban_username=$(azkaban_username "$azkaban_secret_value")
   azkaban_password=$(azkaban_password "$azkaban_secret_value")
-  azkaban_session_id "$azkaban_host" "$azkaban_username" "$azkaban_password"
+  azkaban_authenticate "$azkaban_host" "$azkaban_username" "$azkaban_password"
 }
 
 azkaban_running_jobs() {
@@ -23,7 +23,7 @@ azkaban_running_jobs() {
   python $(source_directory)/azkaban_jobs.py --session-id $azkaban_session_id https://$azkaban_host
 }
 
-azkaban_session_id() {
+azkaban_authenticate() {
   local azkaban_host=${1:?}
   local azkaban_username=${2:?}
   local azkaban_password=${3:?}
