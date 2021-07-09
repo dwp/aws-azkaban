@@ -1,5 +1,33 @@
 meta:
   plan:
+    azkaban-session-id:
+      task: get-azkaban-session-id
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -cx
+            - |
+              source ./aws-azkaban/ci/utility/environment.sh
+              init
+              azkaban_host=$(azkaban_host)
+              azkaban_authenticate > azkaban-session-id.txt
+        inputs:
+          - name: terraform-output-azkaban
+          - name: aws-azkaban
+        outputs:
+          - name: azkaban-session-id
+      params:
+        AWS_REGION: eu-west-2
+        AWS_DEFAULT_REGION: eu-west-2
+
     check-running-jobs:
       task: check-running-jobs
       config:
@@ -19,17 +47,20 @@ meta:
               init
               azkaban_host=$(azkaban_host)
               azkaban_session_id=$(azkaban_authenticate)
-              running_jobs=$(azkaban_running_jobs $azkaban_host $azkaban_session_id)
-              count=$(echo $running_jobs | wc -l)
-              if [ $count -gt 0 ]; then
-                echo Executions are running: >&2
-                echo $running_jobs >&2
-              else
-                echo No executions are running
-              fi
+              ls
+#              running_jobs=$(azkaban_running_jobs $azkaban_host $azkaban_session_id)
+#              count=$(echo $running_jobs | wc -l)
+#              if [ $count -gt 0 ]; then
+#                echo Executions are running: >&2
+#                echo $running_jobs >&2
+#                return 1
+#              else
+#                echo No executions are running
+#              fi
         inputs:
           - name: terraform-output-azkaban
           - name: aws-azkaban
+          - name: azkaban-session-id
       params:
         AWS_REGION: eu-west-2
         AWS_DEFAULT_REGION: eu-west-2

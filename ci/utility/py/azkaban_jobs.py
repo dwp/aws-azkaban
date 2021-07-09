@@ -14,7 +14,7 @@ def main():
                     print(f"{project},{flow},{execution_id}")
     except AzkabanException as e:
         sys.stderr.write(e.message)
-        exit(1)
+        raise e
 
 
 def azkaban_service(arguments):

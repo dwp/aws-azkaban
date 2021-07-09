@@ -6,6 +6,7 @@ jobs:
         resource: aws-azkaban-e2e
       - .: (( inject meta.plan.terraform-bootstrap-azkaban ))
       - .: (( inject meta.plan.terraform-output-azkaban ))
+      - .: (( inject meta.plan.azkaban-session-id ))
       - .: (( inject meta.plan.check-running-jobs ))
         config:
           params:
