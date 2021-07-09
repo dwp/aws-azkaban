@@ -1,66 +1,5 @@
 meta:
   plan:
-    azkaban-session-id:
-      task: azkaban-session-id
-      config:
-        platform: linux
-        image_resource:
-          source:
-            repository: ((dataworks.docker_awscli_repository))
-            tag: ((dataworks.docker_awscli_version))
-            version: ((dataworks.docker_awscli_version))
-          type: docker-image
-        run:
-          path: sh
-          args:
-            - -c
-            - |
-              source ./aws-azkaban/ci/utility/environment.sh
-              source /assume-role && set +x
-              azkaban_authenticate > azkaban-session-id/azkaban-session-id.txt
-        inputs:
-          - name: terraform-output-azkaban
-          - name: aws-azkaban
-        outputs:
-          - name: azkaban-session-id
-      params:
-        AWS_REGION: eu-west-2
-        AWS_DEFAULT_REGION: eu-west-2
-
-    running-jobs:
-      task: running-jobs
-      config:
-        platform: linux
-        image_resource:
-          source:
-            repository: ((dataworks.docker_awscli_repository))
-            tag: ((dataworks.docker_awscli_version))
-            version: ((dataworks.docker_awscli_version))
-          type: docker-image
-        run:
-          path: sh
-          args:
-            - -c
-            - |
-              source ./aws-azkaban/ci/utility/environment.sh
-              init
-              running_jobs=$(azkaban_running_jobs $(azkaban_host) $(azkaban_session_id))
-              count=$(echo -n $running_jobs | wc -l)
-              echo running_jobs: \'$running_jobs\': count \'$count\'.
-              if [ $count -gt 0 ]; then
-                echo Executions are running: >&2
-                echo $running_jobs >&2
-                return 1
-              else
-                echo No executions are running
-              fi
-        inputs:
-          - name: terraform-output-azkaban
-          - name: aws-azkaban
-      params:
-        AWS_REGION: eu-west-2
-        AWS_DEFAULT_REGION: eu-west-2
-
 
     terraform-common-config:
       config:
@@ -586,3 +525,105 @@ meta:
         inputs:
           - name: random-password
 
+    azkaban-session-id:
+      task: azkaban-session-id
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -c
+            - |
+              source ./aws-azkaban/ci/utility/environment.sh
+              source /assume-role && set +x
+              azkaban_authenticate > azkaban-session-id/azkaban-session-id.txt
+        inputs:
+          - name: terraform-output-azkaban
+          - name: aws-azkaban
+        outputs:
+          - name: azkaban-session-id
+      params:
+        AWS_REGION: eu-west-2
+        AWS_DEFAULT_REGION: eu-west-2
+
+    running-jobs:
+      task: running-jobs
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -c
+            - |
+              source ./aws-azkaban/ci/utility/environment.sh
+              init
+              running_jobs=$(azkaban_running_jobs $(azkaban_host) $(azkaban_session_id))
+              if [ -n "$running_jobs" ]; then
+                echo Executions are running: >&2
+                echo $running_jobs >&2
+                return 1
+              else
+                echo No executions are running
+              fi
+        inputs:
+          - name: terraform-output-azkaban
+          - name: aws-azkaban
+      params:
+        AWS_REGION: eu-west-2
+        AWS_DEFAULT_REGION: eu-west-2
+
+    create-e2e-job:
+      task: create-job
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: quay.io/dwp/awscli-ubuntu
+            tag: latest
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -c
+            - |
+              cat <<EOF > e2e.project
+              azkaban-flow-version: 2.0
+              EOF
+
+              cat <<EOF > e2e.flow
+              nodes:
+                - name: e2e
+                  type: emr
+                  config:
+                     step: echo hello, world
+              EOF
+
+              set -x
+              which zip
+              which unzip
+              which java
+              tar -a -cf e2e-job/e2e.zip e2e.project e2e.flow
+              ls
+              ls e2e-job
+              file e2e-job/e2e.zip
+              apt-get install -y zip
+          inputs:
+          - name: terraform-output-azkaban
+          - name: aws-azkaban
+        outputs:
+          - name: e2e-job
+      params:
+        AWS_REGION: eu-west-2
+        AWS_DEFAULT_REGION: eu-west-2
