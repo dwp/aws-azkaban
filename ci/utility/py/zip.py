@@ -4,9 +4,9 @@ import zipfile
 
 def main():
     args = command_line_args()
-    with zipfile.ZipFile(args.zipfile, mode='w') as zip:
+    with zipfile.ZipFile(args.zipfile, mode='w') as zipped:
         for file in args.files:
-            zip.write(file)
+            zipped.write(file)
 
 
 def command_line_args():

@@ -33,6 +33,52 @@ azkaban_authenticate() {
     --data-urlencode "password=$azkaban_password" | jq -r .\"session.id\"
 }
 
+azkaban_authenticate2() {
+  local azkaban_host=${1:?}
+  local azkaban_username=${2:?}
+  local azkaban_password=${3:?}
+  curl -sS https://$azkaban_host -X POST \
+    --data-urlencode "action=login" \
+    --data-urlencode "username=$azkaban_username" \
+    --data-urlencode "password=$azkaban_password"
+}
+
+azkaban_delete_project() {
+  local azkaban_host=${1:?}
+  local azkaban_session_id=${2:?}
+  local azkaban_project_name=${3:?}
+  curl --get https://$azkaban_host/manager \
+    --data-urlencode "delete=true" \
+    --data-urlencode "session.id=$azkaban_session_id" \
+    --data-urlencode "project=$azkaban_project_name"
+}
+
+azkaban_create_project() {
+  local azkaban_host=${1:?}
+  local azkaban_session_id=${2:?}
+  local azkaban_project_name=${3:?}
+  curl https://$azkaban_host/manager -X POST \
+    --data-urlencode "action=create" \
+    --data-urlencode "session.id=$azkaban_session_id" \
+    --data-urlencode "name=$azkaban_project_name" \
+    --data-urlencode "description=Project run by the end to end tests"
+}
+
+azkaban_upload_project_zip() {
+  local azkaban_host=${1:?}
+  local azkaban_session_id=${2:?}
+  local azkaban_project_name=${3:?}
+  local azkaban_zip_file=${4:?}
+
+  curl -i -X POST -L \
+    -H "X-Requested-With: XMLHttpRequest" \
+    --form "ajax=upload" \
+    --form "session.id=$azkaban_session_id" \
+    --form "project=$azkaban_project_name" \
+    --form "file=@$azkaban_zip_file;type=application/zip" \
+    https://$azkaban_host/manager
+}
+
 azkaban_secret_value() {
   local azkaban_secret=${1:?}
   aws secretsmanager get-secret-value --secret-id $azkaban_secret | jq -r .SecretBinary | base64 -d

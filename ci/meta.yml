@@ -584,14 +584,15 @@ meta:
         AWS_REGION: eu-west-2
         AWS_DEFAULT_REGION: eu-west-2
 
-    create-e2e-job:
-      task: create-job
+    create-e2e-project-files:
+      task: create-project-files
       config:
         platform: linux
         image_resource:
           source:
-            repository: quay.io/dwp/awscli-ubuntu
-            tag: latest
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
           type: docker-image
         run:
           path: sh
@@ -609,21 +610,40 @@ meta:
                   config:
                      step: echo hello, world
               EOF
-
               set -x
-              which zip
-              which unzip
-              which java
-              tar -a -cf e2e-job/e2e.zip e2e.project e2e.flow
               ls
-              ls e2e-job
-              file e2e-job/e2e.zip
-              apt-get install -y zip
-          inputs:
-          - name: terraform-output-azkaban
-          - name: aws-azkaban
+              python aws-azkaban/ci/utility/py/zip.py e2e.zip e2e.project e2e.flow
+              mv e2e.zip e2e-job
+        inputs:
+        - name: terraform-output-azkaban
+        - name: aws-azkaban
         outputs:
           - name: e2e-job
+      params:
+        AWS_REGION: eu-west-2
+        AWS_DEFAULT_REGION: eu-west-2
+
+    create-e2e-project:
+      task: create-project
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -c
+            - |
+              echo hello
+              ls
+        inputs:
+        - name: terraform-output-azkaban
+        - name: aws-azkaban
+        - name: e2e-job
       params:
         AWS_REGION: eu-west-2
         AWS_DEFAULT_REGION: eu-west-2
