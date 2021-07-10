@@ -69,6 +69,31 @@ azkaban_upload_project() {
     https://$azkaban_host/manager
 }
 
+# shellcheck disable=SC2155
+azkaban_execute_flow() {
+  local azkaban_host=${1:?}
+  local azkaban_session_id=${2:?}
+  local azkaban_project=${3:?}
+  local azkaban_flow=${4:?}
+
+  local response=$(curl -sS -X POST \
+    -H "X-Requested-With: XMLHttpRequest" \
+    --data-urlencode "session.id=$azkaban_session_id" \
+    --data-urlencode "ajax=executeFlow" \
+    --data-urlencode "project=$azkaban_project" \
+    --data-urlencode "flow=$azkaban_flow" \
+    "https://$azkaban_host/executor")
+
+    local error=$(echo "$response" | jq -r .error)
+
+    if [ -n "$error" ] && [ "$error" != "null" ]; then
+      echo Failed to execute "$azkaban_project"/"$azkaban_flow": "$error" >&2
+      return 1
+    fi
+
+    echo "$response" | jq -r .execid
+}
+
 azkaban_secret_value() {
   local azkaban_secret=${1:?}
   aws secretsmanager get-secret-value --secret-id $azkaban_secret | jq -r .SecretBinary | base64 -d

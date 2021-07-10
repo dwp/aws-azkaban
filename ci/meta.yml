@@ -277,7 +277,7 @@ meta:
           WEBSERVER_NAME: ((WEBSERVER_NAME))
           LAMBDA_NAME: ((LAMBDA_NAME))
         inputs:
-          - name: terraform-output
+          - name: terraform-output-azkaban
         run:
           path: sh
           args:
@@ -286,7 +286,7 @@ meta:
               source /assume-role
               MAX_RETRIES=60
 
-              TRUNCATE_TABLE_FUNCTION_NAME=$(jq -r ".$LAMBDA_NAME.value.function_name" < ./terraform-output/outputs.json)
+              TRUNCATE_TABLE_FUNCTION_NAME=$(jq -r ".$LAMBDA_NAME.value.function_name" < ./terraform-output-azkaban/outputs.json)
 
               aws ecs update-service --cluster $CLUSTER --service $EXECUTOR_NAME --desired-count 0 > /dev/null
               aws ecs update-service --cluster $CLUSTER --service $WEBSERVER_NAME --desired-count 0 > /dev/null
@@ -315,7 +315,7 @@ meta:
 
               jq -eC "if .errorMessage? then error(.errorMessage) else true end" < output.json
 
-              aws ecs update-service --cluster $CLUSTER --service $EXECUTOR_NAME --desired-count 1 > /dev/null
+              aws ecs update-service --cluster $CLUSTER --service $EXECUTOR_NAME  --desired-count 1 > /dev/null
               retries=0
               while [ "$executor_running_count" -eq 0 ]; do
                 if [ "$retries" -eq $MAX_RETRIES ]; then
@@ -650,6 +650,45 @@ meta:
         - name: terraform-output-azkaban
         - name: aws-azkaban
         - name: e2e-job
+        outputs:
+          - name: azkaban-session-id
+      params:
+        AWS_REGION: eu-west-2
+        AWS_DEFAULT_REGION: eu-west-2
+
+    execute-e2e-flow:
+      task: execute-flow
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -c
+            - |
+              set +x
+              source ./aws-azkaban/ci/utility/environment.sh
+              source /assume-role && set +x
+              azkaban_host=$(azkaban_host)
+              azkaban_session_id=$(azkaban_session_id)
+
+              local azkaban_execution_id=$(azkaban_execute_flow "$azkaban_host" "$azkaban_session_id" e2e e2e)
+
+              if [ -z "$azkaban_execution_id" ]; then
+                exit 1
+              fi
+
+              echo $azkaban_execution_id > ./azkaban-execution-id/$azkaban-execution-id.txt
+        inputs:
+        - name: terraform-output-azkaban
+        - name: aws-azkaban
+        outputs:
+        - name: azkaban-execution-id
       params:
         AWS_REGION: eu-west-2
         AWS_DEFAULT_REGION: eu-west-2
