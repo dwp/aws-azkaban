@@ -242,6 +242,7 @@ meta:
               cat output.json | jq -eC "if .errorMessage? then error(.errorMessage) else true end"
 
 
+
     rotate-azkaban-webserver-password:
       .: (( inject meta.plan.rotate-mysql-password ))
       config:
@@ -328,6 +329,7 @@ meta:
                 retries=$((retries + 1))
                 sleep 10;
               done;
+
 
     terraform-dataworks-analytical-frontend-service-bootstrap:
       task: terraform-dataworks-analytical-frontend-service-bootstrap
@@ -431,6 +433,7 @@ meta:
               UPDATED_SECRET_BINARY="$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --query SecretBinary --output text | base64 -d | jq -r --arg data "$RANDOM_PASSWORD" '.azkaban_password = $data')"
               aws secretsmanager put-secret-value --secret-id $SECRET_ID --secret-binary "${UPDATED_SECRET_BINARY}"
 
+
     create-terraform-success:
       task: create-terraform-success
       config:
@@ -474,7 +477,6 @@ meta:
               aws secretsmanager get-random-password --password-length 25 --no-include-space --require-each-included-type | jq -r .RandomPassword >> random-password/random-password.txt
         outputs:
           - name: random-password
-
 
     update-cognito-user-password:
       task: update-cognito-user-password
@@ -615,24 +617,23 @@ meta:
               set +x
               source ./aws-azkaban/ci/utility/environment.sh
               source /assume-role && set -x
-              azkaban_start_webserver $WEBSERVER_SERVICE
-              instance_count=$(azkaban_webserver_instance_count $WEBSERVER_SERVICE)
+              azkaban_start_webserver $WEBSERVER_NAME
+              instance_count=$(azkaban_webserver_instance_count $WEBSERVER_NAME)
               echo Initial azkaban webserver instance count: \'$instance_count\'.
 
               while [ $instance_count = 0 ]; do
                 sleep 5
-                instance_count=$(azkaban_webserver_instance_count $WEBSERVER_SERVICE)
+                instance_count=$(azkaban_webserver_instance_count $WEBSERVER_NAME)
                 echo Current azkaban webserver instance count: \'$instance_count\'.
               done
               echo Final azkaban webserver instance count: \'$instance_count\'.
         inputs:
         - name: terraform-output-azkaban
         - name: aws-azkaban
-        - name: e2e-job
-      params:
-        AWS_REGION: eu-west-2
-        AWS_DEFAULT_REGION: eu-west-2
-        WEBSERVER_SERVICE: ((WEBSERVER_SERVICE))
+        params:
+          AWS_REGION: eu-west-2
+          AWS_DEFAULT_REGION: eu-west-2
+          WEBSERVER_NAME: ((WEBSERVER_NAME))
 
     create-e2e-project:
       task: create-project

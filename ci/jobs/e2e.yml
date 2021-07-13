@@ -24,7 +24,7 @@ jobs:
           params:
             AWS_ACC: ((aws_account.development))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
-            WEBSERVER_SERVICE: "azkaban-external-webserver"
+            WEBSERVER_NAME: "azkaban-external-webserver"
       - .: (( inject meta.plan.create-e2e-project-files ))
         config:
           params:

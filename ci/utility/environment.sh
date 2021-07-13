@@ -111,8 +111,7 @@ azkaban_flow_status() {
 
 azkaban_start_webserver() {
   local webserver_service=${1:?}
-  aws --profile dataworks-development \
-    ecs update-service \
+  aws ecs update-service \
     --cluster main \
     --service "$webserver_service" \
     --desired-count 1 > /dev/null
@@ -120,8 +119,7 @@ azkaban_start_webserver() {
 
 azkaban_webserver_instance_count() {
   local webserver_service=${1:?}
-  aws --profile dataworks-development \
-    ecs describe-services \
+  aws ecs describe-services \
     --cluster main \
     --services "$webserver_service" | jq -r '.services[0].runningCount'
 }
