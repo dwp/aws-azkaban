@@ -26,6 +26,11 @@ jobs:
           params:
             AWS_ACC: ((aws_account.development))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
+      - .: (( inject meta.plan.monitor-e2e-flow ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.development))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
 
   - name: cycle-azkaban-containers-development
     plan:

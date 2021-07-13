@@ -53,6 +53,9 @@ get-dependencies: ## Get dependencies that are normally managed by pipeline
 		done \
 	}
 
+concourse-login:
+	fly --target aws-concourse set-pipeline --pipeline aws-azkaban --config aviator_pipeline.yml
+
 .PHONY: unittest
 unittest:
 	tox

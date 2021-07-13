@@ -77,12 +77,12 @@ azkaban_execute_flow() {
   local azkaban_flow=${4:?}
 
   local response=$(curl -sS -X POST \
-    -H "X-Requested-With: XMLHttpRequest" \
-    --data-urlencode "session.id=$azkaban_session_id" \
-    --data-urlencode "ajax=executeFlow" \
-    --data-urlencode "project=$azkaban_project" \
-    --data-urlencode "flow=$azkaban_flow" \
-    "https://$azkaban_host/executor")
+      -H "X-Requested-With: XMLHttpRequest" \
+      --data-urlencode "session.id=$azkaban_session_id" \
+      --data-urlencode "ajax=executeFlow" \
+      --data-urlencode "project=$azkaban_project" \
+      --data-urlencode "flow=$azkaban_flow" \
+      "https://$azkaban_host/executor")
 
     local error=$(echo "$response" | jq -r .error)
 
@@ -93,6 +93,22 @@ azkaban_execute_flow() {
 
     echo "$response" | jq -r .execid
 }
+
+azkaban_flow_status() {
+  local azkaban_host=${1:?}
+  local azkaban_session_id=${2:?}
+  local azkaban_execution_id=${3:?}
+
+  local response=$(curl -sS --get \
+    -H "X-Requested-With: XMLHttpRequest" \
+    --data-urlencode "session.id=$azkaban_session_id" \
+    --data-urlencode "ajax=fetchexecflow" \
+    --data-urlencode "execid=$azkaban_execution_id" \
+    "https://$azkaban_host/executor")
+
+  echo $response | jq -r .status
+}
+
 
 azkaban_secret_value() {
   local azkaban_secret=${1:?}

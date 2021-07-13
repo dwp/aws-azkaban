@@ -677,17 +677,50 @@ meta:
               azkaban_host=$(azkaban_host)
               azkaban_session_id=$(azkaban_session_id)
 
-              local azkaban_execution_id=$(azkaban_execute_flow "$azkaban_host" "$azkaban_session_id" e2e e2e)
+              azkaban_execution_id=$(azkaban_execute_flow "$azkaban_host" "$azkaban_session_id" e2e e2e)
 
               if [ -z "$azkaban_execution_id" ]; then
                 exit 1
               fi
 
-              echo $azkaban_execution_id > ./azkaban-execution-id/$azkaban-execution-id.txt
+              echo $azkaban_execution_id > ./azkaban-execution-id/azkaban-execution-id.txt
         inputs:
         - name: terraform-output-azkaban
         - name: aws-azkaban
         outputs:
+        - name: azkaban-execution-id
+      params:
+        AWS_REGION: eu-west-2
+        AWS_DEFAULT_REGION: eu-west-2
+
+    monitor-e2e-flow:
+      task: monitor-flow
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -c
+            - |
+              set +x
+              source ./aws-azkaban/ci/utility/environment.sh
+              source /assume-role && set +x
+              azkaban_host=$(azkaban_host)
+              azkaban_session_id=$(azkaban_session_id)
+              ls
+              ls azkaban-execution-id
+              cat azkaban-execution-id/azkaban-execution-id.txt
+              azkaban_execution_id=$(cat azkaban-execution-id/azkaban-execution-id.txt)
+              azkaban_flow_status $azkaban_host $azkaban_session_id $azkaban_execution_id
+        inputs:
+        - name: terraform-output-azkaban
+        - name: aws-azkaban
         - name: azkaban-execution-id
       params:
         AWS_REGION: eu-west-2
