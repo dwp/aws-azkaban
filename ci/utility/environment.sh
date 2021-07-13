@@ -109,6 +109,13 @@ azkaban_flow_status() {
   echo $response | jq -r .status
 }
 
+azkaban_webserver_instance_count() {
+  local webserver_service=${1:?}
+  aws --profile dataworks-development \
+    ecs describe-services \
+    --cluster main \
+    --services "$webserver_service" | jq -r '.services[0].runningCount'
+}
 
 azkaban_secret_value() {
   local azkaban_secret=${1:?}

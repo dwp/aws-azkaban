@@ -525,33 +525,6 @@ meta:
         inputs:
           - name: random-password
 
-    azkaban-session-id:
-      task: azkaban-session-id
-      config:
-        platform: linux
-        image_resource:
-          source:
-            repository: ((dataworks.docker_awscli_repository))
-            tag: ((dataworks.docker_awscli_version))
-            version: ((dataworks.docker_awscli_version))
-          type: docker-image
-        run:
-          path: sh
-          args:
-            - -c
-            - |
-              source ./aws-azkaban/ci/utility/environment.sh
-              source /assume-role && set +x
-              azkaban_authenticate > azkaban-session-id/azkaban-session-id.txt
-        inputs:
-          - name: terraform-output-azkaban
-          - name: aws-azkaban
-        outputs:
-          - name: azkaban-session-id
-      params:
-        AWS_REGION: eu-west-2
-        AWS_DEFAULT_REGION: eu-west-2
-
     running-jobs:
       task: running-jobs
       config:
@@ -623,6 +596,34 @@ meta:
         AWS_REGION: eu-west-2
         AWS_DEFAULT_REGION: eu-west-2
 
+    await-azkaban-webserver:
+      task: await-webserver
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -c
+            - |
+              set +x
+              source ./aws-azkaban/ci/utility/environment.sh
+              source /assume-role && set -x
+              aws ecs describe-services --cluster main --services $WEBSERVER_NAME | jq -r '.services[0].runningCount'
+        inputs:
+        - name: terraform-output-azkaban
+        - name: aws-azkaban
+        - name: e2e-job
+      params:
+        AWS_REGION: eu-west-2
+        AWS_DEFAULT_REGION: eu-west-2
+        WEBSERVER_SERVICE: ((WEBSERVER_SERVICE))
+
     create-e2e-project:
       task: create-project
       config:
@@ -640,7 +641,7 @@ meta:
             - |
               set +x
               source ./aws-azkaban/ci/utility/environment.sh
-              source /assume-role && set +x
+              source /assume-role && set -x
               azkaban_session_id=$(azkaban_session_id)
               azkaban_host=$(azkaban_host)
               azkaban_delete_project $azkaban_host $azkaban_session_id e2e
@@ -650,8 +651,6 @@ meta:
         - name: terraform-output-azkaban
         - name: aws-azkaban
         - name: e2e-job
-        outputs:
-          - name: azkaban-session-id
       params:
         AWS_REGION: eu-west-2
         AWS_DEFAULT_REGION: eu-west-2
@@ -695,6 +694,7 @@ meta:
 
     monitor-e2e-flow:
       task: monitor-flow
+      timeout: 1h
       config:
         platform: linux
         image_resource:
@@ -716,8 +716,25 @@ meta:
               ls
               ls azkaban-execution-id
               cat azkaban-execution-id/azkaban-execution-id.txt
+
               azkaban_execution_id=$(cat azkaban-execution-id/azkaban-execution-id.txt)
-              azkaban_flow_status $azkaban_host $azkaban_session_id $azkaban_execution_id
+              echo azkaban_execution_id: \'$azkaban_execution_id\'
+
+              azkaban_flow_status=$(azkaban_flow_status $azkaban_host $azkaban_session_id $azkaban_execution_id)
+              echo Execution $azkaban_execution_id status is \'$azkaban_flow_status\'.
+
+              while [ "$azkaban_flow_status" == "RUNNING" ] || [ "$azkaban_flow_status" == "PREPARING" ]; do
+                sleep 5
+                azkaban_flow_status=$(azkaban_flow_status $azkaban_host $azkaban_session_id $azkaban_execution_id)
+                echo Execution $azkaban_execution_id status is \'$azkaban_flow_status\'.
+              done
+
+              echo Completed execution $azkaban_execution_id status is \'$azkaban_flow_status\'.
+
+              if [ "$azkaban_flow_status" != "SUCCEEDED" ]; then
+                exit 1
+              fi
+
         inputs:
         - name: terraform-output-azkaban
         - name: aws-azkaban
