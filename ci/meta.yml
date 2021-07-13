@@ -598,6 +598,7 @@ meta:
 
     await-azkaban-webserver:
       task: await-webserver
+      timeout: 15m
       config:
         platform: linux
         image_resource:
@@ -614,7 +615,16 @@ meta:
               set +x
               source ./aws-azkaban/ci/utility/environment.sh
               source /assume-role && set -x
-              aws ecs describe-services --cluster main --services $WEBSERVER_NAME | jq -r '.services[0].runningCount'
+              azkaban_start_webserver $WEBSERVER_SERVICE
+              instance_count=$(azkaban_webserver_instance_count $WEBSERVER_SERVICE)
+              echo Initial azkaban webserver instance count: \'$instance_count\'.
+
+              while [ $instance_count = 0 ]; do
+                sleep 5
+                instance_count=$(azkaban_webserver_instance_count $WEBSERVER_SERVICE)
+                echo Current azkaban webserver instance count: \'$instance_count\'.
+              done
+              echo Final azkaban webserver instance count: \'$instance_count\'.
         inputs:
         - name: terraform-output-azkaban
         - name: aws-azkaban

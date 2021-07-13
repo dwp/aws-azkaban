@@ -109,6 +109,15 @@ azkaban_flow_status() {
   echo $response | jq -r .status
 }
 
+azkaban_start_webserver() {
+  local webserver_service=${1:?}
+  aws --profile dataworks-development \
+    ecs update-service \
+    --cluster main \
+    --service "$webserver_service" \
+    --desired-count 1 > /dev/null
+}
+
 azkaban_webserver_instance_count() {
   local webserver_service=${1:?}
   aws --profile dataworks-development \
