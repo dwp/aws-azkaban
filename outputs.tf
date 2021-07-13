@@ -1,7 +1,3 @@
-output "rds_db" {
-  value = aws_rds_cluster.azkaban_database
-}
-
 output "secrets" {
   value = {
     executor  = aws_secretsmanager_secret.azkaban_executor_password
@@ -34,10 +30,15 @@ output "workflow_manager_vpc" {
   value = module.workflow_manager_vpc
 }
 
-output "azkaban_executor_sg" {
-  value = aws_security_group.azkaban_executor
+output "azkaban_webserver_sg" {
+  value = {
+    id = aws_security_group.azkaban_webserver.id
+  }
 }
 
-output "azkaban_webserver_sg" {
-  value = aws_security_group.azkaban_webserver
+output "azkaban_external" {
+  value = {
+    fqdn        = aws_route53_record.azkaban_external.fqdn
+    secret_name = data.aws_secretsmanager_secret.azkaban_external_cognito.name
+  }
 }

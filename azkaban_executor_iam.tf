@@ -83,7 +83,7 @@ data "aws_iam_policy_document" "azkaban_executor_read_config" {
     ]
 
     resources = [
-      "${data.terraform_remote_state.common.outputs.config_bucket.arn}",
+      data.terraform_remote_state.common.outputs.config_bucket.arn,
     ]
   }
 
@@ -108,7 +108,7 @@ data "aws_iam_policy_document" "azkaban_executor_read_config" {
     ]
 
     resources = [
-      "${data.terraform_remote_state.common.outputs.config_bucket_cmk.arn}",
+      data.terraform_remote_state.common.outputs.config_bucket_cmk.arn,
     ]
   }
 }
@@ -146,17 +146,6 @@ data "aws_iam_policy_document" "azkaban_executor_logs" {
     resources = [
       "*",
     ]
-  }
-}
-
-provider "aws" {
-  alias = "management"
-
-  region  = "eu-west-2"
-  version = "~> 2.70.0"
-
-  assume_role {
-    role_arn = "arn:aws:iam::${local.account[local.management_account[local.environment]]}:role/${var.assume_role}"
   }
 }
 
@@ -255,6 +244,7 @@ data "aws_iam_policy_document" "azkaban_executor_execute_launcher" {
       data.terraform_remote_state.aws_analytical_env_app.outputs.emr_launcher_lambda.arn,
       data.terraform_remote_state.aws_clive.outputs.aws_clive_emr_launcher_lambda.arn,
       data.terraform_remote_state.dataworks_aws_mongo_latest.outputs.mongo_latest_emr_launcher_lambda.arn,
+      data.terraform_remote_state.aws_pdm_dataset_generation.outputs.pdm_emr_launcher_lambda.arn,
     ]
   }
 }

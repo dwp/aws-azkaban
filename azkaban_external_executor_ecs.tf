@@ -49,7 +49,7 @@ data "template_file" "azkaban_external_executor_definition" {
       },
       {
         "name" : "NO_PROXY",
-        "value" : "127.0.0.1,elasticmapreduce.${var.region}.amazonaws.com,s3.${var.region}.amazonaws.com,secretsmanager.${var.region}.amazonaws.com,sts.${var.region}.amazonaws.com,logs.${var.region}.amazonaws.com,azkaban-external-webserver.${local.service_discovery_fqdn},${aws_rds_cluster.azkaban_external_database.endpoint}"
+        "value" : "127.0.0.1,azkaban-external-webserver.${local.service_discovery_fqdn},${aws_rds_cluster.azkaban_external_database.endpoint},${local.vpce_no_proxy}"
       }
     ])
   }
