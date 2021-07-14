@@ -1,5 +1,6 @@
 meta:
   plan:
+
     terraform-common-config:
       config:
         platform: linux
@@ -14,8 +15,8 @@ meta:
           TF_CLI_ARGS_plan: -lock-timeout=300s
           TF_VAR_costcode: ((dataworks.costcode))
 
-    terraform-bootstrap:
-      task: terraform-bootstrap
+    terraform-bootstrap-azkaban:
+      task: terraform-bootstrap-azkaban
       config:
         platform: linux
         image_resource:
@@ -31,13 +32,13 @@ meta:
             - |
               python bootstrap_terraform.py
               sed -i '/^assume_role/ d' terraform.tfvars
-              cp terraform.tf ../terraform-bootstrap
-              cp terraform.tfvars ../terraform-bootstrap
+              cp terraform.tf ../terraform-bootstrap-azkaban
+              cp terraform.tfvars ../terraform-bootstrap-azkaban
           dir: aws-azkaban
         inputs:
           - name: aws-azkaban
         outputs:
-          - name: terraform-bootstrap
+          - name: terraform-bootstrap-azkaban
       params:
         AWS_REGION: eu-west-2
 
@@ -59,13 +60,13 @@ meta:
               python bootstrap_terraform.py
               cd deploy
               sed -i '/^assume_role/ d' terraform.tfvars
-              cp terraform.tf ../../terraform-bootstrap
-              cp terraform.tfvars ../../terraform-bootstrap
+              cp terraform.tf ../../terraform-bootstrap-dataworks-cognito
+              cp terraform.tfvars ../../terraform-bootstrap-dataworks-cognito
           dir: dataworks-cognito
         inputs:
           - name: dataworks-cognito
         outputs:
-          - name: terraform-bootstrap
+          - name: terraform-bootstrap-dataworks-cognito
       params:
         AWS_REGION: eu-west-2
 
@@ -79,8 +80,8 @@ meta:
             - -exc
             - |
               exit_status=0
-              cp ../terraform-bootstrap/terraform.tf .
-              cp ../terraform-bootstrap/terraform.tfvars .
+              cp ../terraform-bootstrap-azkaban/terraform.tf .
+              cp ../terraform-bootstrap-azkaban/terraform.tfvars .
               export TF_VAR_manage_mysql_user_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
               terraform workspace show
               terraform init
@@ -98,7 +99,7 @@ meta:
 
         inputs:
           - name: aws-azkaban
-          - name: terraform-bootstrap
+          - name: terraform-bootstrap-azkaban
           - name: manage-mysql-user-release
         outputs:
           - name: terraform-success
@@ -113,8 +114,8 @@ meta:
             - -exc
             - |
               if [ -f ../terraform-success/success ]; then
-              cp ../terraform-bootstrap/terraform.tf .
-              cp ../terraform-bootstrap/terraform.tfvars .
+              cp ../terraform-bootstrap-azkaban/terraform.tf .
+              cp ../terraform-bootstrap-azkaban/terraform.tfvars .
               export TF_VAR_manage_mysql_user_zip="{base_path = \"../manage-mysql-user-release\", version = \"$(cat ../manage-mysql-user-release/version)\"}"
               terraform workspace show
               terraform init
@@ -132,14 +133,14 @@ meta:
           dir: aws-azkaban
         inputs:
           - name: aws-azkaban
-          - name: terraform-bootstrap
+          - name: terraform-bootstrap-azkaban
           - name: manage-mysql-user-release
           - name: terraform-success
       params:
         DETAILED_EXITCODE: -detailed-exitcode
 
-    terraform-output:
-      task: terraform-output
+    terraform-output-azkaban:
+      task: terraform-output-azkaban
       .: (( inject meta.plan.terraform-common-config ))
       config:
         run:
@@ -147,17 +148,17 @@ meta:
           args:
             - -exc
             - |
-              cp ../terraform-bootstrap/terraform.tf .
-              cp ../terraform-bootstrap/terraform.tfvars .
+              cp ../terraform-bootstrap-azkaban/terraform.tf .
+              cp ../terraform-bootstrap-azkaban/terraform.tfvars .
               terraform workspace show
               terraform init
-              terraform output --json > ../terraform-output/outputs.json
+              terraform output --json > ../terraform-output-azkaban/outputs.json
           dir: aws-azkaban
         inputs:
           - name: aws-azkaban
-          - name: terraform-bootstrap
+          - name: terraform-bootstrap-azkaban
         outputs:
-          - name: terraform-output
+          - name: terraform-output-azkaban
 
     terraform-output-dataworks-cognito:
       task: terraform-output-dataworks-cognito
@@ -169,15 +170,15 @@ meta:
             - -exc
             - |
               cd deploy
-              cp ../../terraform-bootstrap/terraform.tf .
-              cp ../../terraform-bootstrap/terraform.tfvars .
+              cp ../../terraform-bootstrap-dataworks-cognito/terraform.tf .
+              cp ../../terraform-bootstrap-dataworks-cognito/terraform.tfvars .
               terraform workspace show
               terraform init
               terraform output --json > ../../terraform-output/outputs.json
           dir: dataworks-cognito
         inputs:
           - name: dataworks-cognito
-          - name: terraform-bootstrap
+          - name: terraform-bootstrap-dataworks-cognito
         outputs:
           - name: terraform-output
 
@@ -240,6 +241,8 @@ meta:
               aws lambda invoke --function-name $LAMBDA_NAME --invocation-type RequestResponse --payload file://manifest.json --cli-connect-timeout 600 --cli-read-timeout 600 output.json
               cat output.json | jq -eC "if .errorMessage? then error(.errorMessage) else true end"
 
+
+
     rotate-azkaban-webserver-password:
       .: (( inject meta.plan.rotate-mysql-password ))
       config:
@@ -275,7 +278,7 @@ meta:
           WEBSERVER_NAME: ((WEBSERVER_NAME))
           LAMBDA_NAME: ((LAMBDA_NAME))
         inputs:
-          - name: terraform-output
+          - name: terraform-output-azkaban
         run:
           path: sh
           args:
@@ -284,7 +287,7 @@ meta:
               source /assume-role
               MAX_RETRIES=60
 
-              TRUNCATE_TABLE_FUNCTION_NAME=$(jq -r ".$LAMBDA_NAME.value.function_name" < ./terraform-output/outputs.json)
+              TRUNCATE_TABLE_FUNCTION_NAME=$(jq -r ".$LAMBDA_NAME.value.function_name" < ./terraform-output-azkaban/outputs.json)
 
               aws ecs update-service --cluster $CLUSTER --service $EXECUTOR_NAME --desired-count 0 > /dev/null
               aws ecs update-service --cluster $CLUSTER --service $WEBSERVER_NAME --desired-count 0 > /dev/null
@@ -313,7 +316,7 @@ meta:
 
               jq -eC "if .errorMessage? then error(.errorMessage) else true end" < output.json
 
-              aws ecs update-service --cluster $CLUSTER --service $EXECUTOR_NAME --desired-count 1 > /dev/null
+              aws ecs update-service --cluster $CLUSTER --service $EXECUTOR_NAME  --desired-count 1 > /dev/null
               retries=0
               while [ "$executor_running_count" -eq 0 ]; do
                 if [ "$retries" -eq $MAX_RETRIES ]; then
@@ -326,6 +329,7 @@ meta:
                 retries=$((retries + 1))
                 sleep 10;
               done;
+
 
     terraform-dataworks-analytical-frontend-service-bootstrap:
       task: terraform-dataworks-analytical-frontend-service-bootstrap
@@ -429,6 +433,7 @@ meta:
               UPDATED_SECRET_BINARY="$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --query SecretBinary --output text | base64 -d | jq -r --arg data "$RANDOM_PASSWORD" '.azkaban_password = $data')"
               aws secretsmanager put-secret-value --secret-id $SECRET_ID --secret-binary "${UPDATED_SECRET_BINARY}"
 
+
     create-terraform-success:
       task: create-terraform-success
       config:
@@ -472,7 +477,6 @@ meta:
               aws secretsmanager get-random-password --password-length 25 --no-include-space --require-each-included-type | jq -r .RandomPassword >> random-password/random-password.txt
         outputs:
           - name: random-password
-
 
     update-cognito-user-password:
       task: update-cognito-user-password
@@ -522,3 +526,225 @@ meta:
               aws secretsmanager put-secret-value --secret-id $SECRET_ID --secret-binary "${UPDATED_SECRET_BINARY}"
         inputs:
           - name: random-password
+
+    running-jobs:
+      task: running-jobs
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -c
+            - |
+              source ./aws-azkaban/ci/utility/environment.sh
+              init
+              set +x
+              running_jobs=$(azkaban_running_jobs $(azkaban_host) $(azkaban_session_id))
+              if [ -n "$running_jobs" ]; then
+                echo Executions are running: >&2
+                echo $running_jobs >&2
+                return 1
+              else
+                echo No executions are running
+              fi
+        inputs:
+          - name: terraform-output-azkaban
+          - name: aws-azkaban
+      params:
+        AWS_REGION: eu-west-2
+        AWS_DEFAULT_REGION: eu-west-2
+
+    create-e2e-project-files:
+      task: create-project-files
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -c
+            - |
+              cat <<EOF > e2e.project
+              azkaban-flow-version: 2.0
+              EOF
+
+              cat <<EOF > e2e.flow
+              nodes:
+                - name: e2e
+                  type: emr
+                  config:
+                     step: echo hello, world
+              EOF
+              python aws-azkaban/ci/utility/py/zip.py e2e.zip e2e.project e2e.flow
+              mv e2e.zip e2e-job
+        inputs:
+        - name: terraform-output-azkaban
+        - name: aws-azkaban
+        outputs:
+          - name: e2e-job
+      params:
+        AWS_REGION: eu-west-2
+        AWS_DEFAULT_REGION: eu-west-2
+
+    await-azkaban-webserver:
+      task: await-webserver
+      timeout: 15m
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -c
+            - |
+              source ./aws-azkaban/ci/utility/environment.sh
+              source /assume-role
+              azkaban_start_webserver $WEBSERVER_NAME
+              instance_count=$(azkaban_webserver_instance_count $WEBSERVER_NAME)
+              echo Initial azkaban webserver instance count: \'$instance_count\'.
+
+              while [ $instance_count = 0 ]; do
+                sleep 5
+                instance_count=$(azkaban_webserver_instance_count $WEBSERVER_NAME)
+                echo Current azkaban webserver instance count: \'$instance_count\'.
+              done
+              echo Final azkaban webserver instance count: \'$instance_count\'.
+        inputs:
+        - name: terraform-output-azkaban
+        - name: aws-azkaban
+        params:
+          AWS_REGION: eu-west-2
+          AWS_DEFAULT_REGION: eu-west-2
+          WEBSERVER_NAME: ((WEBSERVER_NAME))
+
+    create-e2e-project:
+      task: create-project
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -c
+            - |
+              source ./aws-azkaban/ci/utility/environment.sh
+              source /assume-role
+              set +x
+              azkaban_session_id=$(azkaban_session_id)
+              azkaban_host=$(azkaban_host)
+              azkaban_delete_project $azkaban_host $azkaban_session_id e2e
+              azkaban_create_project $azkaban_host $azkaban_session_id e2e
+              azkaban_upload_project $azkaban_host $azkaban_session_id e2e ./e2e-job/e2e.zip
+        inputs:
+        - name: terraform-output-azkaban
+        - name: aws-azkaban
+        - name: e2e-job
+      params:
+        AWS_REGION: eu-west-2
+        AWS_DEFAULT_REGION: eu-west-2
+
+    execute-e2e-flow:
+      task: execute-flow
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -c
+            - |
+              source ./aws-azkaban/ci/utility/environment.sh
+              source /assume-role
+              set +x
+              azkaban_host=$(azkaban_host)
+              azkaban_session_id=$(azkaban_session_id)
+
+              azkaban_execution_id=$(azkaban_execute_flow "$azkaban_host" "$azkaban_session_id" e2e e2e)
+
+              if [ -z "$azkaban_execution_id" ]; then
+                exit 1
+              fi
+
+              echo $azkaban_execution_id > ./azkaban-execution-id/azkaban-execution-id.txt
+        inputs:
+        - name: terraform-output-azkaban
+        - name: aws-azkaban
+        outputs:
+        - name: azkaban-execution-id
+      params:
+        AWS_REGION: eu-west-2
+        AWS_DEFAULT_REGION: eu-west-2
+
+    monitor-e2e-flow:
+      task: monitor-flow
+      timeout: 1h
+      config:
+        platform: linux
+        image_resource:
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+            version: ((dataworks.docker_awscli_version))
+          type: docker-image
+        run:
+          path: sh
+          args:
+            - -c
+            - |
+              source ./aws-azkaban/ci/utility/environment.sh
+              source /assume-role
+              set +x
+              azkaban_host=$(azkaban_host)
+              azkaban_session_id=$(azkaban_session_id)
+
+              azkaban_execution_id=$(cat azkaban-execution-id/azkaban-execution-id.txt)
+              echo azkaban_execution_id: \'$azkaban_execution_id\'
+
+              azkaban_flow_status=$(azkaban_flow_status $azkaban_host $azkaban_session_id $azkaban_execution_id)
+              echo $azkaban_execution_id execution status is \'$azkaban_flow_status\'.
+
+              while [ "$azkaban_flow_status" == "RUNNING" ] || [ "$azkaban_flow_status" == "PREPARING" ]; do
+                sleep 5
+                azkaban_flow_status=$(azkaban_flow_status $azkaban_host $azkaban_session_id $azkaban_execution_id)
+                echo $azkaban_execution_id execution status is \'$azkaban_flow_status\'.
+              done
+
+              echo Completed $azkaban_execution_id execution status is \'$azkaban_flow_status\'.
+
+              if [ "$azkaban_flow_status" != "SUCCEEDED" ]; then
+                exit 1
+              fi
+
+        inputs:
+        - name: terraform-output-azkaban
+        - name: aws-azkaban
+        - name: azkaban-execution-id
+      params:
+        AWS_REGION: eu-west-2
+        AWS_DEFAULT_REGION: eu-west-2
