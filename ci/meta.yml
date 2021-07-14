@@ -544,6 +544,7 @@ meta:
             - |
               source ./aws-azkaban/ci/utility/environment.sh
               init
+              set +x
               running_jobs=$(azkaban_running_jobs $(azkaban_host) $(azkaban_session_id))
               if [ -n "$running_jobs" ]; then
                 echo Executions are running: >&2
@@ -649,6 +650,7 @@ meta:
             - |
               source ./aws-azkaban/ci/utility/environment.sh
               source /assume-role
+              set +x
               azkaban_session_id=$(azkaban_session_id)
               azkaban_host=$(azkaban_host)
               azkaban_delete_project $azkaban_host $azkaban_session_id e2e
@@ -679,6 +681,7 @@ meta:
             - |
               source ./aws-azkaban/ci/utility/environment.sh
               source /assume-role
+              set +x
               azkaban_host=$(azkaban_host)
               azkaban_session_id=$(azkaban_session_id)
 
@@ -716,6 +719,7 @@ meta:
             - |
               source ./aws-azkaban/ci/utility/environment.sh
               source /assume-role
+              set +x
               azkaban_host=$(azkaban_host)
               azkaban_session_id=$(azkaban_session_id)
 
