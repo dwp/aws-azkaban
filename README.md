@@ -27,7 +27,14 @@ Used to rotate the credentials used to access the Aurora Serverless DB that is m
 
 ## Access
 
-Azkaban can be found [here](https://azkaban-external.dataworks.dwp.gov.uk/). 
+Production Azkaban can be found [here](https://azkaban-external.dataworks.dwp.gov.uk/). 
+
+Other envs:
+[Dev](https://azkaban-external.dev.wip.dataworks.dwp.gov.uk)
+[QA](https://azkaban-external.qa.wip.dataworks.dwp.gov.uk)
+[INT](https://azkaban-external.int.wip.dataworks.dwp.gov.uk)
+[PreProd](https://azkaban-external.pre.dataworks.dwp.gov.uk)
+
 
 
 ## Authentication
