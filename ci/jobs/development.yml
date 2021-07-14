@@ -3,7 +3,6 @@ jobs:
     max_in_flight: 1
     plan:
       - get: aws-azkaban
-        resource: aws-azkaban-e2e
         trigger: true
       - get: manage-mysql-user-release
         trigger: true

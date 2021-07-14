@@ -612,9 +612,8 @@ meta:
           args:
             - -c
             - |
-              set +x
               source ./aws-azkaban/ci/utility/environment.sh
-              source /assume-role && set +x
+              source /assume-role
               azkaban_start_webserver $WEBSERVER_NAME
               instance_count=$(azkaban_webserver_instance_count $WEBSERVER_NAME)
               echo Initial azkaban webserver instance count: \'$instance_count\'.
@@ -678,9 +677,8 @@ meta:
           args:
             - -c
             - |
-              set +x
               source ./aws-azkaban/ci/utility/environment.sh
-              source /assume-role && set +x
+              source /assume-role
               azkaban_host=$(azkaban_host)
               azkaban_session_id=$(azkaban_session_id)
 
@@ -716,9 +714,8 @@ meta:
           args:
             - -c
             - |
-              set +x
               source ./aws-azkaban/ci/utility/environment.sh
-              source /assume-role && set +x
+              source /assume-role
               azkaban_host=$(azkaban_host)
               azkaban_session_id=$(azkaban_session_id)
 
