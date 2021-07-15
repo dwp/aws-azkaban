@@ -199,7 +199,7 @@ data "terraform_remote_state" "aws_uc_feature_infrastructure" {
 
   config = {
     bucket         = "{{terraform.state_file_bucket}}"
-    key            = "terraform/dataworks/aws-uc-feature-infrastructure.tfstate"
+    key            = "terraform/dataworks/aws-uc-feature.tfstate"
     region         = "{{terraform.state_file_region}}"
     encrypt        = true
     kms_key_id     = "arn:aws:kms:{{terraform.state_file_region}}:{{terraform.state_file_account}}:key/{{terraform.state_file_kms_key}}"
