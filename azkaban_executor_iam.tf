@@ -14,7 +14,6 @@ data "aws_iam_policy_document" "azkaban_executor_assume_role" {
 
     principals {
       type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
     }
   }
 }
