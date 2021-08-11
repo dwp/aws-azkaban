@@ -648,6 +648,8 @@ meta:
           args:
             - -c
             - |
+              chmod +x aws-azkaban/ci/utility/environment.sh
+              aws-azkaban/ci/utility/environment.sh
               source aws-azkaban/ci/utility/environment.sh
               source /assume-role
               set +x
