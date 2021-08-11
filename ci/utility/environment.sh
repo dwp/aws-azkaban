@@ -26,10 +26,14 @@ azkaban_authenticate() {
   local azkaban_host=${1:?}
   local azkaban_username=${2:?}
   local azkaban_password=${3:?}
-  curl -sS https://$azkaban_host -X POST \
+  local response=$(curl -sS https://$azkaban_host -X POST \
     --data-urlencode "action=login" \
     --data-urlencode "username=$azkaban_username" \
-    --data-urlencode "password=$azkaban_password" | jq -r .\"session.id\"
+    --data-urlencode "password=$azkaban_password")
+  echo RESPONSE >&2
+  echo $response >&2
+  echo =============== >&2
+  echo $response | jq -r .\"session.id\"
 }
 
 azkaban_delete_project() {
