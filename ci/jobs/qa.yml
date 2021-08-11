@@ -9,55 +9,55 @@ jobs:
       - .: (( inject meta.plan.terraform-bootstrap-azkaban ))
         params:
           TF_WORKSPACE: 'qa'
-#      - .: (( inject meta.plan.terraform-apply ))
-#        params:
-#          TF_WORKSPACE: 'qa'
-#      - .: (( inject meta.plan.terraform-plan ))
-#        params:
-#          TF_WORKSPACE: 'qa'
+      - .: (( inject meta.plan.terraform-apply ))
+        params:
+          TF_WORKSPACE: 'qa'
+      - .: (( inject meta.plan.terraform-plan ))
+        params:
+          TF_WORKSPACE: 'qa'
       - .: (( inject meta.plan.terraform-output-azkaban ))
         params:
           TF_WORKSPACE: 'qa'
-#      - .: (( inject meta.plan.running-jobs ))
-#        config:
-#          params:
-#            AWS_ACC: ((aws_account.qa))
-#            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
-#            TF_WORKSPACE: 'qa'
-#      - .: (( inject meta.plan.cycle-azkaban-containers ))
-#        config:
-#          params:
-#            AWS_ACC: ((aws_account.qa))
-#            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
-#            EXECUTOR_NAME: "azkaban-external-executor"
-#            WEBSERVER_NAME: "azkaban-external-webserver"
-#            LAMBDA_NAME: "truncate_external_table_lambda"
+      - .: (( inject meta.plan.running-jobs ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.qa))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+            TF_WORKSPACE: 'qa'
+      - .: (( inject meta.plan.cycle-azkaban-containers ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.qa))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+            EXECUTOR_NAME: "azkaban-external-executor"
+            WEBSERVER_NAME: "azkaban-external-webserver"
+            LAMBDA_NAME: "truncate_external_table_lambda"
       - .: (( inject meta.plan.await-azkaban-webserver ))
         config:
           params:
             AWS_ACC: ((aws_account.qa))
             AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
             WEBSERVER_NAME: "azkaban-external-webserver"
-#      - .: (( inject meta.plan.create-e2e-project-files ))
-#        config:
-#          params:
-#            AWS_ACC: ((aws_account.qa))
-#            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
-#      - .: (( inject meta.plan.create-e2e-project ))
-#        config:
-#          params:
-#            AWS_ACC: ((aws_account.qa))
-#            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
-#      - .: (( inject meta.plan.execute-e2e-flow ))
-#        config:
-#          params:
-#            AWS_ACC: ((aws_account.qa))
-#            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
-#      - .: (( inject meta.plan.monitor-e2e-flow ))
-#        config:
-#          params:
-#            AWS_ACC: ((aws_account.qa))
-#            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+      - .: (( inject meta.plan.create-e2e-project-files ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.qa))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+      - .: (( inject meta.plan.create-e2e-project ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.qa))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+      - .: (( inject meta.plan.execute-e2e-flow ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.qa))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
+      - .: (( inject meta.plan.monitor-e2e-flow ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.qa))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.qa)):role/ci
 
   - name: rotate-mysql-password-master-qa
     plan:

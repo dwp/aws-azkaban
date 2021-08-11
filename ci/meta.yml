@@ -615,6 +615,7 @@ meta:
             - |
               source ./aws-azkaban/ci/utility/environment.sh
               source /assume-role
+              set +x
               azkaban_start_webserver $WEBSERVER_NAME
               instance_count=$(azkaban_webserver_instance_count $WEBSERVER_NAME)
               echo Initial azkaban webserver instance count: \'$instance_count\'.
