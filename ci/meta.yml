@@ -658,7 +658,7 @@ meta:
               azkaban_upload_project $azkaban_host $azkaban_session_id e2e ./e2e-job/e2e.zip
         inputs:
         - name: terraform-output-azkaban
-        - name: aws-azkaban
+        - name: aws-azkaban-tmp
         - name: e2e-job
       params:
         AWS_REGION: eu-west-2
