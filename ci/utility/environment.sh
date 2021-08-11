@@ -22,6 +22,19 @@ azkaban_running_jobs() {
   python $(source_directory)/azkaban_jobs.py --session-id $azkaban_session_id https://$azkaban_host
 }
 
+azkaban_ready() {
+  local azkaban_host=${1:?}
+  local azkaban_username=${2:?}
+  local azkaban_password=${3:?}
+  local response=$(curl -w %{http_code} --output /dev/null -sS https://$azkaban_host -X POST \
+    --data-urlencode "action=login" \
+    --data-urlencode "username=$azkaban_username" \
+    --data-urlencode "password=$azkaban_password")
+  echo Webserver response $response >&2
+  [ "$response" == 200 ]
+}
+
+
 azkaban_authenticate() {
   local azkaban_host=${1:?}
   local azkaban_username=${2:?}

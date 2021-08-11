@@ -615,6 +615,7 @@ meta:
             - |
               source ./aws-azkaban/ci/utility/environment.sh
               source /assume-role
+              set +x
               azkaban_start_webserver $WEBSERVER_NAME
               instance_count=$(azkaban_webserver_instance_count $WEBSERVER_NAME)
               echo Initial azkaban webserver instance count: \'$instance_count\'.
@@ -624,7 +625,18 @@ meta:
                 instance_count=$(azkaban_webserver_instance_count $WEBSERVER_NAME)
                 echo Current azkaban webserver instance count: \'$instance_count\'.
               done
+
               echo Final azkaban webserver instance count: \'$instance_count\'.
+              azkaban_host=$(azkaban_host)
+              azkaban_secret=$(azkaban_secret)
+              azkaban_secret_value=$(azkaban_secret_value "$azkaban_secret")
+              azkaban_username=$(azkaban_username "$azkaban_secret_value")
+              azkaban_password=$(azkaban_password "$azkaban_secret_value")
+
+              while ! azkaban_ready $azkaban_host $azkaban_username $azkaban_password; do
+                sleep 5
+                echo Server not ready yet
+              done
         inputs:
         - name: terraform-output-azkaban
         - name: aws-azkaban
@@ -648,9 +660,7 @@ meta:
           args:
             - -c
             - |
-              chmod +x aws-azkaban/ci/utility/environment.sh
-              aws-azkaban/ci/utility/environment.sh
-              source aws-azkaban/ci/utility/environment.sh
+              source ./aws-azkaban/ci/utility/environment.sh
               source /assume-role
               set +x
               azkaban_session_id=$(azkaban_session_id)
@@ -726,18 +736,18 @@ meta:
               azkaban_session_id=$(azkaban_session_id)
 
               azkaban_execution_id=$(cat azkaban-execution-id/azkaban-execution-id.txt)
-              echo "azkaban_execution_id: \'$azkaban_execution_id\'"
+              echo azkaban_execution_id: \'$azkaban_execution_id\'
 
               azkaban_flow_status=$(azkaban_flow_status $azkaban_host $azkaban_session_id $azkaban_execution_id)
-              echo "$azkaban_execution_id execution status is \'$azkaban_flow_status\'."
+              echo $azkaban_execution_id execution status is \'$azkaban_flow_status\'.
 
               while [ "$azkaban_flow_status" == "RUNNING" ] || [ "$azkaban_flow_status" == "PREPARING" ]; do
                 sleep 5
                 azkaban_flow_status=$(azkaban_flow_status $azkaban_host $azkaban_session_id $azkaban_execution_id)
-                echo "$azkaban_execution_id execution status is \'$azkaban_flow_status\'."
+                echo $azkaban_execution_id execution status is \'$azkaban_flow_status\'.
               done
 
-              echo "Completed $azkaban_execution_id execution status is \'$azkaban_flow_status\'."
+              echo Completed $azkaban_execution_id execution status is \'$azkaban_flow_status\'.
 
               if [ "$azkaban_flow_status" != "SUCCEEDED" ]; then
                 exit 1
