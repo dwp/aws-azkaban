@@ -10,7 +10,7 @@ resources:
   - name: aws-azkaban
     type: git
     source:
-      branch: TEMP_CI
+      branch: master
       uri: https://github.com/dwp/aws-azkaban.git
       access_token: ((dataworks-secrets.concourse_github_pat))
     webhook_token: ((dataworks.concourse_github_webhook_token))

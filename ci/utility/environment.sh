@@ -30,10 +30,7 @@ azkaban_ready() {
     --data-urlencode "action=login" \
     --data-urlencode "username=$azkaban_username" \
     --data-urlencode "password=$azkaban_password")
-  echo RESPONSE >&2
-  echo $response >&2
-  echo =============== >&2
-
+  echo Webserver response $response >&2
   [ "$response" == 200 ]
 }
 

@@ -736,18 +736,18 @@ meta:
               azkaban_session_id=$(azkaban_session_id)
 
               azkaban_execution_id=$(cat azkaban-execution-id/azkaban-execution-id.txt)
-              echo "azkaban_execution_id: \'$azkaban_execution_id\'"
+              echo azkaban_execution_id: \'$azkaban_execution_id\'
 
               azkaban_flow_status=$(azkaban_flow_status $azkaban_host $azkaban_session_id $azkaban_execution_id)
-              echo "$azkaban_execution_id execution status is \'$azkaban_flow_status\'."
+              echo $azkaban_execution_id execution status is \'$azkaban_flow_status\'.
 
               while [ "$azkaban_flow_status" == "RUNNING" ] || [ "$azkaban_flow_status" == "PREPARING" ]; do
                 sleep 5
                 azkaban_flow_status=$(azkaban_flow_status $azkaban_host $azkaban_session_id $azkaban_execution_id)
-                echo "$azkaban_execution_id execution status is \'$azkaban_flow_status\'."
+                echo $azkaban_execution_id execution status is \'$azkaban_flow_status\'.
               done
 
-              echo "Completed $azkaban_execution_id execution status is \'$azkaban_flow_status\'."
+              echo Completed $azkaban_execution_id execution status is \'$azkaban_flow_status\'.
 
               if [ "$azkaban_flow_status" != "SUCCEEDED" ]; then
                 exit 1
