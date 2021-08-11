@@ -624,7 +624,13 @@ meta:
                 instance_count=$(azkaban_webserver_instance_count $WEBSERVER_NAME)
                 echo Current azkaban webserver instance count: \'$instance_count\'.
               done
+
               echo Final azkaban webserver instance count: \'$instance_count\'.
+
+              while ! azkaban_ready; do
+                sleep 5
+                echo Server not ready yet
+              done
         inputs:
         - name: terraform-output-azkaban
         - name: aws-azkaban
