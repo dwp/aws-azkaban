@@ -15,9 +15,9 @@ jobs:
 #      - .: (( inject meta.plan.terraform-plan ))
 #        params:
 #          TF_WORKSPACE: 'qa'
-#      - .: (( inject meta.plan.terraform-output-azkaban ))
-#        params:
-#          TF_WORKSPACE: 'qa'
+      - .: (( inject meta.plan.terraform-output-azkaban ))
+        params:
+          TF_WORKSPACE: 'qa'
 #      - .: (( inject meta.plan.running-jobs ))
 #        config:
 #          params:
