@@ -2,7 +2,7 @@ resource "aws_ecs_task_definition" "azkaban_webserver" {
   family                   = "azkaban-webserver"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "512"
+  cpu                      = "1024"
   memory                   = "4096"
   task_role_arn            = aws_iam_role.azkaban_webserver.arn
   execution_role_arn       = data.terraform_remote_state.common.outputs.ecs_task_execution_role.arn
