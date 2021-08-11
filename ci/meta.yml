@@ -626,8 +626,13 @@ meta:
               done
 
               echo Final azkaban webserver instance count: \'$instance_count\'.
+              azkaban_host=$(azkaban_host)
+              azkaban_secret=$(azkaban_secret)
+              azkaban_secret_value=$(azkaban_secret_value "$azkaban_secret")
+              azkaban_username=$(azkaban_username "$azkaban_secret_value")
+              azkaban_password=$(azkaban_password "$azkaban_secret_value")
 
-              while ! azkaban_ready; do
+              while ! azkaban_ready $azkaban_host $azkaban_username $azkaban_password; do
                 sleep 5
                 echo Server not ready yet
               done
