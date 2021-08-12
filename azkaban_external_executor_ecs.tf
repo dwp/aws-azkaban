@@ -61,6 +61,7 @@ resource "aws_ecs_service" "azkaban_external_executor" {
   task_definition                    = aws_ecs_task_definition.azkaban_external_executor.arn
   platform_version                   = var.platform_version
   desired_count                      = local.desired_executor_count[local.environment]
+  force_new_deployment               = local.force_executor_redeploy[local.environment]
   launch_type                        = "FARGATE"
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
