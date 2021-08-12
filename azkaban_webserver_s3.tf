@@ -1,4 +1,4 @@
-data template_file "azkaban_webserver_properties" {
+data "template_file" "azkaban_webserver_properties" {
   template = file("${path.module}/config/azkaban/web-server/azkaban.properties")
   vars = {
     db_host                = aws_rds_cluster.azkaban_database.endpoint
@@ -8,15 +8,15 @@ data template_file "azkaban_webserver_properties" {
   }
 }
 
-data template_file "azkaban_webserver_start" {
+data "template_file" "azkaban_webserver_start" {
   template = file("${path.module}/config/azkaban/web-server/start-web.sh")
 }
 
-data template_file "azkaban_webserver_internal" {
+data "template_file" "azkaban_webserver_internal" {
   template = file("${path.module}/config/azkaban/web-server/internal-start-web.sh")
 }
 
-data template_file "azkaban_webserver_jmx_exporter_config" {
+data "template_file" "azkaban_webserver_jmx_exporter_config" {
   template = file("${path.module}/config/azkaban/web-server/jmx-exporter/config.yml")
 }
 
