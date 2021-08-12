@@ -51,4 +51,12 @@ locals {
     production  = 1
   }
 
+  force_executor_redeploy = {
+    development = true
+    qa          = false
+    integration = false
+    preprod     = false
+    production  = false
+  }
+
 }
