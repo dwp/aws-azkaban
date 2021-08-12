@@ -43,4 +43,12 @@ locals {
 
   azkaban_external_web_5xx_errors = "Azkaban External Web - External Web HTTP 500 errors"
 
+  desired_executor_count = {
+    development = 3
+    qa          = 1
+    integration = 1
+    preprod     = 1
+    production  = 1
+  }
+
 }

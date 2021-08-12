@@ -1,4 +1,4 @@
-data template_file "azkaban_executor_properties" {
+data "template_file" "azkaban_executor_properties" {
   template = file("${path.module}/config/azkaban/exec-server/azkaban.properties")
   vars = {
     db_host                    = aws_rds_cluster.azkaban_database.endpoint
@@ -8,23 +8,23 @@ data template_file "azkaban_executor_properties" {
   }
 }
 
-data template_file "azkaban_executor_start" {
+data "template_file" "azkaban_executor_start" {
   template = file("${path.module}/config/azkaban/exec-server/start-exec.sh")
 }
 
-data template_file "azkaban_executor_commonprivate" {
+data "template_file" "azkaban_executor_commonprivate" {
   template = file("${path.module}/config/azkaban/exec-server/commonprivate.properties")
 }
 
-data template_file "azkaban_executor_private" {
+data "template_file" "azkaban_executor_private" {
   template = file("${path.module}/config/azkaban/exec-server/private.properties")
 }
 
-data local_file "azkaban_executor_launchemr_private" {
+data "local_file" "azkaban_executor_launchemr_private" {
   filename = "config/azkaban/exec-server/launchemr-private.properties"
 }
 
-data template_file "azkaban_executor_internal" {
+data "template_file" "azkaban_executor_internal" {
   template = file("${path.module}/config/azkaban/exec-server/internal-start-executor.sh")
   vars = {
     azkaban_executor_port      = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_executor_port
