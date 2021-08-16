@@ -36,7 +36,6 @@ Other envs:
 [PreProd](https://azkaban-external.pre.dataworks.dwp.gov.uk)
 
 
-
 ## Authentication
 Currently two instances of Azkaban are deployed. `user` and `external`. They use differing authentication methods. External uses cognito.
 In order to accommodate programmatic access to Azkaban external, a cognito user was created. The details are stored in the `../azkaban_external/cognito` secret.
