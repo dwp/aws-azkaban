@@ -16,7 +16,7 @@ data "template_file" "azkaban_webserver_definition" {
     group_name    = "azkaban"
     group_value   = "azkaban"
     cpu           = var.fargate_cpu
-    image_url     = data.terraform_remote_state.management.outputs.ecr_azkaban_webserver_url
+    image_url     = local.azkaban_webserver_image
     memory        = var.fargate_memory
     user          = "root"
     ports         = jsonencode([jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_webserver_port])

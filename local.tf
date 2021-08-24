@@ -2,6 +2,9 @@ locals {
   azkaban_external_ecs_cluster = data.terraform_remote_state.common.outputs.ecs_cluster_main
   azkaban_user_ecs_cluster     = data.terraform_remote_state.common.outputs.ecs_cluster_main
 
+  azkaban_executor_image = "${local.account.management}.${module.workflow_manager_vpc.ecr_dkr_domain_name}/azkaban-executor:${var.image_version.azkaban-executor}"
+  azkaban_webserver_image = "${local.account.management}.${module.workflow_manager_vpc.ecr_dkr_domain_name}/azkaban-webserver:${var.image_version.azkaban-webserver}"
+
   azkaban_zip_uploader_log_level = {
     development = "DEBUG"
     qa          = "INFO"
@@ -71,5 +74,4 @@ locals {
     preprod     = false
     production  = false
   }
-
 }
