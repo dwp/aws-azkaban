@@ -16,7 +16,7 @@ data "template_file" "azkaban_external_executor_definition" {
     group_name    = "azkaban"
     group_value   = "azkaban_external"
     cpu           = var.fargate_cpu
-    image_url     = data.terraform_remote_state.management.outputs.ecr_azkaban_executor_url
+    image_url     = local.azkaban_executor_image
     memory        = var.fargate_memory
     user          = "root"
     ports         = jsonencode([jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_executor_port])
