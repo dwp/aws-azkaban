@@ -84,7 +84,7 @@ variable "image_version" {
   description = "pinned image versions to use"
   default = {
     jmx-exporter = "0.0.10"
-    azkaban-webserver = "0.0.139"
+    azkaban-webserver = "0.0.140"
     azkaban-executor = "0.0.131"
   }
 }
