@@ -2,8 +2,8 @@ locals {
   azkaban_external_ecs_cluster = data.terraform_remote_state.common.outputs.ecs_cluster_main
   azkaban_user_ecs_cluster     = data.terraform_remote_state.common.outputs.ecs_cluster_main
 
-  azkaban_executor_image = "${local.account.management}.${module.workflow_manager_vpc.ecr_dkr_domain_name}/azkaban-executor:${var.image_version.azkaban-executor}"
-  azkaban_webserver_image = "${local.account.management}.${module.workflow_manager_vpc.ecr_dkr_domain_name}/azkaban-webserver:${var.image_version.azkaban-webserver}"
+  azkaban_executor_image = format("%s:%s", data.terraform_remote_state.management.outputs.ecr_azkaban_executor_url, var.image_version.azkaban-executor)
+  azkaban_webserver_image = format("%s:%s", data.terraform_remote_state.management.outputs.ecr_azkaban_webserver_url, var.image_version.azkaban-webserver)
 
   azkaban_zip_uploader_log_level = {
     development = "DEBUG"
