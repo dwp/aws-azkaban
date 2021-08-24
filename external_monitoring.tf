@@ -272,7 +272,7 @@ resource "aws_cloudwatch_metric_alarm" "external_web_5xx_errors" {
 # Monitoring Canary alerts
 resource "aws_cloudwatch_log_metric_filter" "azkaban_external_monitoring_canary_success" {
   name           = "azkaban-external-monitoring-canary-success"
-  pattern        = "INFO [monitoring] [Azkaban] Job monitoring finished with status SUCCEEDED"
+  pattern        = "\"INFO [monitoring] [Azkaban] Job monitoring finished with status SUCCEEDED\""
   log_group_name = aws_cloudwatch_log_group.workflow_manager.name
 
   metric_transformation {
