@@ -68,6 +68,7 @@ resource "aws_ecs_service" "azkaban_executor" {
   launch_type                        = "FARGATE"
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
+  health_check_grace_period_seconds  = 60
 
   network_configuration {
     security_groups = [aws_security_group.azkaban_executor.id, aws_security_group.workflow_manager_common.id]
