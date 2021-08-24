@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_metric_alarm" "user_executor_running_tasks_less_than_desired" {
-  count               = local.azkaban_alert_on_running_tasks_less_than_desired[local.environment] ? 1 : 0
+  count               = local.azkaban_user_alert_on_running_tasks_less_than_desired[local.environment] ? 1 : 0
   alarm_name          = local.azkaban_user_executor_running_tasks_less_than_desired
   alarm_description   = "Managed by ${local.common_tags.Application} repository"
   alarm_actions       = [local.monitoring_topic_arn]
@@ -61,7 +61,7 @@ resource "aws_cloudwatch_metric_alarm" "user_executor_running_tasks_less_than_de
 
 # Web monitoring
 resource "aws_cloudwatch_metric_alarm" "user_web_running_tasks_less_than_desired" {
-  count               = local.azkaban_alert_on_running_tasks_less_than_desired[local.environment] ? 1 : 0
+  count               = local.azkaban_user_alert_on_running_tasks_less_than_desired[local.environment] ? 1 : 0
   alarm_name          = local.azkaban_user_web_running_tasks_less_than_desired
   alarm_description   = "Managed by ${local.common_tags.Application} repository"
   alarm_actions       = [local.monitoring_topic_arn]
@@ -122,7 +122,7 @@ resource "aws_cloudwatch_metric_alarm" "user_web_running_tasks_less_than_desired
 }
 
 resource "aws_cloudwatch_metric_alarm" "user_web_healthy_hosts_less_than_running_tasks" {
-  count               = local.azkaban_alert_on_unhealthy_hosts_less_than_running[local.environment] ? 1 : 0
+  count               = local.azkaban_user_alert_on_unhealthy_hosts_less_than_running[local.environment] ? 1 : 0
   alarm_name          = local.azkaban_user_web_unhealthy_hosts
   alarm_description   = "Managed by ${local.common_tags.Application} repository"
   alarm_actions       = [local.monitoring_topic_arn]
@@ -183,7 +183,7 @@ resource "aws_cloudwatch_metric_alarm" "user_web_healthy_hosts_less_than_running
 }
 
 resource "aws_cloudwatch_metric_alarm" "user_web_healthy_hosts_zero_but_running_tasks" {
-  count               = local.azkaban_alert_on_unhealthy_hosts_less_than_running[local.environment] ? 1 : 0
+  count               = local.azkaban_user_alert_on_unhealthy_hosts_less_than_running[local.environment] ? 1 : 0
   alarm_name          = local.azkaban_user_web_zero_unhealthy_hosts
   alarm_description   = "Managed by ${local.common_tags.Application} repository"
   alarm_actions       = [local.monitoring_topic_arn]
