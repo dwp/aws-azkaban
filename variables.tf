@@ -102,6 +102,28 @@ variable "executor_image_version" {
   }
 }
 
+variable "external_webserver_image_version" {
+  description = "pinned Azkaban Webserver image versions to use"
+  default = {
+    development    = "latest"
+    qa             = "0.0.141"
+    integration    = "0.0.141"
+    preprod        = "0.0.141"
+    production     = "0.0.141"
+  }
+}
+
+variable "external_executor_image_version" {
+  description = "pinned Azkaban Executor image versions to use"
+  default = {
+    development    = "latest"
+    qa             = "0.0.131"
+    integration    = "0.0.131"
+    preprod        = "0.0.131"
+    production     = "0.0.131"
+  }
+}
+
 variable "exporter_image_version" {
   description = "pinned JMX exporter image versions to use"
   default = {
