@@ -83,7 +83,7 @@ variable "subnets" {
 variable "webserver_image_version" {
   description = "pinned Azkaban Webserver image versions to use"
   default = {
-    development    = "latest"
+    development    = "0.0.140"
     qa             = "0.0.141"
     integration    = "0.0.141"
     preprod        = "0.0.141"
@@ -105,7 +105,7 @@ variable "executor_image_version" {
 variable "external_webserver_image_version" {
   description = "pinned Azkaban Webserver image versions to use"
   default = {
-    development    = "latest"
+    development    = "0.0.140"
     qa             = "0.0.141"
     integration    = "0.0.141"
     preprod        = "0.0.141"
