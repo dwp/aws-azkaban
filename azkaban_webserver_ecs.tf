@@ -16,7 +16,7 @@ data "template_file" "azkaban_webserver_definition" {
     group_name    = "azkaban"
     group_value   = "azkaban"
     cpu           = var.fargate_cpu
-    image_url     = local.azkaban_webserver_image
+    image_url     = local.azkaban_external_webserver_image
     memory        = var.fargate_memory
     user          = "root"
     ports         = jsonencode([jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_webserver_port])
@@ -46,7 +46,7 @@ data "template_file" "azkaban_webserver_jmx_exporter_definition" {
     group_name    = "jmx_exporter"
     group_value   = "jmx_exporter"
     cpu           = var.fargate_cpu
-    image_url     = format("%s:%s", data.terraform_remote_state.management.outputs.ecr_jmx_exporter_url, var.image_version.jmx-exporter)
+    image_url     = format("%s:%s", data.terraform_remote_state.management.outputs.ecr_jmx_exporter_url, var.exporter_image_version[local.environment])
     memory        = var.fargate_memory
     user          = "root"
     ports         = jsonencode([5556])
