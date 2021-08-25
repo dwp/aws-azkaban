@@ -102,7 +102,7 @@ variable "executor_image_version" {
   }
 }
 
-variable exporter_image_version" {
+variable "exporter_image_version" {
   description = "pinned JMX exporter image versions to use"
   default = {
     development    = "latest"
