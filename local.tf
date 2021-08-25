@@ -72,7 +72,7 @@ locals {
   azkaban_user_web_5xx_errors                           = "Azkaban User Web - HTTP 500 errors"
 
   desired_executor_count = {
-    development = 3
+    development = 1
     qa          = 1
     integration = 1
     preprod     = 1
