@@ -296,11 +296,11 @@ resource "aws_cloudwatch_metric_alarm" "azkaban_external_monitoring_canary_succe
   alarm_actions     = [local.monitoring_topic_arn]
 
   tags = merge(
-  local.common_tags,
-  {
-    Name              = "azkaban-external-monitoring-canary-success",
-    notification_type = "Error",
-    severity          = "Critical"
-  },
+    local.common_tags,
+    {
+      Name              = "azkaban-external-monitoring-canary-success",
+      notification_type = "Error",
+      severity          = "Critical"
+    },
   )
 }
