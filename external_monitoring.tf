@@ -277,7 +277,7 @@ resource "aws_cloudwatch_log_metric_filter" "azkaban_external_monitoring_canary_
   log_group_name = aws_cloudwatch_log_group.workflow_manager.name
 
   metric_transformation {
-    name      = "azkaban-external-canary-success"
+    name      = "azkaban-external-monitoring-canary-success"
     namespace = "/app/workflow-manager"
     value     = "1"
   }
@@ -287,11 +287,13 @@ resource "aws_cloudwatch_metric_alarm" "azkaban_external_monitoring_canary_succe
   count               = local.azkaban_external_alert_monitoring_canary[local.environment] ? 1 : 0
   alarm_name          = local.azkaban_external_monitoring_canary_success
   comparison_operator = "LessThanThreshold"
-  evaluation_periods  = "1"
+  evaluation_periods  = "3"
+  threshold           = "1"
   metric_name         = "azkaban-external-monitoring-canary-success"
   namespace           = "/app/workflow-manager"
-  period              = "900"
+  period              = "300"
   statistic           = "Sum"
+  treat_missing_data  = "breaching"
 
   alarm_description = "This metric monitors successes of Azkaban External monitoring canary flow"
   alarm_actions     = [local.monitoring_topic_arn]
