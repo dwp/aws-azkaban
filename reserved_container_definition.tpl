@@ -53,7 +53,7 @@
       },
       {
         "name": join("", [upper(group_name), "_CONFIG_S3_PREFIX"]),
-        "value": "monitoring/${group_name}"
+        "value": "workflow-manager/${group_value}"
       }
     ],
     [
