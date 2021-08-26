@@ -57,6 +57,10 @@ variable "webserver_memory" {
   default = "6156"
 }
 
+variable "jmx_memory" {
+  default = "512"
+}
+
 variable "internet_proxy_port" {
   default = 3128
 }

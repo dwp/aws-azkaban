@@ -50,7 +50,7 @@ data "template_file" "azkaban_webserver_jmx_exporter_definition" {
     cpu                = var.fargate_cpu
     image_url          = format("%s:%s", data.terraform_remote_state.management.outputs.ecr_jmx_exporter_url, var.exporter_image_version[local.environment])
     memory             = var.fargate_memory
-    memory_reservation = var.fargate_memory
+    memory_reservation = var.jmx_memory
     user               = "root"
     ports              = jsonencode([5556])
     log_group          = aws_cloudwatch_log_group.workflow_manager.name
