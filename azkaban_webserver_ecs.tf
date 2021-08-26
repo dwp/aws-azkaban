@@ -24,6 +24,7 @@ data "template_file" "azkaban_webserver_definition" {
     log_group          = aws_cloudwatch_log_group.workflow_manager.name
     region             = var.region
     config_bucket      = data.terraform_remote_state.common.outputs.config_bucket.id
+    ulimits            = jsonencode([])
     essential          = true
 
     mount_points = jsonencode([])
@@ -56,6 +57,7 @@ data "template_file" "azkaban_webserver_jmx_exporter_definition" {
     log_group          = aws_cloudwatch_log_group.workflow_manager.name
     region             = var.region
     config_bucket      = data.terraform_remote_state.common.outputs.config_bucket.id
+    ulimits            = jsonencode([])
     essential          = false
 
     mount_points = jsonencode([])
