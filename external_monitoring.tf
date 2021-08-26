@@ -249,7 +249,7 @@ resource "aws_cloudwatch_metric_alarm" "external_web_5xx_errors" {
   evaluation_periods  = "1"
   metric_name         = "HTTPCode_ELB_5XX_Count"
   namespace           = "AWS/ApplicationELB"
-  period              = "60"
+  period              = "300"
   statistic           = "Sum"
 
   dimensions = {
