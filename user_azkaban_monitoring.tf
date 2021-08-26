@@ -246,12 +246,12 @@ resource "aws_cloudwatch_metric_alarm" "user_web_healthy_hosts_zero_but_running_
 resource "aws_cloudwatch_metric_alarm" "user_web_5xx_errors" {
   count               = local.azkaban_user_alert_on_500_errors[local.environment] ? 1 : 0
   alarm_name          = local.azkaban_user_web_5xx_errors
-  comparison_operator = "GreaterThanOrEqualToThreshold"
+  comparison_operator = "GreaterThanThreshold"
   threshold           = "1"
-  evaluation_periods  = "5"
+  evaluation_periods  = "2"
   metric_name         = "HTTPCode_ELB_5XX_Count"
   namespace           = "AWS/ApplicationELB"
-  period              = "60"
+  period              = "300"
   statistic           = "Sum"
 
   dimensions = {
