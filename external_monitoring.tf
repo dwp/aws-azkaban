@@ -246,8 +246,7 @@ resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_zero_but_runn
 resource "aws_cloudwatch_metric_alarm" "external_web_5xx_errors" {
   alarm_name          = local.azkaban_external_web_5xx_errors
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  threshold           = "1"
-  evaluation_periods  = "5"
+  evaluation_periods  = "1"
   metric_name         = "HTTPCode_ELB_5XX_Count"
   namespace           = "AWS/ApplicationELB"
   period              = "60"
