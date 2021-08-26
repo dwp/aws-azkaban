@@ -2,27 +2,30 @@ resource "aws_ecs_task_definition" "azkaban_webserver" {
   family                   = "azkaban-webserver"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "1024"
-  memory                   = "4096"
+  cpu                      = "2048"
+  memory                   = "8192"
   task_role_arn            = aws_iam_role.azkaban_webserver.arn
   execution_role_arn       = data.terraform_remote_state.common.outputs.ecs_task_execution_role.arn
   container_definitions    = "[${data.template_file.azkaban_webserver_definition.rendered}, ${data.template_file.azkaban_webserver_jmx_exporter_definition.rendered}]"
 }
 
 data "template_file" "azkaban_webserver_definition" {
-  template = file("${path.module}/container_definition.tpl")
+  template = file("${path.module}/reserved_container_definition.tpl")
   vars = {
-    name          = "azkaban-webserver"
-    group_name    = "azkaban"
-    group_value   = "azkaban"
-    cpu           = var.fargate_cpu
-    image_url     = local.azkaban_external_webserver_image
-    memory        = var.fargate_memory
-    user          = "root"
-    ports         = jsonencode([jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_webserver_port])
-    log_group     = aws_cloudwatch_log_group.workflow_manager.name
-    region        = var.region
-    config_bucket = data.terraform_remote_state.common.outputs.config_bucket.id
+    name               = "azkaban-webserver"
+    group_name         = "azkaban"
+    group_value        = "azkaban"
+    cpu                = var.fargate_cpu
+    image_url          = local.azkaban_external_webserver_image
+    memory             = var.webserver_memory
+    memory_reservation = var.fargate_memory
+    user               = "root"
+    ports              = jsonencode([jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_webserver_port])
+    log_group          = aws_cloudwatch_log_group.workflow_manager.name
+    region             = var.region
+    config_bucket      = data.terraform_remote_state.common.outputs.config_bucket.id
+    ulimits            = jsonencode([])
+    essential          = true
 
     mount_points = jsonencode([])
 
@@ -42,17 +45,20 @@ data "template_file" "azkaban_webserver_definition" {
 data "template_file" "azkaban_webserver_jmx_exporter_definition" {
   template = file("${path.module}/container_definition.tpl")
   vars = {
-    name          = "azkaban-webserver-jmx-exporter"
-    group_name    = "jmx_exporter"
-    group_value   = "jmx_exporter"
-    cpu           = var.fargate_cpu
-    image_url     = format("%s:%s", data.terraform_remote_state.management.outputs.ecr_jmx_exporter_url, var.exporter_image_version[local.environment])
-    memory        = var.fargate_memory
-    user          = "root"
-    ports         = jsonencode([5556])
-    log_group     = aws_cloudwatch_log_group.workflow_manager.name
-    region        = var.region
-    config_bucket = data.terraform_remote_state.common.outputs.config_bucket.id
+    name               = "azkaban-webserver-jmx-exporter"
+    group_name         = "jmx_exporter"
+    group_value        = "jmx_exporter"
+    cpu                = var.fargate_cpu
+    image_url          = format("%s:%s", data.terraform_remote_state.management.outputs.ecr_jmx_exporter_url, var.exporter_image_version[local.environment])
+    memory             = var.fargate_memory
+    memory_reservation = var.jmx_memory
+    user               = "root"
+    ports              = jsonencode([5556])
+    log_group          = aws_cloudwatch_log_group.workflow_manager.name
+    region             = var.region
+    config_bucket      = data.terraform_remote_state.common.outputs.config_bucket.id
+    ulimits            = jsonencode([])
+    essential          = false
 
     mount_points = jsonencode([])
     environment_variables = jsonencode([

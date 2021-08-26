@@ -53,6 +53,14 @@ variable "fargate_memory" {
   default = "2048"
 }
 
+variable "webserver_memory" {
+  default = "6156"
+}
+
+variable "jmx_memory" {
+  default = "512"
+}
+
 variable "internet_proxy_port" {
   default = 3128
 }
