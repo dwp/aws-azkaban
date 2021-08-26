@@ -188,7 +188,7 @@ resource "aws_cloudwatch_metric_alarm" "user_web_healthy_hosts_zero_but_running_
   alarm_description   = "Managed by ${local.common_tags.Application} repository"
   alarm_actions       = [local.monitoring_topic_arn]
   treat_missing_data  = "breaching"
-  evaluation_periods  = 1
+  evaluation_periods  = 2
   threshold           = 0
   comparison_operator = "GreaterThanThreshold"
 
