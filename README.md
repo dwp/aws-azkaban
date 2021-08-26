@@ -81,7 +81,7 @@ When triggered these alerts are sent to the `dataworks-aws-service-alerts` slack
 
 ## Monitoring Canary
 There exists a monitoring project on Azkaban which runs every 10 minutes - called 'monitoring'. This task acts as a canary.
-If the canary success, it will print a 'Hello World' into the executor log files. Cloudwatch is monitoring for this log and when it finds it, will record '1' against the 'azkaban-external-monitoring-canary-success' metric.
+If the canary succeeds, it will print 'Hello World' into the executor log files. Cloudwatch is monitoring for this log and when it finds it, it will record '1' against the 'azkaban-external-monitoring-canary-success' metric.
 
 An alarm exists which will check that every 15 minutes, the 'azkaban-external-monitoring-canary-success' metric has a datapoint of value 1 or above; if it doesn't it will raise an alert.
 
