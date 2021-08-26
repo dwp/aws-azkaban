@@ -244,7 +244,7 @@ resource "aws_cloudwatch_metric_alarm" "user_web_healthy_hosts_zero_but_running_
 }
 
 resource "aws_cloudwatch_metric_alarm" "user_web_5xx_errors" {
-  count               = local.azkaban_user_alert_on_500_errors[local.environment]
+  count               = local.azkaban_user_alert_on_500_errors[local.environment] ? 1 : 0
   alarm_name          = local.azkaban_user_web_5xx_errors
   comparison_operator = "GreaterThanOrEqualToThreshold"
   threshold           = "1"
