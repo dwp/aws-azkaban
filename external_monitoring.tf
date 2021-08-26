@@ -244,6 +244,7 @@ resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_zero_but_runn
 }
 
 resource "aws_cloudwatch_metric_alarm" "external_web_5xx_errors" {
+  count               = local.azkaban_external_alert_on_500_errors[local.environment] ? 1 : 0
   alarm_name          = local.azkaban_external_web_5xx_errors
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
