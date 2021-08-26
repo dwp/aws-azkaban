@@ -188,7 +188,7 @@ resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_zero_but_runn
   alarm_description   = "Managed by ${local.common_tags.Application} repository"
   alarm_actions       = [local.monitoring_topic_arn]
   treat_missing_data  = "breaching"
-  evaluation_periods  = 2
+  evaluation_periods  = 1
   threshold           = 0
   comparison_operator = "GreaterThanThreshold"
 
@@ -246,7 +246,7 @@ resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_zero_but_runn
 resource "aws_cloudwatch_metric_alarm" "external_web_5xx_errors" {
   alarm_name          = local.azkaban_external_web_5xx_errors
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  threshold           = "1"
+  threshold = "1"
   evaluation_periods  = "5"
   metric_name         = "HTTPCode_ELB_5XX_Count"
   namespace           = "AWS/ApplicationELB"
@@ -297,11 +297,11 @@ resource "aws_cloudwatch_metric_alarm" "azkaban_external_monitoring_canary_succe
   alarm_actions     = [local.monitoring_topic_arn]
 
   tags = merge(
-    local.common_tags,
-    {
-      Name              = "azkaban-external-monitoring-canary-success",
-      notification_type = "Error",
-      severity          = "Critical"
-    },
+  local.common_tags,
+  {
+    Name              = "azkaban-external-monitoring-canary-success",
+    notification_type = "Error",
+    severity          = "Critical"
+  },
   )
 }
