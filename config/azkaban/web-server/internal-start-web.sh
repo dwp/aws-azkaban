@@ -46,7 +46,7 @@ echo "executor-port: $executorport"
 serverpath=`pwd`
 
 if [[ -z "$AZKABAN_OPTS" ]]; then
-    AZKABAN_OPTS="-Xmx4G"
+    AZKABAN_OPTS="-Xmx2G"
 fi
 # Set the log4j configuration file
 if [ -f $conf/log4j.properties ]; then
