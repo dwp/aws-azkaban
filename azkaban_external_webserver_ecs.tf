@@ -2,27 +2,30 @@ resource "aws_ecs_task_definition" "azkaban_external_webserver" {
   family                   = "azkaban-external-webserver"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "1024"
-  memory                   = "4096"
+  cpu                      = "2048"
+  memory                   = "8192"
   task_role_arn            = aws_iam_role.azkaban_webserver.arn
   execution_role_arn       = data.terraform_remote_state.common.outputs.ecs_task_execution_role.arn
   container_definitions    = "[${data.template_file.azkaban_external_webserver_definition.rendered}, ${data.template_file.azkaban_webserver_jmx_exporter_definition.rendered}]"
 }
 
 data "template_file" "azkaban_external_webserver_definition" {
-  template = file("${path.module}/container_definition.tpl")
+  template = file("${path.module}/reserved_container_definition.tpl")
   vars = {
-    name          = "azkaban-external-webserver"
-    group_name    = "azkaban"
-    group_value   = "azkaban_external"
-    cpu           = var.fargate_cpu
-    image_url     = local.azkaban_webserver_image
-    memory        = var.fargate_memory
-    user          = "root"
-    ports         = jsonencode([jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_webserver_port])
-    log_group     = aws_cloudwatch_log_group.workflow_manager.name
-    region        = var.region
-    config_bucket = data.terraform_remote_state.common.outputs.config_bucket.id
+    name               = "azkaban-external-webserver"
+    group_name         = "azkaban"
+    group_value        = "azkaban_external"
+    cpu                = var.fargate_cpu
+    image_url          = local.azkaban_webserver_image
+    memory             = var.webserver_memory
+    memory_reservation = var.fargate_memory
+    user               = "root"
+    ports              = jsonencode([jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_webserver_port])
+    log_group          = aws_cloudwatch_log_group.workflow_manager.name
+    region             = var.region
+    config_bucket      = data.terraform_remote_state.common.outputs.config_bucket.id
+    ulimits            = jsonencode([])
+    essential          = true
 
     mount_points = jsonencode([])
 
