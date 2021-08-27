@@ -43,7 +43,7 @@ data "template_file" "azkaban_webserver_definition" {
 }
 
 data "template_file" "azkaban_webserver_jmx_exporter_definition" {
-  template = file("${path.module}/container_definition.tpl")
+  template = file("${path.module}/reserved_container_definition.tpl")
   vars = {
     name               = "azkaban-webserver-jmx-exporter"
     group_name         = "jmx_exporter"
