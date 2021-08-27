@@ -177,7 +177,7 @@ resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_less_than_run
     {
       Name              = "azkaban-external-healthy-vs-running",
       notification_type = "Warning",
-      severity          = "High"
+      severity          = "Critical"
     },
   )
 }
