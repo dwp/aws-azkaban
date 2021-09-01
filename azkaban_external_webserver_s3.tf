@@ -1,4 +1,4 @@
-data template_file "azkaban_external_webserver_properties" {
+data "template_file" "azkaban_external_webserver_properties" {
   template = file("${path.module}/config/azkaban_external/web-server/azkaban.properties")
   vars = {
     db_host                         = aws_rds_cluster.azkaban_external_database.endpoint
@@ -21,15 +21,15 @@ resource "aws_s3_bucket_object" "azkaban_external_webserver_properties" {
   kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
 }
 
-data template_file "azkaban_external_webserver_start" {
+data "template_file" "azkaban_external_webserver_start" {
   template = file("${path.module}/config/azkaban_external/web-server/start-web.sh")
 }
 
-data template_file "azkaban_external_webserver_internal" {
+data "template_file" "azkaban_external_webserver_internal" {
   template = file("${path.module}/config/azkaban_external/web-server/internal-start-web.sh")
 }
 
-data template_file "azkaban_external_webserver_jmx_exporter_config" {
+data "template_file" "azkaban_external_webserver_jmx_exporter_config" {
   template = file("${path.module}/config/azkaban_external/web-server/jmx-exporter/config.yml")
 }
 

@@ -6,7 +6,7 @@ resource "aws_ecs_task_definition" "azkaban_executor" {
   family                   = "azkaban-executor"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "512"
+  cpu                      = "1024"
   memory                   = "4096"
   task_role_arn            = aws_iam_role.azkaban_executor.arn
   execution_role_arn       = data.terraform_remote_state.common.outputs.ecs_task_execution_role.arn
@@ -20,7 +20,7 @@ data "template_file" "azkaban_executor_definition" {
     group_name    = "azkaban"
     group_value   = "azkaban"
     cpu           = var.fargate_cpu
-    image_url     = data.terraform_remote_state.management.outputs.ecr_azkaban_executor_url
+    image_url     = local.azkaban_executor_image
     memory        = var.fargate_memory
     user          = "root"
     ports         = jsonencode([jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).ports.azkaban_executor_port])

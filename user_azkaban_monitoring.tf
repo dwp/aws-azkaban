@@ -1,6 +1,6 @@
-resource "aws_cloudwatch_metric_alarm" "external_executor_running_tasks_less_than_desired" {
-  count               = local.azkaban_external_alert_on_running_tasks_less_than_desired[local.environment] ? 1 : 0
-  alarm_name          = local.azkaban_external_executor_running_tasks_less_than_desired
+resource "aws_cloudwatch_metric_alarm" "user_executor_running_tasks_less_than_desired" {
+  count               = local.azkaban_user_alert_on_running_tasks_less_than_desired[local.environment] ? 1 : 0
+  alarm_name          = local.azkaban_user_executor_running_tasks_less_than_desired
   alarm_description   = "Managed by ${local.common_tags.Application} repository"
   alarm_actions       = [local.monitoring_topic_arn]
   treat_missing_data  = "breaching"
@@ -26,8 +26,8 @@ resource "aws_cloudwatch_metric_alarm" "external_executor_running_tasks_less_tha
       unit        = "Count"
 
       dimensions = {
-        ServiceName = aws_ecs_service.azkaban_executor.name
-        ClusterName = local.azkaban_external_ecs_cluster.name
+        ServiceName = aws_ecs_service.azkaban_webserver.name
+        ClusterName = local.azkaban_user_ecs_cluster.name
       }
     }
   }
@@ -43,8 +43,8 @@ resource "aws_cloudwatch_metric_alarm" "external_executor_running_tasks_less_tha
       unit        = "Count"
 
       dimensions = {
-        ServiceName = aws_ecs_service.azkaban_executor.name
-        ClusterName = local.azkaban_external_ecs_cluster.name
+        ServiceName = aws_ecs_service.azkaban_webserver.name
+        ClusterName = local.azkaban_user_ecs_cluster.name
       }
     }
   }
@@ -52,7 +52,7 @@ resource "aws_cloudwatch_metric_alarm" "external_executor_running_tasks_less_tha
   tags = merge(
     local.common_tags,
     {
-      Name              = "azkaban-external-executor-desired-task-alert",
+      Name              = "azkaban-user-executor-desired-task-alert",
       notification_type = "Warning",
       severity          = "Critical"
     },
@@ -60,9 +60,9 @@ resource "aws_cloudwatch_metric_alarm" "external_executor_running_tasks_less_tha
 }
 
 # Web monitoring
-resource "aws_cloudwatch_metric_alarm" "external_web_running_tasks_less_than_desired" {
-  count               = local.azkaban_external_alert_on_running_tasks_less_than_desired[local.environment] ? 1 : 0
-  alarm_name          = local.azkaban_external_web_running_tasks_less_than_desired
+resource "aws_cloudwatch_metric_alarm" "user_web_running_tasks_less_than_desired" {
+  count               = local.azkaban_user_alert_on_running_tasks_less_than_desired[local.environment] ? 1 : 0
+  alarm_name          = local.azkaban_user_web_running_tasks_less_than_desired
   alarm_description   = "Managed by ${local.common_tags.Application} repository"
   alarm_actions       = [local.monitoring_topic_arn]
   treat_missing_data  = "breaching"
@@ -88,8 +88,8 @@ resource "aws_cloudwatch_metric_alarm" "external_web_running_tasks_less_than_des
       unit        = "Count"
 
       dimensions = {
-        ServiceName = aws_ecs_service.azkaban_external_webserver.name
-        ClusterName = local.azkaban_external_ecs_cluster.name
+        ServiceName = aws_ecs_service.azkaban_webserver.name
+        ClusterName = local.azkaban_user_ecs_cluster.name
       }
     }
   }
@@ -105,8 +105,8 @@ resource "aws_cloudwatch_metric_alarm" "external_web_running_tasks_less_than_des
       unit        = "Count"
 
       dimensions = {
-        ServiceName = aws_ecs_service.azkaban_external_webserver.name
-        ClusterName = local.azkaban_external_ecs_cluster.name
+        ServiceName = aws_ecs_service.azkaban_webserver.name
+        ClusterName = local.azkaban_user_ecs_cluster.name
       }
     }
   }
@@ -114,16 +114,16 @@ resource "aws_cloudwatch_metric_alarm" "external_web_running_tasks_less_than_des
   tags = merge(
     local.common_tags,
     {
-      Name              = "azkaban-external-web-desired-task-alert",
+      Name              = "azkaban-user-web-desired-task-alert",
       notification_type = "Warning",
       severity          = "Critical"
     },
   )
 }
 
-resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_less_than_running_tasks" {
-  count               = local.azkaban_external_alert_on_unhealthy_hosts_less_than_running[local.environment] ? 1 : 0
-  alarm_name          = local.azkaban_external_web_unhealthy_hosts
+resource "aws_cloudwatch_metric_alarm" "user_web_healthy_hosts_less_than_running_tasks" {
+  count               = local.azkaban_user_alert_on_unhealthy_hosts_less_than_running[local.environment] ? 1 : 0
+  alarm_name          = local.azkaban_user_web_unhealthy_hosts
   alarm_description   = "Managed by ${local.common_tags.Application} repository"
   alarm_actions       = [local.monitoring_topic_arn]
   treat_missing_data  = "breaching"
@@ -149,8 +149,8 @@ resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_less_than_run
       unit        = "Count"
 
       dimensions = {
-        TargetGroup  = aws_lb_target_group.azkaban_external_webserver.arn_suffix
-        LoadBalancer = aws_lb.azkaban_external.arn_suffix
+        TargetGroup  = aws_lb_target_group.azkaban_webserver.arn_suffix
+        LoadBalancer = aws_lb.workflow_manager.arn_suffix
       }
     }
   }
@@ -166,8 +166,8 @@ resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_less_than_run
       unit        = "Count"
 
       dimensions = {
-        ServiceName = aws_ecs_service.azkaban_external_webserver.name
-        ClusterName = local.azkaban_external_ecs_cluster.name
+        ServiceName = aws_ecs_service.azkaban_webserver.name
+        ClusterName = local.azkaban_user_ecs_cluster.name
       }
     }
   }
@@ -175,20 +175,20 @@ resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_less_than_run
   tags = merge(
     local.common_tags,
     {
-      Name              = "azkaban-external-healthy-vs-running",
+      Name              = "azkaban-user-healthy-vs-running",
       notification_type = "Warning",
-      severity          = "Critical"
+      severity          = "High"
     },
   )
 }
 
-resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_zero_but_running_tasks" {
-  count               = local.azkaban_external_alert_on_unhealthy_hosts_less_than_running[local.environment] ? 1 : 0
-  alarm_name          = local.azkaban_external_web_zero_unhealthy_hosts
+resource "aws_cloudwatch_metric_alarm" "user_web_healthy_hosts_zero_but_running_tasks" {
+  count               = local.azkaban_user_alert_on_unhealthy_hosts_less_than_running[local.environment] ? 1 : 0
+  alarm_name          = local.azkaban_user_web_zero_unhealthy_hosts
   alarm_description   = "Managed by ${local.common_tags.Application} repository"
   alarm_actions       = [local.monitoring_topic_arn]
   treat_missing_data  = "breaching"
-  evaluation_periods  = 1
+  evaluation_periods  = 2
   threshold           = 0
   comparison_operator = "GreaterThanThreshold"
 
@@ -210,8 +210,8 @@ resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_zero_but_runn
       unit        = "Count"
 
       dimensions = {
-        TargetGroup  = aws_lb_target_group.azkaban_external_webserver.arn_suffix
-        LoadBalancer = aws_lb.azkaban_external.arn_suffix
+        TargetGroup  = aws_lb_target_group.azkaban_webserver.arn_suffix
+        LoadBalancer = aws_lb.workflow_manager.arn_suffix
       }
     }
   }
@@ -227,8 +227,8 @@ resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_zero_but_runn
       unit        = "Count"
 
       dimensions = {
-        ServiceName = aws_ecs_service.azkaban_external_webserver.name
-        ClusterName = local.azkaban_external_ecs_cluster.name
+        ServiceName = aws_ecs_service.azkaban_webserver.name
+        ClusterName = local.azkaban_user_ecs_cluster.name
       }
     }
   }
@@ -236,73 +236,36 @@ resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_zero_but_runn
   tags = merge(
     local.common_tags,
     {
-      Name              = "azkaban-external-zero-healthy-hosts",
+      Name              = "azkaban-user-zero-healthy-hosts",
       notification_type = "Warning",
       severity          = "Critical"
     },
   )
 }
 
-resource "aws_cloudwatch_metric_alarm" "external_web_5xx_errors" {
-  count               = local.azkaban_external_alert_on_500_errors[local.environment] ? 1 : 0
-  alarm_name          = local.azkaban_external_web_5xx_errors
-  comparison_operator = "GreaterThanOrEqualToThreshold"
+resource "aws_cloudwatch_metric_alarm" "user_web_5xx_errors" {
+  count               = local.azkaban_user_alert_on_500_errors[local.environment] ? 1 : 0
+  alarm_name          = local.azkaban_user_web_5xx_errors
+  comparison_operator = "GreaterThanThreshold"
+  threshold           = "10"
   evaluation_periods  = "1"
   metric_name         = "HTTPCode_ELB_5XX_Count"
   namespace           = "AWS/ApplicationELB"
   period              = "300"
-  statistic           = "Sum"
+  statistic           = "Average"
 
   dimensions = {
-    LoadBalancer = aws_lb.azkaban_external.arn_suffix
+    LoadBalancer = aws_lb.workflow_manager.arn_suffix
   }
 
-  alarm_description = "This metric monitors 5xx errors on Azkaban external LB"
+  alarm_description = "This metric monitors 5xx errors on Azkaban user LB"
   alarm_actions     = [local.monitoring_topic_arn]
 
   tags = merge(
     local.common_tags,
     {
-      Name              = "azkaban-external-5xx-alert",
+      Name              = "azkaban-user-5xx-alert",
       notification_type = "Warning",
-      severity          = "Critical"
-    },
-  )
-}
-
-# Monitoring Canary alerts
-resource "aws_cloudwatch_log_metric_filter" "azkaban_external_monitoring_canary_success" {
-  name           = "azkaban-external-monitoring-canary-success"
-  pattern        = "\"INFO [monitoring] [Azkaban] Job monitoring finished with status SUCCEEDED\""
-  log_group_name = aws_cloudwatch_log_group.workflow_manager.name
-
-  metric_transformation {
-    name      = "azkaban-external-monitoring-canary-success"
-    namespace = "/app/workflow-manager"
-    value     = "1"
-  }
-}
-
-resource "aws_cloudwatch_metric_alarm" "azkaban_external_monitoring_canary_success" {
-  count               = local.azkaban_external_alert_monitoring_canary[local.environment] ? 1 : 0
-  alarm_name          = local.azkaban_external_monitoring_canary_success
-  comparison_operator = "LessThanThreshold"
-  evaluation_periods  = "3"
-  threshold           = "1"
-  metric_name         = "azkaban-external-monitoring-canary-success"
-  namespace           = "/app/workflow-manager"
-  period              = "300"
-  statistic           = "Sum"
-  treat_missing_data  = "breaching"
-
-  alarm_description = "This metric monitors successes of Azkaban External monitoring canary flow"
-  alarm_actions     = [local.monitoring_topic_arn]
-
-  tags = merge(
-    local.common_tags,
-    {
-      Name              = "azkaban-external-monitoring-canary-success",
-      notification_type = "Error",
       severity          = "Critical"
     },
   )

@@ -46,11 +46,19 @@ variable "whitelist_cidr_blocks" {
 }
 
 variable "fargate_cpu" {
-  default = "256"
+  default = "512"
 }
 
 variable "fargate_memory" {
   default = "2048"
+}
+
+variable "webserver_memory" {
+  default = "6156"
+}
+
+variable "jmx_memory" {
+  default = "512"
 }
 
 variable "internet_proxy_port" {
@@ -80,9 +88,57 @@ variable "subnets" {
   }
 }
 
-variable "image_versions" {
-  description = "pinned image versions to use"
+variable "webserver_image_version" {
+  description = "pinned Azkaban Webserver image versions to use"
   default = {
-    jmx-exporter = "0.0.10"
+    development    = "latest"
+    qa             = "0.0.141"
+    integration    = "0.0.141"
+    preprod        = "0.0.141"
+    production     = "0.0.141"
+  }
+}
+
+variable "executor_image_version" {
+  description = "pinned Azkaban Executor image versions to use"
+  default = {
+    development    = "latest"
+    qa             = "0.0.131"
+    integration    = "0.0.131"
+    preprod        = "0.0.131"
+    production     = "0.0.131"
+  }
+}
+
+variable "external_webserver_image_version" {
+  description = "pinned Azkaban Webserver image versions to use"
+  default = {
+    development    = "latest"
+    qa             = "0.0.141"
+    integration    = "0.0.141"
+    preprod        = "0.0.141"
+    production     = "0.0.141"
+  }
+}
+
+variable "external_executor_image_version" {
+  description = "pinned Azkaban Executor image versions to use"
+  default = {
+    development    = "latest"
+    qa             = "0.0.131"
+    integration    = "0.0.131"
+    preprod        = "0.0.131"
+    production     = "0.0.131"
+  }
+}
+
+variable "exporter_image_version" {
+  description = "pinned JMX exporter image versions to use"
+  default = {
+    development    = "latest"
+    qa             = "0.0.10"
+    integration    = "0.0.10"
+    preprod        = "0.0.10"
+    production     = "0.0.10"
   }
 }

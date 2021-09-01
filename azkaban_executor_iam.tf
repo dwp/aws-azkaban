@@ -245,6 +245,7 @@ data "aws_iam_policy_document" "azkaban_executor_execute_launcher" {
       data.terraform_remote_state.aws_clive.outputs.aws_clive_emr_launcher_lambda.arn,
       data.terraform_remote_state.dataworks_aws_mongo_latest.outputs.mongo_latest_emr_launcher_lambda.arn,
       data.terraform_remote_state.aws_pdm_dataset_generation.outputs.pdm_emr_launcher_lambda.arn,
+      data.terraform_remote_state.aws_uc_feature_infrastructure.outputs.aws_uc_feature_emr_launcher_lambda.arn,
     ]
   }
 }

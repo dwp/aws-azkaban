@@ -2,7 +2,7 @@ resource "aws_ecs_task_definition" "azkaban_external_executor" {
   family                   = "azkaban-external-executor"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "512"
+  cpu                      = "1024"
   memory                   = "4096"
   task_role_arn            = aws_iam_role.azkaban_executor.arn
   execution_role_arn       = data.terraform_remote_state.common.outputs.ecs_task_execution_role.arn
@@ -16,7 +16,7 @@ data "template_file" "azkaban_external_executor_definition" {
     group_name    = "azkaban"
     group_value   = "azkaban_external"
     cpu           = var.fargate_cpu
-    image_url     = data.terraform_remote_state.management.outputs.ecr_azkaban_executor_url
+    image_url     = local.azkaban_external_executor_image
     memory        = var.fargate_memory
     user          = "root"
     ports         = jsonencode([jsondecode(data.aws_secretsmanager_secret_version.azkaban_external.secret_binary).ports.azkaban_executor_port])
@@ -60,7 +60,8 @@ resource "aws_ecs_service" "azkaban_external_executor" {
   cluster                            = data.terraform_remote_state.common.outputs.ecs_cluster_main.id
   task_definition                    = aws_ecs_task_definition.azkaban_external_executor.arn
   platform_version                   = var.platform_version
-  desired_count                      = 1
+  desired_count                      = local.desired_executor_count[local.environment]
+  force_new_deployment               = local.force_executor_redeploy[local.environment]
   launch_type                        = "FARGATE"
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
