@@ -102,7 +102,7 @@ variable "webserver_image_version" {
 variable "executor_image_version" {
   description = "pinned Azkaban Executor image versions to use"
   default = {
-    development = "latest"
+    development = "debug"
     qa          = "0.0.131"
     integration = "0.0.131"
     preprod     = "0.0.131"
