@@ -92,9 +92,9 @@ variable "webserver_image_version" {
   description = "pinned Azkaban Webserver image versions to use"
   default = {
     development = "latest"
-    qa          = "0.0.141"
-    integration = "0.0.141"
-    preprod     = "0.0.141"
+    qa          = "0.0.158"
+    integration = "0.0.158"
+    preprod     = "0.0.158"
     production  = "0.0.141"
   }
 }
@@ -114,9 +114,9 @@ variable "external_webserver_image_version" {
   description = "pinned Azkaban Webserver image versions to use"
   default = {
     development = "latest"
-    qa          = "0.0.141"
-    integration = "0.0.141"
-    preprod     = "0.0.141"
+    qa          = "0.0.158"
+    integration = "0.0.158"
+    preprod     = "0.0.158"
     production  = "0.0.141"
   }
 }
