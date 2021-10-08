@@ -95,7 +95,7 @@ variable "webserver_image_version" {
     qa          = "0.0.158"
     integration = "0.0.158"
     preprod     = "0.0.158"
-    production  = "0.0.141"
+    production  = "0.0.158"
   }
 }
 
@@ -117,7 +117,7 @@ variable "external_webserver_image_version" {
     qa          = "0.0.158"
     integration = "0.0.158"
     preprod     = "0.0.158"
-    production  = "0.0.141"
+    production  = "0.0.158"
   }
 }
 
