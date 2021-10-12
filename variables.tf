@@ -106,7 +106,7 @@ variable "executor_image_version" {
     qa          = "0.0.159"
     integration = "0.0.159"
     preprod     = "0.0.159"
-    production  = "0.0.131"
+    production  = "0.0.159"
   }
 }
 
@@ -128,7 +128,7 @@ variable "external_executor_image_version" {
     qa          = "0.0.159"
     integration = "0.0.159"
     preprod     = "0.0.159"
-    production  = "0.0.131"
+    production  = "0.0.159"
   }
 }
 
