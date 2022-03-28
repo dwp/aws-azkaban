@@ -103,10 +103,10 @@ variable "executor_image_version" {
   description = "pinned Azkaban Executor image versions to use"
   default = {
     development = "latest"
-    qa          = "0.0.163"
-    integration = "0.0.163"
-    preprod     = "0.0.163"
-    production  = "0.0.163"
+    qa          = "0.0.164"
+    integration = "0.0.164"
+    preprod     = "0.0.164"
+    production  = "0.0.164"
   }
 }
 
@@ -125,10 +125,10 @@ variable "external_executor_image_version" {
   description = "pinned Azkaban Executor image versions to use"
   default = {
     development = "latest"
-    qa          = "0.0.163"
-    integration = "0.0.163"
-    preprod     = "0.0.163"
-    production  = "0.0.163"
+    qa          = "0.0.164"
+    integration = "0.0.164"
+    preprod     = "0.0.164"
+    production  = "0.0.164"
   }
 }
 
