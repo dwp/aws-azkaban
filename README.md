@@ -47,7 +47,7 @@ These settings are toggled in the `config/*.properties` files and controlled by 
 
 ### Requirements
 
-* Terraform 0.13
+* Terraform 0.14
 * Python 3
 * JQ
 * Access to Dataworks AWS Environments
