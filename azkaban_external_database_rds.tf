@@ -57,7 +57,7 @@ resource "aws_rds_cluster_parameter_group" "azkaban_external_database" {
 
   parameter {
     name  = "require_secure_transport"
-    value = "ON"
+    value = "OFF"
   }
 
   parameter {
