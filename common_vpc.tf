@@ -3,7 +3,7 @@ data "aws_availability_zones" "current" {}
 
 module "workflow_manager_vpc" {
   source         = "dwp/vpc/aws"
-  version        = "3.0.10"
+  version        = "3.0.15"
   vpc_name       = "workflow-manager"
   region         = var.region
   vpc_cidr_block = local.cidr_block[local.environment].workflow-manager-vpc
