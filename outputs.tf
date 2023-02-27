@@ -13,12 +13,12 @@ output "ecs_services" {
 }
 
 output "truncate_table_lambda" {
-  value = aws_lambda_function.truncate_table
+  value     = aws_lambda_function.truncate_table
   sensitive = true
 }
 
 output "truncate_external_table_lambda" {
-  value = aws_lambda_function.truncate_external_table
+  value     = aws_lambda_function.truncate_external_table
   sensitive = true
 }
 
