@@ -1,7 +1,7 @@
 resource "aws_cloudwatch_metric_alarm" "external_executor_running_tasks_less_than_desired" {
   count               = local.azkaban_external_alert_on_running_tasks_less_than_desired[local.environment] ? 1 : 0
   alarm_name          = local.azkaban_external_executor_running_tasks_less_than_desired
-  alarm_description   = "Managed by ${local.common_tags.Application} repository"
+  alarm_description   = "Managed by ${local.common_tags.DWX_Application} repository"
   alarm_actions       = [local.monitoring_topic_arn]
   treat_missing_data  = "breaching"
   evaluation_periods  = 5
@@ -63,7 +63,7 @@ resource "aws_cloudwatch_metric_alarm" "external_executor_running_tasks_less_tha
 resource "aws_cloudwatch_metric_alarm" "external_web_running_tasks_less_than_desired" {
   count               = local.azkaban_external_alert_on_running_tasks_less_than_desired[local.environment] ? 1 : 0
   alarm_name          = local.azkaban_external_web_running_tasks_less_than_desired
-  alarm_description   = "Managed by ${local.common_tags.Application} repository"
+  alarm_description   = "Managed by ${local.common_tags.DWX_Application} repository"
   alarm_actions       = [local.monitoring_topic_arn]
   treat_missing_data  = "breaching"
   evaluation_periods  = 5
@@ -124,7 +124,7 @@ resource "aws_cloudwatch_metric_alarm" "external_web_running_tasks_less_than_des
 resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_less_than_running_tasks" {
   count               = local.azkaban_external_alert_on_unhealthy_hosts_less_than_running[local.environment] ? 1 : 0
   alarm_name          = local.azkaban_external_web_unhealthy_hosts
-  alarm_description   = "Managed by ${local.common_tags.Application} repository"
+  alarm_description   = "Managed by ${local.common_tags.DWX_Application} repository"
   alarm_actions       = [local.monitoring_topic_arn]
   treat_missing_data  = "breaching"
   evaluation_periods  = 5
@@ -185,7 +185,7 @@ resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_less_than_run
 resource "aws_cloudwatch_metric_alarm" "external_web_healthy_hosts_zero_but_running_tasks" {
   count               = local.azkaban_external_alert_on_unhealthy_hosts_less_than_running[local.environment] ? 1 : 0
   alarm_name          = local.azkaban_external_web_zero_unhealthy_hosts
-  alarm_description   = "Managed by ${local.common_tags.Application} repository"
+  alarm_description   = "Managed by ${local.common_tags.DWX_Application} repository"
   alarm_actions       = [local.monitoring_topic_arn]
   treat_missing_data  = "breaching"
   evaluation_periods  = 1
