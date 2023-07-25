@@ -85,7 +85,7 @@ resource "aws_vpc_endpoint" "tanium_service" {
   service_name        = local.tanium_service_name[local.environment]
   vpc_endpoint_type   = "Interface"
   security_group_ids  = [aws_security_group.tanium_service_endpoint.id]
-  subnet_ids          = aws_subnet.private.*.id
+  subnet_ids          = aws_subnet.workflow_manager_private.*.id
   private_dns_enabled = false
   tags                = merge(local.common_tags, { Name = "tanium-service" })
 }
