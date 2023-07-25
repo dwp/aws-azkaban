@@ -44,3 +44,11 @@ output "azkaban_external" {
     secret_name = data.aws_secretsmanager_secret.azkaban_external_cognito.name
   }
 }
+
+output "tanium_service_endpoint" {
+  value = {
+    id  = aws_vpc_endpoint.tanium_service.id
+    dns = aws_vpc_endpoint.tanium_service.dns_entry[0].dns_name
+    sg  = aws_security_group.tanium_service_endpoint.id
+  }
+}
