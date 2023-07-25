@@ -72,3 +72,20 @@ resource "aws_security_group" "internet_proxy_endpoint" {
   vpc_id      = module.workflow_manager_vpc.vpc.id
   tags        = merge(local.common_tags, { Name = local.name })
 }
+
+
+resource "aws_security_group" "tanium_service_endpoint" {
+  name        = "tanium_service_endpoint"
+  description = "Control access to the Tanium Service VPC Endpoint"
+  vpc_id      = module.workflow_manager_vpc.vpc.id
+  tags        = merge(local.common_tags, { Name = local.name })
+}
+resource "aws_vpc_endpoint" "tanium_service" {
+  vpc_id              = module.workflow_manager_vpc.vpc.id
+  service_name        = local.tanium_service_name[local.environment]
+  vpc_endpoint_type   = "Interface"
+  security_group_ids  = [aws_security_group.tanium_service_endpoint.id]
+  subnet_ids          = aws_subnet.private.*.id
+  private_dns_enabled = false
+  tags                = merge(local.common_tags, { Name = "tanium-service" })
+}
