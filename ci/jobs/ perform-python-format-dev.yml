@@ -1,0 +1,13 @@
+jobs:
+  - name: perform-python-format-dev
+    max_in_flight: 1
+    plan:
+      - get: aws-azkaban
+      - get: aws-azkaban-dev
+        trigger: false
+      - .: (( inject meta.plan.perform-python-format ))
+        input_mapping:
+          aws-azkaban: aws-azkaban-dev
+        config:
+          params:
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.management-dev)):role/ci

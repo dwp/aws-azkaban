@@ -331,6 +331,29 @@ meta:
               done;
 
 
+    perform-python-format:
+      task: perform-python-format
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((dataworks.terraform_repository))
+            tag: ((dataworks.terraform_version))
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              PYTHON-VERSION="Python-3.8.0"
+              curl -o $PYTHON-VERSION-bin.tgz https://www.python.org/ftp/python/3.8.0/$PYTHON-VERSION.tgz
+              
+        inputs:
+          - name: aws-azkaban
+        outputs:
+          - name: aws-azkaban/new-python-folder
+
+
     terraform-dataworks-analytical-frontend-service-bootstrap:
       task: terraform-dataworks-analytical-frontend-service-bootstrap
       .: (( inject meta.plan.terraform-common-config ))

@@ -97,3 +97,7 @@ groups:
   - name: update-pipeline
     jobs:
       - update-pipeline
+
+  - name: perform-python-format-dev
+    jobs:
+      - perform-python-format-dev
