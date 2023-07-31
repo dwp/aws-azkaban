@@ -341,7 +341,7 @@ meta:
             repository: (( dataworks.docker_python_boto_behave_repository ))
             tag: ((dataworks.docker_python_boto_behave_version))
         run:
-          ddir: aws-azkaban
+          dir: aws-azkaban
           path: sh
           args:
             - -exc
