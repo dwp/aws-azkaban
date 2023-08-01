@@ -4,8 +4,8 @@ jobs:
     plan:
       - get: aws-azkaban
       - get: aws-azkaban-dev
-        trigger: false
-      - .: (( inject meta.plan.perform-python-format ))
+        trigger: true
+      - .: (( inject meta.plan.set-up-python-3-8 ))
         input_mapping:
           aws-azkaban: aws-azkaban-dev
         config:
