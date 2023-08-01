@@ -337,14 +337,13 @@ meta:
         image_resource:
           type: docker-image
           source:
-            repository: (( dataworks.docker_python_boto_behave_repository ))
+            repository: ((dataworks.docker_python_boto_behave_repository))
             tag: ((dataworks.docker_python_boto_behave_version))
           params:
             AWS_REGION: ((dataworks.aws_region))
             AWS_DEFAULT_REGION: ((dataworks.aws_region))
             ASSUME_DURATION: 43200
             E2E_TEST_TIMEOUT: 90000
-
         run:
           dir: aws-azkaban
           path: sh
@@ -366,7 +365,7 @@ meta:
         image_resource:
           type: docker-image
           source:
-            repository: (( dataworks.docker_python_boto_behave_repository ))
+            repository: ((dataworks.docker_python_boto_behave_repository))
             tag: ((dataworks.docker_python_boto_behave_version))
         run:
           dir: aws-azkaban
@@ -387,7 +386,7 @@ meta:
         image_resource:
           type: docker-image
           source:
-            repository: (( dataworks.docker_python_boto_behave_repository ))
+            repository: ((dataworks.docker_python_boto_behave_repository))
             tag: ((dataworks.docker_python_boto_behave_version))
         run:
           dir: aws-azkaban
