@@ -337,7 +337,7 @@ meta:
         image_resource:
           type: docker-image
           source:
-            repository: ((dataworks.docker_python_boto_behave_repository))
+            repository: (( dataworks.docker_python_boto_behave_repository ))
             tag: ((dataworks.docker_python_boto_behave_version))
           params:
             AWS_REGION: ((dataworks.aws_region))
@@ -351,8 +351,8 @@ meta:
           args:
             - -exc
             - |
-              yum update -y
-              yum install -y python((dataworks.docker_python_boto_behave_version))
+              apt-get update -y
+              apt-get install -y python((dataworks.docker_python_boto_behave_version))
               python3 --version        
         inputs:
           - name: aws-azkaban
@@ -366,7 +366,7 @@ meta:
         image_resource:
           type: docker-image
           source:
-            repository: ((dataworks.docker_python_boto_behave_repository))
+            repository: (( dataworks.docker_python_boto_behave_repository ))
             tag: ((dataworks.docker_python_boto_behave_version))
         run:
           dir: aws-azkaban
@@ -387,7 +387,7 @@ meta:
         image_resource:
           type: docker-image
           source:
-            repository: ((dataworks.docker_python_boto_behave_repository))
+            repository: (( dataworks.docker_python_boto_behave_repository ))
             tag: ((dataworks.docker_python_boto_behave_version))
         run:
           dir: aws-azkaban
