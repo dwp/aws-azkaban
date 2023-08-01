@@ -10,4 +10,5 @@ jobs:
           aws-azkaban: aws-azkaban-dev
         config:
           params:
-            AWS_ROLE_ARN: arn:aws:iam::((aws_account.management-dev)):role/ci
+            AWS_ACC: ((aws_account.development))
+            AWS_ROLE_ARN: arn:aws:iam::((aws_account.development)):role/ci
