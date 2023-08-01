@@ -351,8 +351,8 @@ meta:
           args:
             - -exc
             - |
-              apt-get update -y
-              apt-get install -y python((dataworks.docker_python_boto_behave_version))
+              yum update -y
+              yum install -y python((dataworks.docker_python_boto_behave_version))
               python3 --version        
         inputs:
           - name: aws-azkaban
