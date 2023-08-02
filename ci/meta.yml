@@ -353,7 +353,7 @@ meta:
               cat /etc/os-release
 
               PYTHON_VERSION=“Python-3.8.0”
-              PYTHON_FILE_NAME=“python-$PYTHON_VERSION.tgz”
+              PYTHON_FILE_NAME=“python-$PYTHON_VERSION”
               curl -o $PYTHON_FILE_NAME.tgz https://www.python.org/ftp/python/3.8.0/Python-3.8.0.tgz
               echo “Python  $PYTHON_VERSION downloaded and saved as $PYTHON_FILE_NAME
         inputs:
