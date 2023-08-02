@@ -405,8 +405,6 @@ meta:
             - |
               pip install tox
               ls -d */
-              cd tox-installed
-              ls
         inputs:
           - name: aws-azkaban
         outputs:
@@ -434,6 +432,8 @@ meta:
             - -exc
             - |
               tox
+              cd tox-installed
+              ls
         inputs:
           - name: tox-installed
 
