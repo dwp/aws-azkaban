@@ -350,9 +350,8 @@ meta:
           args:
             - -exc
             - |
-              yum update -y
-              yum install -y python((dataworks.docker_python_boto_behave_version))
-              python3 --version        
+              cat /etc/os-release
+              ls -d */
         inputs:
           - name: aws-azkaban
         outputs:
