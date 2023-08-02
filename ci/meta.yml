@@ -361,6 +361,33 @@ meta:
         outputs:
           - name: python-set-up
 
+    set-up-python-3-8-new:
+      task: set-up-python-3-8-new
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            tag: ((dataworks.docker_awscli_version))
+        run:
+          dir: aws-azkaban
+          path: sh
+          args:
+            - -exc
+            - |
+              cat /etc/os-release
+
+              PYTHON_VERSION=“Python-3.8.0”
+              PYTHON_FILE_NAME=“python-$PYTHON_VERSION”
+              curl -o $PYTHON_FILE_NAME.tgz https://www.python.org/ftp/python/3.8.0/Python-3.8.0.tgz
+              echo “Python  $PYTHON_VERSION downloaded and saved as $PYTHON_FILE_NAME
+        inputs:
+          - name: aws-azkaban
+        outputs:
+          - name: python-set-up
+
+
     install-tox:
       task: install-tox
       config:
