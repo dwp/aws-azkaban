@@ -330,8 +330,8 @@ meta:
                 sleep 10;
               done;
 
-    set-up-python-3-8:
-      task: set-up-python-3-8
+    set-up-python-3-7:
+      task: set-up-python-3-7
       config:
         platform: linux
         image_resource:
@@ -351,45 +351,40 @@ meta:
             - -exc
             - |
               cat /etc/os-release
-
-              PYTHON_VERSION=“Python-3.8.0”
-              PYTHON_FILE_NAME=“python-$PYTHON_VERSION”
-              curl -o $PYTHON_FILE_NAME.tgz https://www.python.org/ftp/python/3.8.0/Python-3.8.0.tgz
-              echo “Python  $PYTHON_VERSION downloaded and saved as $PYTHON_FILE_NAME
+              python3 --version
         inputs:
           - name: aws-azkaban
         outputs:
           - name: python-set-up
 
-    set-up-python-3-8-new:
-      task: set-up-python-3-8-new
-      config:
-        platform: linux
-        image_resource:
-          type: docker-image
-          source:
-            repository: ((dataworks.docker_awscli_repository))
-            tag: ((dataworks.docker_awscli_version))
-        run:
-          dir: aws-azkaban
-          path: sh
-          args:
-            - -exc
-            - |
-              cat /etc/os-release
+    # install-tox:
+    #   task: install-tox
+    #   config:
+    #     platform: linux
+    #     image_resource:
+    #       type: docker-image
+    #       source:
+    #         repository: ((dataworks.docker_python_boto_behave_repository))
+    #         tag: ((dataworks.docker_python_boto_behave_version))
+    #       params:
+    #         AWS_REGION: ((dataworks.aws_region))
+    #         AWS_DEFAULT_REGION: ((dataworks.aws_region))
+    #         ASSUME_DURATION: 43200
+    #         E2E_TEST_TIMEOUT: 90000
+    #     run:
+    #       dir: aws-azkaban
+    #       path: sh
+    #       args:
+    #         - -exc
+    #         - |
+    #           pip install tox
+    #     inputs:
+    #       - name: python-set-up
+    #     outputs:
+    #       - name: tox-installed
 
-              PYTHON_VERSION=“Python-3.8.0”
-              PYTHON_FILE_NAME=“python-$PYTHON_VERSION”
-              curl -o $PYTHON_FILE_NAME.tgz https://www.python.org/ftp/python/3.8.0/Python-3.8.0.tgz
-              echo “Python  $PYTHON_VERSION downloaded and saved as $PYTHON_FILE_NAME
-        inputs:
-          - name: aws-azkaban
-        outputs:
-          - name: python-set-up
-
-
-    install-tox:
-      task: install-tox
+    install-tox-new:
+      task: install-tox-new
       config:
         platform: linux
         image_resource:
@@ -397,6 +392,11 @@ meta:
           source:
             repository: ((dataworks.docker_python_boto_behave_repository))
             tag: ((dataworks.docker_python_boto_behave_version))
+          params:
+            AWS_REGION: ((dataworks.aws_region))
+            AWS_DEFAULT_REGION: ((dataworks.aws_region))
+            ASSUME_DURATION: 43200
+            E2E_TEST_TIMEOUT: 90000
         run:
           dir: aws-azkaban
           path: sh
@@ -404,10 +404,12 @@ meta:
             - -exc
             - |
               pip install tox
+              ls -d */
         inputs:
-          - name: python-set-up
+          - name: aws-azkaban
         outputs:
           - name: tox-installed
+          
 
     tox-unit-tests:
       task: tox-unit-tests
@@ -418,6 +420,11 @@ meta:
           source:
             repository: ((dataworks.docker_python_boto_behave_repository))
             tag: ((dataworks.docker_python_boto_behave_version))
+          params:
+            AWS_REGION: ((dataworks.aws_region))
+            AWS_DEFAULT_REGION: ((dataworks.aws_region))
+            ASSUME_DURATION: 43200
+            E2E_TEST_TIMEOUT: 90000
         run:
           dir: aws-azkaban
           path: sh

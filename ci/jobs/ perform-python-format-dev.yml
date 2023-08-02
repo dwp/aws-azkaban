@@ -5,7 +5,11 @@ jobs:
       - get: aws-azkaban
       - get: aws-azkaban-dev
         trigger: true
-      - .: ((inject meta.plan.set-up-python-3-8-new))
+      # - .: ((inject meta.plan.set-up-python-3-7))
+      #   input_mapping:
+      #     aws-azkaban: aws-azkaban-dev
+      - .: ((inject meta.plan.install-tox-new))
+      - .: ((inject meta.plan.tox-unit-tests))
         input_mapping:
           aws-azkaban: aws-azkaban-dev
         config:
