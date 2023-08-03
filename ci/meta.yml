@@ -378,13 +378,11 @@ meta:
             - -exc
             - |
               pip install tox
-              ls -d */
         inputs:
           - name: aws-azkaban
         outputs:
           - name: tox-installed
           
-
     tox-unit-tests:
       task: tox-unit-tests
       config:
@@ -406,8 +404,6 @@ meta:
             - -exc
             - |
               tox
-              cd tox-installed
-              ls
         inputs:
           - name: tox-installed
 
