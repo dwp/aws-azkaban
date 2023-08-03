@@ -350,7 +350,6 @@ meta:
           args:
             - -exc
             - |
-              cat /etc/os-release
               python3 --version
         inputs:
           - name: aws-azkaban

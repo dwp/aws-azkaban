@@ -7,6 +7,7 @@ jobs:
         trigger: true
       - .: ((inject meta.plan.set-up-python-3-7))
       - .: ((inject meta.plan.install-tox))
+      - .: ((inject meta.plan.tox-unit-tests))
         input_mapping:
           aws-azkaban: aws-azkaban-dev
         config:
