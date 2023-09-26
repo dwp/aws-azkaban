@@ -1,3 +1,5 @@
+# DO NOT USE THIS REPO - MIGRATED TO GITLAB
+
 # aws-azkaban
 
 ## An AWS based azkaban platform
