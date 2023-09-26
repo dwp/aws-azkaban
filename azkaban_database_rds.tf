@@ -18,7 +18,7 @@ resource "aws_rds_cluster" "azkaban_database" {
   cluster_identifier   = "azkaban-database"
   database_name        = jsondecode(data.aws_secretsmanager_secret_version.workflow_manager.secret_binary).db_name
   engine               = "aurora-mysql"
-  engine_version       = "5.7.serverless_mysql_aurora.2.11.3"
+  engine_version       = "5.7.mysql_aurora.2.11.3"
   engine_mode          = "serverless"
   enable_http_endpoint = true
 
