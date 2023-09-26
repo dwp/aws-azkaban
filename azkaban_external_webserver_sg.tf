@@ -78,4 +78,3 @@ resource "aws_security_group_rule" "azkaban_external_webserver_ingress_internet_
   source_security_group_id = aws_security_group.azkaban_external_webserver.id
   security_group_id        = aws_security_group.internet_proxy_endpoint.id
 }
-

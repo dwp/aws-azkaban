@@ -19,7 +19,7 @@ data "template_file" "azkaban_external_executor_internal" {
   }
 }
 
-resource "aws_s3_bucket_object" "azkaban_external_executor_internal" {
+resource "aws_s3_object" "azkaban_external_executor_internal" {
   bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
   key        = "${local.name}/azkaban_external/exec-server/internal-start-executor.sh"
   content    = data.template_file.azkaban_external_executor_internal.rendered
@@ -45,42 +45,42 @@ data "local_file" "azkaban_external_executor_launchemr_private" {
   filename = "config/azkaban_external/exec-server/launchemr-private.properties"
 }
 
-resource "aws_s3_bucket_object" "azkaban_external_executor_properties" {
+resource "aws_s3_object" "azkaban_external_executor_properties" {
   bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
   key        = "${local.name}/azkaban_external/exec-server/azkaban.properties"
   content    = data.template_file.azkaban_external_executor_properties.rendered
   kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
 }
 
-resource "aws_s3_bucket_object" "azkaban_external_executor_start" {
+resource "aws_s3_object" "azkaban_external_executor_start" {
   bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
   key        = "${local.name}/azkaban_external/exec-server/start-exec.sh"
   content    = data.template_file.azkaban_external_executor_start.rendered
   kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
 }
 
-resource "aws_s3_bucket_object" "azkaban_external_executor_commonprivate" {
+resource "aws_s3_object" "azkaban_external_executor_commonprivate" {
   bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
   key        = "${local.name}/azkaban_external/exec-server/commonprivate.properties"
   content    = data.template_file.azkaban_external_executor_commonprivate.rendered
   kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
 }
 
-resource "aws_s3_bucket_object" "azkaban_external_executor_private" {
+resource "aws_s3_object" "azkaban_external_executor_private" {
   bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
   key        = "${local.name}/azkaban_external/exec-server/private.properties"
   content    = data.template_file.azkaban_external_executor_private.rendered
   kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
 }
 
-resource "aws_s3_bucket_object" "azkaban_external_executor_launchemr_private" {
+resource "aws_s3_object" "azkaban_external_executor_launchemr_private" {
   bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
   key        = "${local.name}/azkaban_external/exec-server/launchemr-private.properties"
   content    = data.local_file.azkaban_executor_launchemr_private.content
   kms_key_id = data.terraform_remote_state.common.outputs.config_bucket_cmk.arn
 }
 
-resource "aws_s3_bucket_object" "azkaban_external_executor_script" {
+resource "aws_s3_object" "azkaban_external_executor_script" {
   bucket     = data.terraform_remote_state.common.outputs.config_bucket.id
   key        = "${local.name}/azkaban_external/step.sh"
   content    = file("${path.module}/config/azkaban_external/step.sh")
