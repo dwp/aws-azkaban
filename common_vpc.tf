@@ -27,6 +27,7 @@ module "workflow_manager_vpc" {
     "sts",
     "dynamodb",
     "sns",
+    "lambda"
   ]
   common_tags = local.common_tags
 }
