@@ -66,4 +66,3 @@ jobs:
               AWS_ACC: ((aws_account.production))
               AWS_ROLE_ARN: arn:aws:iam::((aws_account.production)):role/ci
               SECRET_ID: "/concourse/dataworks/workflow_manager/azkaban_external/cognito"
-

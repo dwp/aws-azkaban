@@ -92,5 +92,3 @@ resource "aws_service_discovery_service" "azkaban_executor" {
     }
   }
 }
-
-

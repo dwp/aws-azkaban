@@ -1,14 +1,16 @@
+# DO NOT USE THIS REPO - MIGRATED TO GITLAB
+
 # aws-azkaban
 
 ## An AWS based azkaban platform
 
 ## Description
-AWS Azkaban deploys two containerised versions of [Azkaban](https://azkaban.github.io/azkaban/docs/latest/) that both back onto an AWS EMR cluster along with the peripheral infrastructure required for functionality and security. 
-One of the versions is for users through the Analytical Env and the other for use by admins and engineers (referred to as azkaban_external), that is accessible directly through a URL. 
+AWS Azkaban deploys two containerised versions of [Azkaban](https://azkaban.github.io/azkaban/docs/latest/) that both back onto an AWS EMR cluster along with the peripheral infrastructure required for functionality and security.
+One of the versions is for users through the Analytical Env and the other for use by admins and engineers (referred to as azkaban_external), that is accessible directly through a URL.
 The frontend of the service is handled by the webserver containers from which, tasks are sent to and then handled by the executors. An Aurora Serverless database is used to track active executors that can be called by the webservers when needed.
 
 ## Development
-This repo contains only the IAC and lambdas and these can be developed as they are found. The Azkaban containers themselves can be found [here](https://github.com/dwp/dataworks-hardened-images) along with further documentation on them. 
+This repo contains only the IAC and lambdas and these can be developed as they are found. The Azkaban containers themselves can be found [here](https://github.com/dwp/dataworks-hardened-images) along with further documentation on them.
 The containers are pushed to ECR and called by name by the infrastructure in this repo.
 
 The deployment is handled using a Concourse [job](https://ci.dataworks.dwp.gov.uk/teams/dataworks/pipelines/aws-azkaban) and the pipeline code can be found in the `/ci` directory. There are admin ci jobs for cycling the containers and rotating passwords.
@@ -27,7 +29,7 @@ Used to rotate the credentials used to access the Aurora Serverless DB that is m
 
 ## Access
 
-Production Azkaban can be found [here](https://azkaban-external.dataworks.dwp.gov.uk/). 
+Production Azkaban can be found [here](https://azkaban-external.dataworks.dwp.gov.uk/).
 
 Other envs:
 [Dev](https://azkaban-external.dev.wip.dataworks.dwp.gov.uk)
@@ -71,7 +73,7 @@ You will then be able to develop against the development account (default Terraf
 
 ## Monitoring
 Currently, only external azkaban is being monitored in dev, preprod and prod environments. This is configured as aws_cloudwatch_metric_alarms in the external_monitoring.tf file.
-The active alerts are for mismatches in desired task counts and running task counts for the webservers and executors and 500 errors in the frontend. 
+The active alerts are for mismatches in desired task counts and running task counts for the webservers and executors and 500 errors in the frontend.
 When triggered these alerts are sent to the `dataworks-aws-service-alerts` slack channel.
 
 ## High level infrastructure outline
