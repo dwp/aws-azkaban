@@ -42,4 +42,3 @@ class AzkabanScheduler:
 
         self._logger.info(f"Request response '{response.text}' with a status of '{response.status_code}'")
         response.raise_for_status()
-
