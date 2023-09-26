@@ -166,4 +166,3 @@ class LambdaHandlerTests(TestCase):
 
         result = lambda_handler.establish_azkaban_session(mock_http)
         assert result == "test-session-id-12345432"
-

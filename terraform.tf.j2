@@ -12,9 +12,14 @@ terraform {
 
   required_providers {
     aws = {
-      version = "~> 3.42.0"
+      version = "4.56"
     }
   }
+}
+
+data "aws_secretsmanager_secret_version" "terraform_secrets" {
+  provider  = aws.management-dns
+  secret_id = "/concourse/dataworks/terraform"
 }
 
 data "terraform_remote_state" "common" {
@@ -258,6 +263,15 @@ data "terraform_remote_state" "aws_internal_compute" {
 provider "aws" {
   region  = "{{terraform.provider_region}}"
 
+  default_tags {
+    tags = {
+      Application      = "DataWorks"                              # As per our definition on ServiceNow
+      Function         = "Data and Analytics"                     # As per our definition on ServiceNow
+      Environment      = local.hcs_environment[local.environment] # Set up locals as per Tagging doc requirements https://engineering.dwp.gov.uk/policies/hcs-cloud-hosting-policies/resource-identification-tagging/
+      Business-Project = "PRJ0022507"                             # This seems to replace costcode as per the doc https://engineering.dwp.gov.uk/policies/hcs-cloud-hosting-policies/resource-identification-tagging/
+    }
+  }
+
   assume_role {
     role_arn = "arn:aws:iam::${lookup(local.account, local.environment)}:role/${var.assume_role}"
   }
@@ -266,6 +280,15 @@ provider "aws" {
 provider "aws" {
   alias  = "management-dns"
   region  = "{{terraform.provider_region}}"
+
+  default_tags {
+    tags = {
+      Application      = "DataWorks"                              # As per our definition on ServiceNow
+      Function         = "Data and Analytics"                     # As per our definition on ServiceNow
+      Environment      = local.hcs_environment[local.environment] # Set up locals as per Tagging doc requirements https://engineering.dwp.gov.uk/policies/hcs-cloud-hosting-policies/resource-identification-tagging/
+      Business-Project = "PRJ0022507"                             # This seems to replace costcode as per the doc https://engineering.dwp.gov.uk/policies/hcs-cloud-hosting-policies/resource-identification-tagging/
+    }
+  }
 
   assume_role {
     role_arn = "arn:aws:iam::${local.account[local.management_account[local.environment]]}:role/${var.assume_role}"
@@ -276,6 +299,15 @@ provider "aws" {
   alias = "management"
   region  = "{{terraform.provider_region}}"
 
+  default_tags {
+    tags = {
+      Application      = "DataWorks"                              # As per our definition on ServiceNow
+      Function         = "Data and Analytics"                     # As per our definition on ServiceNow
+      Environment      = local.hcs_environment[local.environment] # Set up locals as per Tagging doc requirements https://engineering.dwp.gov.uk/policies/hcs-cloud-hosting-policies/resource-identification-tagging/
+      Business-Project = "PRJ0022507"                             # This seems to replace costcode as per the doc https://engineering.dwp.gov.uk/policies/hcs-cloud-hosting-policies/resource-identification-tagging/
+    }
+  }
+
   assume_role {
     role_arn = "arn:aws:iam::${local.account[local.management_account[local.environment]]}:role/${var.assume_role}"
   }
@@ -285,6 +317,16 @@ locals {
   name        = "workflow-manager"
   external_name = "azkaban-external"
   environment = terraform.workspace == "default" ? "development" : terraform.workspace
+
+  hcs_environment = {
+    development    = "Dev"
+    qa             = "Test"
+    integration    = "Stage"
+    preprod        = "Stage"
+    production     = "Production"
+    management     = "SP_Tooling"
+    management-dev = "DT_Tooling"
+  }
 
   parent_domain_name = {
     management-dev = "mgt-dev.${var.parent_domain_name}"
@@ -315,8 +357,9 @@ locals {
       {{key}} = "{{value}}"
     {%- endfor %}
     Name         = local.name
-    Environment  = local.environment
-    Application  = "aws-azkaban"
+    DWX_Environment  = local.environment
+    DWX_Project   = "workflow-manager"
+    DWX_Application  = "aws-azkaban"
     Persistence  = "True"
     AutoShutdown = "False"
     Team         = "DataWorks"

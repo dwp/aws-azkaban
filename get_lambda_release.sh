@@ -41,4 +41,3 @@ fetch_asset(){
 }
 
 get_release
-
